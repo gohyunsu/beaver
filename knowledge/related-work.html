@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="BEAVER 연구의 related work index: gaze datasets, medical supervision, temporal modeling, intent, generative interaction, reading, automation oversight." />
+    <meta name="theme-color" content="#143d35" />
+    <title>Related work · BEAVER Research Atlas</title>
+    <link rel="stylesheet" href="../assets/css/site.css" />
+    <script src="../assets/js/site.js" defer></script>
+    <script src="../assets/js/references.js" defer></script>
+  </head>
+  <body data-root="../" data-page="related">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="page-hero">
+        <div class="shell page-hero-grid">
+          <div>
+            <p class="eyebrow">Knowledge · Evidence map</p>
+            <h1>선행연구를 <em>계열</em>로 읽습니다.</h1>
+            <p class="page-summary">논문 수를 늘리는 목록이 아니라, 각 연구가 이미 답한 것과 BEAVER의 주장 범위를 어떻게 제한하는지 기록합니다.</p>
+          </div>
+          <aside class="page-meta">
+            <div class="page-meta-row"><span>Coverage</span><span>7 evidence families</span></div>
+            <div class="page-meta-row"><span>Sources</span><span>Primary / official pages</span></div>
+            <div class="page-meta-row"><span>Rule</span><span>Finding + implication</span></div>
+            <div class="page-meta-row"><span>Updated</span><span>2026.07.21</span></div>
+          </aside>
+        </div>
+      </header>
+
+      <section class="section">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Literature index</p><h2><span data-reference-count>Works</span></h2></div>
+            <p class="section-intro">키워드로 제목·핵심 발견·BEAVER 관련성을 검색하거나 계열별로 좁혀볼 수 있습니다.</p>
+          </div>
+          <label for="reference-search" class="kicker">Search</label>
+          <input class="search-box" id="reference-search" data-reference-search type="search" placeholder="예: REFLACX, temporal, saliency, calibration" />
+          <div class="filters" data-reference-filters aria-label="문헌 계열 필터"></div>
+          <div class="reference-grid" data-reference-grid aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="section alt">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Synthesis</p><h2>문헌이 강제하는 <em>네 가지 결론</em></h2></div>
+            <p class="section-intro">related work의 역할은 아이디어를 지지하는 인용만 모으는 것이 아니라, 하지 말아야 할 claim과 필요한 baseline을 정하는 것입니다.</p>
+          </div>
+          <div class="grid-4">
+            <article class="card reveal"><p class="card-number">01</p><h3>Temporal gaze는 빈 땅이 아니다.</h3><p>GradTrack, FG-CXR, GazeX가 duration·order·언어 정렬을 이미 다룹니다. GazeMed는 controlled decomposition과 REFLACX-specific evidence로 좁혀야 합니다.</p></article>
+            <article class="card reveal"><p class="card-number">02</p><h3>Gaze는 intent가 아니다.</h3><p>Midas touch와 personalized disagreement 결과는 gaze-only command의 오탐 위험을 보여줍니다. saliency 통제와 confirmation이 필수입니다.</p></article>
+            <article class="card reveal"><p class="card-number">03</p><h3>Editing novelty는 passive inference에 있다.</h3><p>GazeGen은 active targeting을, Eye Want It All!은 correlation을 다뤘습니다. GazeImageRefine는 식별 가능성·선택적 제안·실제 효용을 증명해야 합니다.</p></article>
+            <article class="card reveal"><p class="card-number">04</p><h3>작은 gain은 설명이 필요하다.</h3><p>leXic은 ablation, calibration, generalization, compute cost가 없으면 feature fusion 이상의 기여로 읽히기 어렵습니다.</p></article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

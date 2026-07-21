@@ -1,0 +1,19 @@
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+node_modules/
+dist/
+*.log
+
+# Private source material and research data
+KakaoTalk_*.txt
+*.hwp
+*.hwpx
+*.zip
+data/
+datasets/
+results/private/
+.env
+.env.*
+!.env.example

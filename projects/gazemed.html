@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="GazeMed: REFLACX에서 전문가 gaze의 공간·시간·언어 정렬 정보가 병변 국소화에 주는 증분 가치를 검증합니다." />
+    <meta name="theme-color" content="#143d35" />
+    <title>GazeMed · BEAVER Research Atlas</title>
+    <link rel="stylesheet" href="../assets/css/site.css" />
+    <script src="../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../" data-page="gazemed">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="page-hero">
+        <div class="shell page-hero-grid">
+          <div>
+            <p class="eyebrow">Project 01 · Focus now</p>
+            <h1>Gaze<em>Med</em></h1>
+            <p class="page-summary">전문가가 “어디를 봤는가”를 넘어, 얼마나 오래·어떤 순서로·무엇을 말하며 보았는지가 흉부 X-ray 이상소견 국소화에 주는 증분 가치를 분해합니다.</p>
+            <nav class="toc" aria-label="페이지 목차">
+              <a href="#question">Research question</a><a href="#scope">Scope</a><a href="#method">Method</a><a href="#evaluation">Evaluation</a><a href="#tasks">Tasks</a><a href="#risks">Risks</a>
+            </nav>
+          </div>
+          <aside class="page-meta">
+            <div class="page-meta-row"><span>Status</span><span><span class="status">Active focus</span></span></div>
+            <div class="page-meta-row"><span>Anchor data</span><span>REFLACX + MIMIC-CXR-JPG</span></div>
+            <div class="page-meta-row"><span>Internal target</span><span>2026.08.15 submission</span></div>
+            <div class="page-meta-row"><span>Updated</span><span>2026.07.21</span></div>
+          </aside>
+        </div>
+      </header>
+
+      <section class="section" id="question">
+        <div class="shell content-grid">
+          <article class="prose">
+            <p class="eyebrow">Research question</p>
+            <h2>시간 정보는 정적 heatmap을 넘어 <em>무엇을 더 주는가?</em></h2>
+            <p>초기 가설은 1,000 Hz raw gaze를 video-like tensor로 표현하면 fixation parsing이 버리는 saccade path와 velocity를 보존해 병변 국소화를 개선한다는 것이었습니다. 그러나 7월 20일 예비실험은 이 표현에서 유의미한 방향을 찾지 못했습니다. 동시에 GradTrack은 fixation의 순서와 지속시간을 이미 활용하고, GazeX는 흉부 X-ray에서 gaze trajectory를 VLM pretraining에 사용합니다.</p>
+            <div class="callout">
+              <strong>권고 framing</strong>
+              <p>새로운 거대 아키텍처보다, 동일 데이터·동일 image encoder에서 gaze의 공간 밀도, 지속시간, 순서, raw dynamics, dictation alignment가 각각 얼마나 필요한지 검증하는 controlled information-value study로 좁힙니다.</p>
+            </div>
+            <div class="rq-list">
+              <div class="rq"><p>Image-only baseline 대비 aggregate gaze heatmap은 이상소견 국소화와 분류를 개선하는가?</p></div>
+              <div class="rq"><p>Fixation duration과 temporal order는 spatial density만 사용할 때보다 추가 정보를 제공하는가?</p></div>
+              <div class="rq"><p>Pathology mention과 시간 정렬한 gaze window는 전체 판독 gaze보다 label-specific localization에 유리한가?</p></div>
+              <div class="rq"><p>효과는 질환 종류, 확신도, 판독자, 병변 크기에 따라 어떻게 달라지는가?</p></div>
+            </div>
+
+            <h2 id="scope">태스크를 먼저 고정합니다.</h2>
+            <p>REFLACX의 병변 표시는 radiologist-drawn ellipse와 certainty label입니다. 이는 임상 전문가가 제공한 강한 reference annotation이지만, pixel-perfect segmentation mask도 절대적 ground truth도 아닙니다. 판독자 간 변이가 존재하고 대부분 이미지는 한 명의 판독자가 읽었습니다.</p>
+            <div class="callout good">
+              <strong>Primary task: abnormality localization</strong>
+              <p>ellipse 또는 bounding region에 대한 class-aware localization을 1차 태스크로 둡니다. segmentation이라고 부르면 gaze의 모호한 경계와 ellipse의 성격보다 강한 주장을 하게 됩니다. Multi-label classification은 2차 태스크로 둡니다.</p>
+            </div>
+            <div class="table-wrap">
+              <table class="comparison">
+                <thead><tr><th>Layer</th><th>정의</th><th>용도</th><th>주의</th></tr></thead>
+                <tbody>
+                  <tr><td>Image label</td><td>0–5 certainty</td><td>multi-label 분류·필터</td><td>threshold sensitivity report</td></tr>
+                  <tr><td>Lesion ellipse</td><td>이상소견 위치와 범위</td><td>localization reference</td><td>pixel mask로 과해석 금지</td></tr>
+                  <tr><td>Fixations</td><td>x, y, duration, order</td><td>주 baseline·sequence</td><td>zoom/pan 좌표 변환 확인</td></tr>
+                  <tr><td>Raw samples</td><td>1,000 Hz gaze stream</td><td>탐색적 ablation</td><td>고중복·잡음·연산 비용</td></tr>
+                  <tr><td>Dictation</td><td>word timestamp transcript</td><td>label-specific window</td><td>speech–observation lag 추정 필요</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2 id="method">최소 아키텍처, 강한 ablation</h2>
+            <p>입력 표현이 바뀔 때 image backbone과 학습 예산을 고정해야 어떤 gaze 정보가 가치를 만드는지 말할 수 있습니다. 먼저 lightweight CNN 또는 이미 검증된 CXR encoder로 baseline을 고정하고, gaze branch만 바꿉니다.</p>
+            <div class="flow" aria-label="실험 흐름">
+              <div class="flow-step"><strong>Data audit</strong><p>study·image·reader ID, 좌표, missingness, label frequency를 확정합니다.</p></div>
+              <div class="flow-step"><strong>Baseline</strong><p>image-only와 duration-weighted heatmap을 같은 split에서 재현합니다.</p></div>
+              <div class="flow-step"><strong>Information ablation</strong><p>duration·order·raw·dictation window를 하나씩 추가하고 shuffle합니다.</p></div>
+              <div class="flow-step"><strong>Decision</strong><p>효과 크기와 신뢰구간으로 full run 또는 negative result framing을 선택합니다.</p></div>
+            </div>
+
+            <h3>비교할 표현</h3>
+            <div class="table-wrap">
+              <table class="comparison">
+                <thead><tr><th>ID</th><th>표현</th><th>역할</th><th>상태</th></tr></thead>
+                <tbody>
+                  <tr><td>I0</td><td>CXR image only</td><td>gaze 증분 가치의 기준</td><td><span class="status neutral">Required</span></td></tr>
+                  <tr><td>G1</td><td>Duration-weighted Gaussian heatmap</td><td>공간 밀도 baseline</td><td><span class="status neutral">Required</span></td></tr>
+                  <tr><td>G2</td><td>Fixation token sequence (x, y, duration, Δt)</td><td>순서·지속시간</td><td><span class="status">Recommended</span></td></tr>
+                  <tr><td>G3</td><td>Order-shuffled / duration-shuffled G2</td><td>정보원 causal ablation</td><td><span class="status">Recommended</span></td></tr>
+                  <tr><td>G4</td><td>Downsampled raw event tokens</td><td>fixation parsing 밖의 정보</td><td><span class="status parked">Gate first</span></td></tr>
+                  <tr><td>G5</td><td>Pathology mention-aligned gaze</td><td>label-specific supervision</td><td><span class="status waiting">Next</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3>왜 raw video를 우선하지 않는가</h3>
+            <p>1,000 Hz samples를 T×H×W video로 바꾸면 대부분 프레임이 거의 비어 있고 인접 프레임이 중복됩니다. micro-motion과 saccade trajectory가 병변 경계를 담는다는 가정도 아직 입증되지 않았습니다. 먼저 event-token 표현과 raw-vs-fixation 정보량 검사를 통과한 뒤 video encoder 비용을 정당화해야 합니다.</p>
+
+            <h2 id="evaluation">평가 프로토콜</h2>
+            <ul>
+              <li><strong>Split:</strong> 동일 subject/study/image가 여러 판독으로 존재해도 한 split에만 있도록 group split. 가능하면 official MIMIC split과의 일관성도 보고.</li>
+              <li><strong>Primary metrics:</strong> lesion-aware pointing accuracy, class-wise localization AUROC 또는 mAP, ellipse overlap 기반 metric. threshold 하나만 쓰지 않고 curve 기반 지표 병기.</li>
+              <li><strong>Secondary metrics:</strong> multi-label AUROC/AUPRC, calibration error, Brier score.</li>
+              <li><strong>Uncertainty:</strong> 5 seeds만 평균내지 말고 study/image 단위 bootstrap confidence interval과 paired comparison.</li>
+              <li><strong>Subgroups:</strong> pathology, certainty threshold, reader, lesion size, positive/negative case.</li>
+              <li><strong>Sanity checks:</strong> random heatmap, center prior, order shuffle, coordinate permutation, label permutation.</li>
+            </ul>
+            <div class="callout info">
+              <strong>중요한 음성 결과</strong>
+              <p>temporal order가 aggregate heatmap보다 낫지 않더라도, split·backbone·비용을 통제하고 어느 조건에서 정보가 사라지는지 보이면 유효합니다. 단, “negative result도 무조건 publishable”은 아니며 충분한 power와 강한 baseline이 필요합니다.</p>
+            </div>
+
+            <h2 id="tasks">실행 게이트</h2>
+            <div class="task-list">
+              <div class="task"><span class="status">P0 · Now</span><div><strong>REFLACX data audit report</strong><small>매칭 성공률, label count, reader/image 중복, invalid gaze, 좌표 변환 예시 20건</small></div><span class="due">Gate A</span></div>
+              <div class="task"><span class="status">P0 · Now</span><div><strong>I0 + G1 baseline</strong><small>같은 split·backbone·seed에서 image-only와 heatmap 비교</small></div><span class="due">Gate B</span></div>
+              <div class="task"><span class="status waiting">P0 · Next</span><div><strong>G2/G3 information ablation</strong><small>fixation sequence, order shuffle, duration shuffle</small></div><span class="due">Gate C</span></div>
+              <div class="task"><span class="status waiting">P1</span><div><strong>G5 gaze–dictation alignment</strong><small>pathology mention extraction, lag window sweep, label-specific heatmap</small></div><span class="due">After B</span></div>
+              <div class="task"><span class="status parked">P2</span><div><strong>Raw sample branch</strong><small>event tokens이 G2를 이길 신호를 보일 때만 확대</small></div><span class="due">Conditional</span></div>
+              <div class="task"><span class="status neutral">P1</span><div><strong>Statistical report + figure pack</strong><small>CI, per-class plot, calibration, failure cases, compute table</small></div><span class="due">Before writing</span></div>
+            </div>
+
+            <h2 id="risks">핵심 리스크와 중단 기준</h2>
+            <div class="grid-2">
+              <article class="card"><h3>Novelty crowding</h3><p>GradTrack·GazeX·FG-CXR이 temporal gaze와 gaze–language alignment를 선점합니다.</p><p><strong>대응:</strong> REFLACX의 정보원 분해와 엄격한 ablation을 contribution으로 고정.</p></article>
+              <article class="card"><h3>Label ambiguity</h3><p>certainty와 ellipse가 임상적 진실 전체를 대표하지 않습니다.</p><p><strong>대응:</strong> threshold sensitivity와 multi-reader subset 분석.</p></article>
+              <article class="card"><h3>Leakage</h3><p>동일 CXR의 여러 reading이 split을 넘으면 성능이 부풀 수 있습니다.</p><p><strong>대응:</strong> subject/study/image group split을 코드 수준에서 assert.</p></article>
+              <article class="card"><h3>Deadline compression</h3><p>넓은 VLM은 4주 일정에 맞지 않고 baseline 품질을 희생시킵니다.</p><p><strong>중단:</strong> Gate B/C에서 효과·재현성이 없으면 short empirical report로 축소.</p></article>
+            </div>
+
+            <h2>핵심 근거</h2>
+            <ul>
+              <li><a href="https://www.nature.com/articles/s41597-022-01441-z">REFLACX</a> — 5명 radiologist, 3,032 gaze–dictation pairs, 2,616 unique CXR.</li>
+              <li><a href="https://papers.miccai.org/miccai-2024/843-Paper1675.html">GazeMedSeg</a> — gaze heatmap pseudo-mask 기반 weakly supervised segmentation.</li>
+              <li><a href="https://papers.miccai.org/miccai-2025/0305-Paper1072.html">GradTrack</a> — fixation position·duration·order를 활용한 gaze track supervision.</li>
+              <li><a href="https://arxiv.org/abs/2604.14316">GazeX</a> — radiologist gaze trajectory를 학습한 CXR VLM preprint.</li>
+              <li><a href="https://openaccess.thecvf.com/content/ACCV2024/html/Pham_FG-CXR_A_Radiologist-Aligned_Gaze_Dataset_for_Enhancing_Interpretability_in_Chest_ACCV_2024_paper.html">FG-CXR</a> — gaze와 diagnosis transcript의 fine-grained alignment.</li>
+            </ul>
+          </article>
+
+          <aside class="side-stack" aria-label="프로젝트 지표">
+            <div class="metric-card"><strong>3,032</strong><span>REFLACX synchronized gaze–dictation readings</span></div>
+            <div class="metric-card"><strong>5</strong><span>board-certified radiologists</span></div>
+            <div class="metric-card"><strong>5 stages</strong><span>information ladder: image → heatmap → event → raw → language</span></div>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>
