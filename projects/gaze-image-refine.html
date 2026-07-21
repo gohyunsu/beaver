@@ -15,11 +15,11 @@
       <header class="page-hero">
         <div class="shell page-hero-grid">
           <div>
-            <p class="eyebrow">Project 02 · Study design</p>
+            <p class="eyebrow">Core Research · Project 02 · Study design</p>
             <h1>GazeImage<em>Refine</em></h1>
             <p class="page-summary">생성 이미지에서 오래 본 곳이 단지 눈에 띄는 곳인지, 실제로 고치고 싶은 곳인지 구분하고, 확신이 있을 때만 수정 후보를 제안하는 mixed-initiative interaction을 설계합니다.</p>
             <nav class="toc" aria-label="페이지 목차">
-              <a href="#gap">Research gap</a><a href="#study">Study 1</a><a href="#system">Study 2</a><a href="#features">Features</a><a href="#tasks">Tasks</a><a href="#ethics">Ethics</a>
+              <a href="#background">Concept primer</a><a href="#gap">Research gap</a><a href="#study">Study 1</a><a href="#system">Study 2</a><a href="#features">Features</a><a href="#tasks">Tasks</a><a href="#ethics">Ethics</a>
             </nav>
           </div>
           <aside class="page-meta">
@@ -30,6 +30,20 @@
           </aside>
         </div>
       </header>
+
+      <section class="section alt" id="background">
+        <div class="shell">
+          <div class="section-head"><div><p class="eyebrow">Concept primer</p><h2>이미지 수정은 <em>의도를 외부화</em>하는 과정입니다.</h2></div><p class="section-intro">사용자는 결과의 문제를 먼저 시각적으로 감지하지만, 현재 인터페이스에서는 이를 텍스트·mask·brush로 다시 표현해야 합니다. gaze는 이 비용을 줄일 후보이지만 그 자체가 수정 명령은 아닙니다.</p></div>
+          <div class="system-map reveal">
+            <div class="system-node core"><span class="tag">Visual attention</span><strong>눈에 띄어 실제로 본 영역</strong><span>saliency · object size · task demand</span></div>
+            <div class="system-arrow" aria-hidden="true">≠</div>
+            <div class="system-node"><span class="tag">Edit intent</span><strong>사용자가 바꾸기로 한 영역</strong><span class="muted">keep/edit · region · reason</span></div>
+            <div class="system-arrow" aria-hidden="true">→</div>
+            <div class="system-node"><span class="tag">Mixed initiative</span><strong>후보 제시 후 명시적 확인</strong><span class="muted">calibrated suggestion · confirm · undo</span></div>
+          </div>
+          <div class="callout info"><strong>입문 핵심</strong><p>연구의 1단계는 “시선으로 편집”이 아니라 attention에서 saliency를 설명하고 남은 신호가 실제 edit action을 예측하는지 확인하는 것입니다. 2단계 UI는 1단계 gate를 통과할 때만 만듭니다.</p></div>
+        </div>
+      </section>
 
       <section class="section" id="gap">
         <div class="shell content-grid">

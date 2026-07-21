@@ -15,11 +15,11 @@
       <header class="page-hero">
         <div class="shell page-hero-grid">
           <div>
-            <p class="eyebrow">Project 03 · Revision path</p>
+            <p class="eyebrow">Core Research · Project 03 · Revision path</p>
             <h1><em>leXic</em></h1>
             <p class="page-summary">EyeBench의 gaze-only reading-comprehension baseline에 사전 계산한 word difficulty를 결합했습니다. 작은 성능 향상은 확인했지만, 기술적 novelty와 실용적 의미를 입증하기 위한 보강이 필요합니다.</p>
             <nav class="toc" aria-label="페이지 목차">
-              <a href="#built">What exists</a><a href="#evidence">Evidence</a><a href="#review">Review</a><a href="#recovery">Recovery</a><a href="#tasks">Tasks</a>
+              <a href="#background">Concept primer</a><a href="#built">What exists</a><a href="#evidence">Evidence</a><a href="#review">Review</a><a href="#recovery">Recovery</a><a href="#tasks">Tasks</a>
             </nav>
           </div>
           <aside class="page-meta">
@@ -30,6 +30,19 @@
           </aside>
         </div>
       </header>
+
+      <section class="section alt" id="background">
+        <div class="shell">
+          <div class="section-head"><div><p class="eyebrow">Concept primer</p><h2>읽기 시선은 사람과 글의 <em>상호작용</em>입니다.</h2></div><p class="section-intro">fixation duration이나 regression은 독자의 이해 상태뿐 아니라 단어 길이·빈도·예측 가능성 같은 텍스트 난이도에도 영향을 받습니다. gaze-only 모델은 이 두 원인을 섞어 학습할 수 있습니다.</p></div>
+          <div class="flow reveal">
+            <div class="flow-step"><strong>Text context</strong><p>word length · frequency · surprisal이 처리 난이도를 바꿉니다.</p></div>
+            <div class="flow-step"><strong>Observed gaze</strong><p>fixation · skip · regression에는 text와 reader 차이가 함께 들어갑니다.</p></div>
+            <div class="flow-step"><strong>Comprehension task</strong><p>질문 정답을 예측하되 text identity를 기억하지 않게 분할합니다.</p></div>
+            <div class="flow-step"><strong>Generalization</strong><p>unseen reader · unseen text · both를 따로 평가합니다.</p></div>
+          </div>
+          <div class="callout"><strong>leXic의 역할</strong><p>거대 언어모델을 새로 학습하는 연구가 아니라, 사전 계산한 저비용 lexical context가 gaze-only baseline의 어떤 shift를 보완하고 어디서 실패하는지 묻는 empirical study입니다.</p></div>
+        </div>
+      </section>
 
       <section class="section" id="built">
         <div class="shell content-grid">

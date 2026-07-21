@@ -58,3 +58,13 @@
 - trust measurement review는 gaze가 독립된 automation AOI의 monitoring proxy일 때 제한적으로 유용하다고 본다.
 
 **결론:** 초기 ZombieClicks/verification-gap 연구에서 gaze를 trust의 직접 측정값으로 사용하지 않는다. 이 방향을 재개한다면 trust, verification behavior, error detection을 분리해야 한다.
+
+## 8. VLA / robot runtime assurance 계열
+
+- **RT-2 / OpenVLA / Open X-Embodiment:** language-conditioned visual observation에서 robot action을 생성하는 VLA와 cross-embodiment pretraining의 기반. 새 VLA를 4개월 안에 처음부터 학습하는 것보다 공개 policy·SDK 위의 좁은 시스템 기여가 현실적이다.
+- **Sentinel:** generative policy failure를 temporal action inconsistency와 VLM task-progress failure로 나눈다. VLA-Guard의 erratic vs semantic-progress monitor 분리와 직접 연결된다.
+- **SafeVLA:** VLA safety를 constrained learning 문제로 다룬다. 단순 post-hoc dashboard만으로 policy safety가 해결된다고 주장할 수 없다.
+- **VLA-Arena / ForesightSafety-VLA:** task structure, language, visual variation과 safe/unsafe success를 분리해 평가한다. 단일 task success rate는 안전 지표가 아니다.
+- **PACS:** learned policy 밖의 safety filter가 필요하며, intervention 자체가 policy trajectory를 망가뜨릴 수 있음을 보인다.
+
+**결론:** 해커톤 기여는 foundation VLA가 아니라 instruction–observation–action trace, semantic anomaly detection, deterministic shield, evidence dashboard의 계층적 결합이다. learned monitor를 physical safety guarantee로 부르지 않는다.

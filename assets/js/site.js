@@ -3,20 +3,17 @@ const root = body.dataset.root || "./";
 const current = body.dataset.page || "";
 
 const links = [
-  ["overview", "Overview", `${root}index.html`],
-  ["gazemed", "GazeMed", `${root}projects/gazemed.html`],
-  ["refine", "ImageRefine", `${root}projects/gaze-image-refine.html`],
-  ["lexic", "leXic", `${root}projects/lexic.html`],
-  ["datasets", "Datasets", `${root}knowledge/datasets.html`],
-  ["methods", "Methods", `${root}knowledge/methods.html`],
-  ["related", "Related work", `${root}knowledge/related-work.html`],
-  ["roadmap", "Roadmap", `${root}operations/roadmap.html`],
+  { id: "overview", label: "Overview", href: `${root}index.html`, pages: ["overview"] },
+  { id: "research", label: "Core Research", href: `${root}index.html#core-portfolio`, pages: ["gazemed", "refine", "lexic"] },
+  { id: "knowledge", label: "Knowledge Base", href: `${root}knowledge/foundations.html`, pages: ["foundations", "datasets", "methods", "related"] },
+  { id: "roadmap", label: "Roadmap", href: `${root}operations/roadmap.html`, pages: ["roadmap"] },
+  { id: "opportunity", label: "Opportunity Lab", href: `${root}opportunities/vla-guard.html`, pages: ["hackathon"], className: "opportunity-link" },
 ];
 
 const nav = links
   .map(
-    ([id, label, href]) =>
-      `<a href="${href}"${id === current ? ' aria-current="page"' : ""}>${label}</a>`,
+    ({ label, href, pages, className = "" }) =>
+      `<a href="${href}"${className ? ` class="${className}"` : ""}${pages.includes(current) ? ' aria-current="page"' : ""}>${label}</a>`,
   )
   .join("");
 
@@ -53,8 +50,9 @@ if (footer) {
           <p>2026 학생자율연구의 연구 질문, 근거, 의사결정과 실행 상태를 한곳에서 관리합니다. 원본 대화의 개인정보와 제한 데이터는 포함하지 않습니다.</p>
         </div>
         <div class="footer-links">
-          <a href="${root}docs/RESEARCH_CONTEXT.md">Context</a>
-          <a href="${root}docs/TASKS.md">Tasks</a>
+          <a href="${root}docs/RESEARCH_CONTEXT.md">Core context</a>
+          <a href="${root}docs/TASKS.md">Core tasks</a>
+          <a href="${root}docs/HACKATHON_FIT.md">Opportunity memo</a>
           <a href="${root}docs/DECISION_LOG.md">Decisions</a>
         </div>
       </div>

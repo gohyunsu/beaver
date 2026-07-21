@@ -233,3 +233,19 @@ owner와 venue가 정해질 때만 feature ablation, additional backbone/data, c
 - 새 문헌이 novelty를 줄이면 숨기지 말고 연구 질문을 좁힌다.
 - 숫자와 일정은 원 출처를 확인하고 기준일을 갱신한다.
 - 대화에서 제안된 아이디어와 실제 결정·실험 결과를 같은 문장에 섞지 않는다.
+
+## 8. 독립 부록 — Opportunity Lab: 앵커 × COSS 융합 해커톤
+
+> 이 절은 1–7절의 gaze-centered Core Research 포트폴리오에 포함되지 않는다. 참가 결정 전 외부 기회 분석을 보존하는 독립 가지다.
+
+**상태:** 2026-07-20 팀 대화에 참여 안내가 공유됐으나, 대화록에는 팀의 참가 결정·구성·매칭 결과가 없다. 2026-07-21 검토 결과는 `조건부 참여 권고`이며 확정 프로젝트가 아니다.
+
+**판단:** 현재 GazeMed/GazeImageRefine를 VLA 로봇 과제로 직접 포장하는 것은 이론적·구현적으로 부정확하다. 다만 5월의 web-agent oversight, action trace, grounded representation, scripted error 문제를 embodied agent로 확장하고, 현재 포트폴리오의 multimodal alignment·selective intervention·evaluation 원칙을 적용할 수 있다.
+
+**권장 주제:** VLA 기반 로봇 작업의 명령–관측–행동 정합성 검증 및 이상행동 시각화 시스템, 약칭 VLA-Guard.
+
+**핵심 범위:** 새 범용 VLA를 학습하지 않는다. xArm pick-and-place 한 작업에서 wrong object, wrong destination, stall/grasp failure, forbidden-zone intrusion을 재현하고 semantic monitor와 deterministic safety shield를 분리한다.
+
+**Go gate:** xArm/ROS 경험과 장비를 가진 매칭 팀, 8월 전 SDK/simulator vertical slice, 명확한 subsystem contract. 이 조건이 없으면 참여하지 않거나 replay-only demonstrator로 축소한다.
+
+상세 판단과 추천서 초안은 `docs/HACKATHON_FIT.md`, 개념 배경은 `docs/FOUNDATIONS.md`를 따른다.

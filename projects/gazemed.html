@@ -15,11 +15,11 @@
       <header class="page-hero">
         <div class="shell page-hero-grid">
           <div>
-            <p class="eyebrow">Project 01 · Focus now</p>
+            <p class="eyebrow">Core Research · Project 01 · Focus now</p>
             <h1>Gaze<em>Med</em></h1>
             <p class="page-summary">전문가가 “어디를 봤는가”를 넘어, 얼마나 오래·어떤 순서로·무엇을 말하며 보았는지가 흉부 X-ray 이상소견 국소화에 주는 증분 가치를 분해합니다.</p>
             <nav class="toc" aria-label="페이지 목차">
-              <a href="#question">Research question</a><a href="#scope">Scope</a><a href="#method">Method</a><a href="#evaluation">Evaluation</a><a href="#tasks">Tasks</a><a href="#risks">Risks</a>
+              <a href="#background">Concept primer</a><a href="#question">Research question</a><a href="#scope">Scope</a><a href="#method">Method</a><a href="#evaluation">Evaluation</a><a href="#tasks">Tasks</a><a href="#risks">Risks</a>
             </nav>
           </div>
           <aside class="page-meta">
@@ -30,6 +30,21 @@
           </aside>
         </div>
       </header>
+
+      <section class="section alt" id="background">
+        <div class="shell">
+          <div class="section-head"><div><p class="eyebrow">Concept primer</p><h2>왜 진단 결과가 아니라 <em>판독 과정</em>을 보는가</h2></div><p class="section-intro">흉부 X-ray는 2차원 투영 영상이라 구조가 겹치고 병변이 작거나 모호할 수 있습니다. 분류 라벨만으로는 전문가가 어떤 근거 영역을 보고 결론에 도달했는지 알려주지 않습니다.</p></div>
+          <div class="grid-3">
+            <article class="card"><p class="card-number">Image label</p><h3>무엇이 있는가</h3><p>질환 존재·확신도를 알려주지만 위치와 판독 과정을 설명하지 않습니다.</p></article>
+            <article class="card"><p class="card-number">Lesion region</p><h3>어디에 있는가</h3><p>REFLACX ellipse는 전문가가 표시한 reference region이지 정밀한 pixel mask는 아닙니다.</p></article>
+            <article class="card"><p class="card-number">Gaze + dictation</p><h3>어떻게 찾았는가</h3><p>어디를 얼마나 오래 어떤 순서로 봤고 언제 소견을 말했는지를 관찰합니다.</p></article>
+          </div>
+          <figure class="source-figure reveal">
+            <img src="../assets/img/gaze-representation-ladder.svg" alt="GazeMed가 비교하는 raw sample, fixation, heatmap, 언어 정렬의 정보 차이" />
+            <figcaption><strong>GazeMed의 표현 사다리.</strong> <a href="https://www.nature.com/articles/s41597-022-01441-z">REFLACX</a>가 제공하는 raw gaze·fixation·timestamped dictation 구조를 바탕으로 BEAVER가 만든 설명용 도식입니다. 각 단계는 더 복잡한 모델이 아니라 서로 다른 정보 가정을 뜻합니다.</figcaption>
+          </figure>
+        </div>
+      </section>
 
       <section class="section" id="question">
         <div class="shell content-grid">

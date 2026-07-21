@@ -169,6 +169,17 @@ input {
   color: var(--forest);
 }
 
+.nav-links .opportunity-link {
+  border: 1px solid rgba(242, 124, 77, 0.45);
+  color: #8b3d20;
+}
+
+.nav-links .opportunity-link:hover,
+.nav-links .opportunity-link[aria-current="page"] {
+  background: rgba(242, 124, 77, 0.14);
+  color: #713019;
+}
+
 .nav-toggle {
   display: none;
   cursor: pointer;
@@ -378,6 +389,104 @@ h3 {
 
 .grid-4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.branch-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.55fr);
+  gap: 1rem;
+}
+
+.branch-card {
+  position: relative;
+  min-height: 260px;
+  padding: clamp(1.35rem, 3vw, 2.25rem);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.branch-card.core {
+  background: var(--forest);
+  color: var(--white);
+}
+
+.branch-card.opportunity {
+  border: 2px dashed rgba(242, 124, 77, 0.6);
+  background: rgba(255, 253, 247, 0.75);
+}
+
+.branch-card h3 {
+  margin-bottom: 0.4rem;
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+}
+
+.branch-card p {
+  max-width: 700px;
+}
+
+.branch-card.core .muted {
+  color: rgba(255, 253, 247, 0.72);
+}
+
+.branch-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+}
+
+.branch-list span {
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 253, 247, 0.18);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 253, 247, 0.08);
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+
+.scope-rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.source-figure {
+  margin: 1.5rem 0 0;
+  padding: clamp(0.8rem, 2vw, 1.2rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.source-figure img {
+  width: 100%;
+  border-radius: calc(var(--radius) - 8px);
+  background: #fffdf7;
+}
+
+.source-figure figcaption {
+  padding: 0.8rem 0.25rem 0.15rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.source-figure figcaption strong {
+  color: var(--ink);
+}
+
+.visual-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .card,
@@ -1081,6 +1190,10 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .branch-grid {
+    grid-template-columns: 1fr;
+  }
+
   .system-arrow {
     transform: rotate(90deg);
   }
@@ -1124,6 +1237,11 @@ h3 {
   }
 
   .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .branch-list,
+  .visual-grid {
     grid-template-columns: 1fr;
   }
 
