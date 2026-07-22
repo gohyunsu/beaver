@@ -5,7 +5,6 @@
 - `docs/RESEARCH_CONTEXT.md`: 오래 유지되는 연구 맥락과 현재 기준선
 - `docs/DECISION_LOG.md`: 날짜가 있는 결정과 이유
 - `docs/TASKS.md`: 실행 가능한 산출물과 gate
-- `docs/HACKATHON_FIT.md`: Core Research와 분리된 외부 기회 판단
 - 사이트: 위 내용을 탐색하기 쉽게 설명하는 공개 가능한 표현
 
 같은 정보를 여러 곳에서 수정할 때는 먼저 Markdown 문서를 갱신하고 사이트를 맞춥니다.
@@ -21,9 +20,8 @@
 ### Scope lane 규칙
 
 - **Core Research:** GazeMed, GazeImageRefine, leXic. P0–P2 priority와 core roadmap을 공유한다.
-- **Opportunity Lab:** 외부 행사·지원·협업 후보. Proposed → Gate → Active/Declined의 별도 상태를 사용한다.
-- Opportunity 항목은 참가 결정과 gate 통과 전 core project 수, 진행률, milestone, P0/P1에 합산하지 않는다.
-- 두 lane 사이의 이동은 날짜·근거·자원 영향을 `DECISION_LOG.md`에 남긴 뒤 반영한다.
+- 새 연구 아이디어는 BEAVER의 기존 맥락과 섞지 않고 별도 저장소에서 관리한다.
+- BEAVER의 범위를 바꾸는 결정은 날짜·근거·자원 영향을 `DECISION_LOG.md`에 남긴 뒤 반영한다.
 
 ## 3. Task 작성법
 
@@ -68,12 +66,10 @@ Task는 활동이 아니라 검증 가능한 산출물이어야 합니다.
 - BEAVER의 novelty, baseline, scope에 주는 구체적 의미
 - preprint인지 peer-reviewed인지 드러나는 venue/status
 
-VLA·robot safety 문헌은 `robotics` category와 `Opportunity` label을 사용해 gaze-centered core literature와 시각적으로 구분합니다.
-
 ## 7. 이미지와 시각화
 
 - 원 논문 figure를 그대로 복사하는 것을 기본값으로 삼지 않습니다.
 - 먼저 primary source의 개념·수치·구조를 바탕으로 자체 설명용 SVG를 만들고 caption에 출처와 “자체 재구성”임을 표시합니다.
 - 외부 이미지를 직접 쓸 때는 license, attribution, local redistribution 가능 여부를 기록합니다.
 - 시각화는 장식이 아니라 branch, 정보 손실, 단계, 비교 관계를 설명할 때만 추가합니다.
-- 색만으로 Core/Opportunity 또는 상태를 구분하지 않고 label과 설명을 함께 둡니다.
+- 색만으로 프로젝트 또는 상태를 구분하지 않고 label과 설명을 함께 둡니다.

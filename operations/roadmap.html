@@ -17,14 +17,13 @@
           <div>
             <p class="eyebrow">Operations · Research roadmap</p>
             <h1>일정이 아니라 <em>의존성</em>을 관리합니다.</h1>
-            <p class="page-summary">Core Research의 실행 상태를 관리합니다. 해커톤은 별도 Opportunity Lab gate로 표시하며, 참가 확정 전에는 현재 작업이나 진행률에 합산하지 않습니다.</p>
-            <nav class="toc" aria-label="페이지 목차"><a href="#scope">Scope lanes</a><a href="#board">Core board</a><a href="#opportunity-board">Opportunity gate</a><a href="#milestones">Milestones</a><a href="#decisions">Decisions</a><a href="#risks">Risks</a></nav>
+            <p class="page-summary">대화 기록에서 확인된 세 핵심 연구의 실행 상태와 의존성을 관리합니다.</p>
+            <nav class="toc" aria-label="페이지 목차"><a href="#scope">Portfolio</a><a href="#board">Core board</a><a href="#milestones">Milestones</a><a href="#decisions">Decisions</a><a href="#risks">Risks</a></nav>
           </div>
           <aside class="page-meta">
             <div class="page-meta-row"><span>Focus</span><span>GazeMed</span></div>
             <div class="page-meta-row"><span>Waiting</span><span>IRB + Tobii</span></div>
             <div class="page-meta-row"><span>Parked</span><span>leXic revision</span></div>
-            <div class="page-meta-row"><span>Excluded</span><span>VLA-Guard proposal</span></div>
             <div class="page-meta-row"><span>Snapshot</span><span>2026.07.21</span></div>
           </aside>
         </div>
@@ -32,11 +31,8 @@
 
       <section class="section alt" id="scope">
         <div class="shell">
-          <div class="section-head"><div><p class="eyebrow">Scope lanes</p><h2>같은 날짜에도 <em>다른 상태 체계</em></h2></div><p class="section-intro">Core는 Now/Next/Later로, Opportunity는 Proposed/Gate/Active/Declined로 관리합니다. 두 체계 사이의 이동은 decision log가 있을 때만 허용합니다.</p></div>
-          <div class="branch-grid">
-            <article class="branch-card core"><span class="status">Core Research</span><h3>현재 실행 포트폴리오</h3><p class="muted">GazeMed · GazeImageRefine · leXic. 아래 P0–P2 board, milestone, risk가 적용됩니다.</p><div class="branch-list"><span>Focus · GazeMed</span><span>Waiting · ImageRefine</span><span>Parked · leXic</span></div></article>
-            <article class="branch-card opportunity"><span class="status waiting">Opportunity Lab</span><h3>VLA-Guard</h3><p>현재 상태는 <code>Proposed</code>. 참여자·파트너·장비·vertical slice를 확인하는 HG-00을 통과하기 전에는 active task가 아닙니다.</p><p><a href="../opportunities/vla-guard.html">별도 gate 보기 →</a></p></article>
-          </div>
+          <div class="section-head"><div><p class="eyebrow">Core portfolio</p><h2>상태와 우선순위를 <em>명시적으로</em> 봅니다.</h2></div><p class="section-intro">GazeMed·GazeImageRefine·leXic만 이 저장소의 현재 연구 포트폴리오로 관리합니다.</p></div>
+          <article class="branch-card core"><span class="status">Core Research</span><h3>현재 실행 포트폴리오</h3><p class="muted">아래 P0–P2 board, milestone, risk는 세 연구에만 적용됩니다.</p><div class="branch-list"><span>Focus · GazeMed</span><span>Waiting · ImageRefine</span><span>Parked · leXic</span></div></article>
         </div>
       </section>
 
@@ -44,7 +40,7 @@
         <div class="shell">
           <div class="section-head">
             <div><p class="eyebrow">Core Research board only</p><h2>우선순위별 <em>작업 계약</em></h2></div>
-            <p class="section-intro">담당자는 GitHub issue에서 확정합니다. 이 표에는 세 gaze-centered 핵심 트랙만 포함되며 VLA-Guard의 제안 작업은 합산하지 않습니다.</p>
+            <p class="section-intro">담당자는 GitHub issue에서 확정합니다. 이 표에는 대화에서 확인된 세 gaze-centered 핵심 트랙만 포함됩니다.</p>
           </div>
           <div class="table-wrap reveal">
             <table class="task-table">
@@ -63,21 +59,6 @@
               </tbody>
             </table>
           </div>
-        </div>
-      </section>
-
-      <section class="section alt" id="opportunity-board">
-        <div class="shell">
-          <article class="branch-card opportunity">
-            <div class="section-head"><div><p class="eyebrow">Opportunity Lab · separate gate</p><h2>아직 project가 아니라 <em>참여 판단</em></h2></div><p class="section-intro">해커톤 관련 항목은 core priority를 갖지 않습니다. 아래 네 조건이 확인되고 팀이 참여를 결정한 뒤 별도 board를 엽니다.</p></div>
-            <div class="grid-4">
-              <div><span class="status waiting">HG-00A</span><h3>People</h3><p>참여 학생·지도교수·역할이 정해짐.</p></div>
-              <div><span class="status waiting">HG-00B</span><h3>Partner</h3><p>xArm/ROS 역량을 가진 매칭 팀 확인.</p></div>
-              <div><span class="status waiting">HG-00C</span><h3>Hardware</h3><p>장비·공간·안전 운영 접근 확인.</p></div>
-              <div><span class="status waiting">HG-00D</span><h3>Evidence</h3><p>8월 전 one-task smoke test 가능.</p></div>
-            </div>
-            <div class="scope-rule"><span aria-hidden="true">◇</span><span>현재 결과: 4개 gate 모두 미확인 → 상태는 Proposed 유지</span></div>
-          </article>
         </div>
       </section>
 

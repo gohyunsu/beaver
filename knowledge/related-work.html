@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="BEAVER 핵심 연구 7개 계열과 별도 Opportunity Lab의 VLA·robot safety 문헌을 구분한 related work index." />
+    <meta name="description" content="BEAVER 핵심 연구의 선행연구를 계열과 주장 제약에 따라 정리한 related work index." />
     <meta name="theme-color" content="#143d35" />
     <title>Related work · BEAVER Research Atlas</title>
     <link rel="stylesheet" href="../assets/css/site.css" />
@@ -18,11 +18,10 @@
           <div>
             <p class="eyebrow">Knowledge · Evidence map</p>
             <h1>선행연구를 <em>계열</em>로 읽습니다.</h1>
-            <p class="page-summary">논문 수를 늘리는 목록이 아니라, 각 연구가 이미 답한 것과 BEAVER의 주장 범위를 어떻게 제한하는지 기록합니다. VLA 문헌은 별도 Opportunity Lab 계열로 표시합니다.</p>
+            <p class="page-summary">논문 수를 늘리는 목록이 아니라, 각 연구가 이미 답한 것과 BEAVER의 주장 범위를 어떻게 제한하는지 기록합니다.</p>
           </div>
           <aside class="page-meta">
             <div class="page-meta-row"><span>Core</span><span>7 evidence families</span></div>
-            <div class="page-meta-row"><span>Opportunity</span><span>1 separate family</span></div>
             <div class="page-meta-row"><span>Sources</span><span>Primary / official pages</span></div>
             <div class="page-meta-row"><span>Rule</span><span>Finding + implication</span></div>
             <div class="page-meta-row"><span>Updated</span><span>2026.07.21</span></div>
@@ -36,7 +35,6 @@
             <div><p class="eyebrow">Literature index</p><h2><span data-reference-count>Works</span></h2></div>
             <p class="section-intro">키워드로 제목·핵심 발견·BEAVER 관련성을 검색하거나 계열별로 좁혀볼 수 있습니다.</p>
           </div>
-          <div class="callout info"><strong>범위 표기</strong><p><code>Opportunity · VLA &amp; robot safety</code> 필터의 문헌은 VLA-Guard 적합성 판단용입니다. 이 문헌이 gaze-centered Core Research의 주제나 현재 project 수를 확장하지 않습니다.</p></div>
           <label for="reference-search" class="kicker">Search</label>
           <input class="search-box" id="reference-search" data-reference-search type="search" placeholder="예: REFLACX, temporal, saliency, calibration" />
           <div class="filters" data-reference-filters aria-label="문헌 계열 필터"></div>
@@ -59,16 +57,6 @@
         </div>
       </section>
 
-      <section class="section">
-        <div class="shell">
-          <article class="branch-card opportunity">
-            <p class="eyebrow">Opportunity-only synthesis · separate from the four core conclusions</p>
-            <h2>VLA 역량과 <em>안전 보증</em>을 분리합니다.</h2>
-            <p>RT-2·OpenVLA는 language-conditioned robot policy의 가능성을, Sentinel은 consistency/progress monitoring을, SafeVLA·VLA-Arena·ForesightSafety-VLA는 task success 밖의 안전 평가 필요성을 보여줍니다. 따라서 VLA-Guard의 방어 가능한 범위는 foundation policy가 아니라 runtime trace·semantic anomaly·hard shield·evidence UI의 결합입니다.</p>
-            <p><a href="../opportunities/vla-guard.html">독립 해커톤 가지에서 설계 보기 →</a></p>
-          </article>
-        </div>
-      </section>
     </main>
     <div data-site-footer></div>
   </body>

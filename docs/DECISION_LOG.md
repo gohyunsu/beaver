@@ -73,13 +73,3 @@
 - leXic: empirical study of low-cost lexical conditioning and its limits.
 
 **상태:** 대화 기록의 사실이 아니라 관련 문헌과 현재 제약을 바탕으로 한 권고안. 다음 팀 회의에서 승인·수정 필요.
-
-## 2026-07-21 — Conditional hackathon recommendation
-
-**평가:** 앵커 × COSS 공유대학 융합 해커톤은 주제·일정·1:1 매칭 구조상 참여 가능하지만 현재 BEAVER에 로봇/VLA 구현 증거가 없어 무조건 참여를 권고하지 않음.
-
-**권고:** 과거 agent oversight를 VLA robot runtime verification으로 확장한 `VLA-Guard`를 조건부 후보로 채택. GazeMed 모델의 직접 전용이나 범용 VLA 개발은 제외.
-
-**Go 조건:** xArm/ROS와 장비 접근성을 제공하는 partner, 8월 전 single-task vertical slice, learned monitor와 hard safety shield의 분리.
-
-**상태:** 팀 결정이 아닌 분석 권고. 참가 의향, 팀원, 지도교수, 매칭 결과가 확정되면 별도 decision으로 갱신.

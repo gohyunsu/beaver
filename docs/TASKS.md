@@ -110,40 +110,6 @@
 - architectural novelty보다 empirical analysis framing
 - Residual branch는 ablation이 지지하지 않으면 부차적/negative result로 축소
 
-## Opportunity Lab — VLA-Guard hackathon
-
-> 상태: 참가 확정 전 조건부 backlog. 아래 HG-00을 통과하기 전 구현 P0로 승격하지 않는다.
-> 이 절은 위의 Core Research P0–P2와 우선순위·진행률을 합산하지 않는다.
-
-### HG-00 Participation gate
-
-- **확인:** 참여 학생, 지도교수, 부산 공유대학 매칭 희망, partner의 xArm/ROS 역량, 실제 장비·공간 접근
-- **완료 조건:** 역할과 장비를 문서로 확인하고 기존 GazeMed P0를 중단할지 병행할지 팀이 결정
-
-### HG-01 Interface smoke test
-
-- **산출물:** xArm SDK 또는 simulator에서 pose/state/action log, pause/stop, RGB frame timestamp
-- **완료 조건:** nominal pick-and-place 일부와 injected anomaly 1종이 공통 event schema로 replay 가능
-- **의존:** HG-00
-
-### HG-02 Vertical slice
-
-- **산출물:** instruction→expected state→observation/action comparison→alert→dashboard
-- **완료 조건:** normal 1종과 anomaly 1종 end-to-end demo, 외부 model/SDK license와 자체 개발 범위 기록
-- **의존:** HG-01
-
-### HG-03 Benchmark pack
-
-- **산출물:** wrong object, wrong destination, stall/grasp failure, forbidden zone episode set
-- **완료 조건:** no-monitor, rule-only, semantic-only, hybrid 비교와 episode-level split
-- **의존:** HG-02
-
-### HG-04 CO-SHOW package
-
-- **산출물:** live demo, replay fallback, poster, result table, setup/safety checklist
-- **완료 조건:** 네트워크·model·camera failure rehearsal와 E-stop 담당자 지정
-- **의존:** HG-03
-
 ## Repository operations
 
 ### OPS-01 GitHub issues

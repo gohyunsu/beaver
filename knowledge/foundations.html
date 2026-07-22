@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="BEAVER 연구의 개념적 배경: gaze signal, construct validity, weak supervision, multimodal alignment, VLA와 runtime assurance." />
+    <meta name="description" content="BEAVER 연구의 개념적 배경: gaze signal, construct validity, weak supervision과 multimodal alignment." />
     <meta name="theme-color" content="#143d35" />
     <title>Foundations · BEAVER Research Atlas</title>
     <link rel="stylesheet" href="../assets/css/site.css" />
@@ -17,13 +17,12 @@
           <div>
             <p class="eyebrow">Knowledge · Conceptual foundations</p>
             <h1>센서값과 <em>의미</em> 사이</h1>
-            <p class="page-summary">먼저 Core Research가 다루는 시선·영상·언어의 공통 개념을 설명하고, 마지막 절은 별도 Opportunity Lab에만 적용되는 VLA·robot safety 부록으로 명확히 구분합니다.</p>
-            <nav class="toc" aria-label="페이지 목차"><a href="#inference">Inference chain</a><a href="#gaze">Gaze vocabulary</a><a href="#construct">Construct validity</a><a href="#alignment">Alignment</a><a href="#evaluation">Evaluation</a><a href="#vla">VLA & safety</a></nav>
+            <p class="page-summary">Core Research가 다루는 시선·영상·언어의 공통 개념을 관찰값, 잠재 개념, 예측과 개입의 순서로 설명합니다.</p>
+            <nav class="toc" aria-label="페이지 목차"><a href="#inference">Inference chain</a><a href="#gaze">Gaze vocabulary</a><a href="#construct">Construct validity</a><a href="#alignment">Alignment</a><a href="#evaluation">Evaluation</a></nav>
           </div>
           <aside class="page-meta">
             <div class="page-meta-row"><span>Role</span><span>Shared vocabulary</span></div>
             <div class="page-meta-row"><span>Main scope</span><span>Core Research</span></div>
-            <div class="page-meta-row"><span>Appendix</span><span>Opportunity Lab</span></div>
             <div class="page-meta-row"><span>Core rule</span><span>Observation ≠ construct</span></div>
             <div class="page-meta-row"><span>Updated</span><span>2026.07.21</span></div>
           </aside>
@@ -46,7 +45,7 @@
           </div>
           <div class="callout info">
             <strong>해석 규칙</strong>
-            <p>“오래 봤다 → 고치고 싶다”, “VLA가 성공 확률이 높다 → 안전하다”처럼 중간 층을 건너뛰는 문장은 연구 가설이 아니라 검증해야 할 추론입니다.</p>
+            <p>“오래 봤다 → 고치고 싶다”, “시선이 겹쳤다 → 이해했다”처럼 중간 층을 건너뛰는 문장은 연구 가설이 아니라 검증해야 할 추론입니다.</p>
           </div>
         </div>
       </section>
@@ -142,36 +141,6 @@
         </div>
       </section>
 
-      <section class="section alt" id="vla">
-        <div class="shell content-grid">
-          <article class="prose">
-            <p class="eyebrow">Opportunity Lab appendix · not Core Research</p>
-            <h2>VLA는 <em>말을 행동으로 바꾸는 정책</em>입니다.</h2>
-            <div class="callout"><strong>범위 경계</strong><p>이 절은 해커톤 후보를 이해하기 위한 부록입니다. GazeMed·GazeImageRefine·leXic의 공통 이론이나 현재 core roadmap에 VLA를 추가하는 것이 아닙니다.</p></div>
-            <p>VLA는 자연어 지시 <code>ℓ</code>과 현재·과거 관측 <code>o≤t</code>에서 로봇 행동 <code>a<sub>t</sub></code>를 예측하는 정책 <code>π(a<sub>t</sub> | o≤t, ℓ)</code>입니다. 관측은 카메라 영상과 robot state를, 행동은 end-effector pose·joint command·gripper state 또는 action chunk를 포함할 수 있습니다.</p>
-            <h3>세 가지 간극</h3>
-            <ul>
-              <li><strong>Grounding gap:</strong> “빨간 블록”이라는 언어가 올바른 객체·위치와 연결돼야 합니다.</li>
-              <li><strong>Embodiment gap:</strong> 다른 로봇의 action dimension, 좌표계, gripper, control frequency는 그대로 호환되지 않습니다.</li>
-              <li><strong>Assurance gap:</strong> task success는 collision·금지구역 침범·위험한 동작이 없었다는 뜻이 아닙니다.</li>
-            </ul>
-            <h3>정책과 안전 장치를 분리합니다.</h3>
-            <p>learned monitor는 잘못된 객체 선택이나 진행 정체 같은 의미적 이상을 탐지할 수 있지만, 물리적 안전 보증을 대신하지 않습니다. joint/velocity/workspace limit, collision check, emergency stop은 SDK·controller·검증 가능한 규칙 계층에 남겨야 합니다.</p>
-            <p><a href="../opportunities/vla-guard.html">별도 Opportunity Lab의 VLA-Guard 설계 보기 →</a></p>
-          </article>
-          <aside class="side-stack">
-            <div class="metric-card"><strong>Policy</strong><span>무엇을 할지 예측</span></div>
-            <div class="metric-card"><strong>Monitor</strong><span>진행·정합성 이상을 탐지</span></div>
-            <div class="metric-card"><strong>Shield</strong><span>물리 제약 위반을 차단</span></div>
-          </aside>
-        </div>
-        <div class="shell">
-          <figure class="source-figure reveal">
-            <img src="../assets/img/vla-assurance-stack.svg" alt="VLA policy의 행동 제안을 semantic monitor와 deterministic safety shield가 서로 다른 역할로 점검하는 구조" />
-            <figcaption><strong>여러 1차 문헌을 종합한 자체 도식.</strong> Policy 구조는 <a href="https://proceedings.mlr.press/v270/kim25c.html">OpenVLA</a>, consistency/progress monitoring은 <a href="https://openreview.net/forum?id=j1B3Id9CLm">Sentinel</a>, 안전 제약과 평가 분리는 <a href="https://arxiv.org/abs/2503.03480">SafeVLA</a>와 <a href="https://arxiv.org/abs/2606.27079">ForesightSafety-VLA</a>에서 개념을 가져왔습니다. 원 논문 도판을 그대로 사용하지 않았습니다.</figcaption>
-          </figure>
-        </div>
-      </section>
     </main>
     <div data-site-footer></div>
   </body>

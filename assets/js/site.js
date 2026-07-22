@@ -7,7 +7,6 @@ const links = [
   { id: "research", label: "Core Research", href: `${root}index.html#core-portfolio`, pages: ["gazemed", "refine", "lexic"] },
   { id: "knowledge", label: "Knowledge Base", href: `${root}knowledge/foundations.html`, pages: ["foundations", "datasets", "methods", "related"] },
   { id: "roadmap", label: "Roadmap", href: `${root}operations/roadmap.html`, pages: ["roadmap"] },
-  { id: "opportunity", label: "Opportunity Lab", href: `${root}opportunities/vla-guard.html`, pages: ["hackathon"], className: "opportunity-link" },
 ];
 
 const nav = links
@@ -52,7 +51,6 @@ if (footer) {
         <div class="footer-links">
           <a href="${root}docs/RESEARCH_CONTEXT.md">Core context</a>
           <a href="${root}docs/TASKS.md">Core tasks</a>
-          <a href="${root}docs/HACKATHON_FIT.md">Opportunity memo</a>
           <a href="${root}docs/DECISION_LOG.md">Decisions</a>
         </div>
       </div>
