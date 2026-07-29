@@ -14,4 +14,13 @@
   - License: Creative Commons Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/
   - Changes: resized by the publisher's image endpoint; no content changes.
 
+## GazeMed architecture
+
+- `assets/img/gazemed-pr3-pipeline.png`
+  - Source: `preliminary-0718/pipeline.png` in TeamBeaverSudal/GazeMed PR #3, commit `38f5d44`.
+  - Source URL: https://github.com/TeamBeaverSudal/GazeMed/pull/3
+  - Creator: Team BEAVER / GazeMed.
+  - Changes: copied without visual modification.
+  - Note: the source artifact states that its heatmap panel is an explanatory example, not a qualitative model output.
+
 All other SVG and CSS illustrations in this repository are original explanatory graphics created for the BEAVER site.

@@ -26,6 +26,8 @@ BEAVER는 **사람의 시선이 담는 공간·시간·맥락 정보가 기존 �
 
 **초기 아이디어:** raw 1,000 Hz gaze를 video-like spatiotemporal trajectory로 표현하면 fixation parsing이 버리는 saccade, velocity, micro-motion을 보존해 lesion localization을 개선할 것이라는 가설. 2026-07-20 예비실험에서 유의미한 방향을 찾지 못해 primary path에서 내렸다.
 
+**초기 실험이 남긴 경계:** raw trajectory와 fixation heatmap의 차이는 Gaussian blur bandwidth를 맞추면 사라졌고, velocity·saccade·pupil 특징도 독립적인 이득을 보이지 않았다. 별도의 초기 probe에서는 finding별 해부학적 위치 prior가 gaze-only보다 강했다. 이 결과는 현재 Final의 효과를 부정하지 않지만, 같은 split·instance·label에서 anatomy-only와 직접 비교해 gaze가 흔한 위치를 재현하는 것 이상인지 확인해야 함을 뜻한다.
+
 **현재 모델:** 하나의 instance는 finding label과 ellipse가 있는 판독 구간이다. 추론 때 CXR pixel은 사용하지 않고, 전체 fixation sequence와 timestamped speech에서 만든 특징만 사용한다. 10개 binary text descriptor와 8차원 finding embedding이 query가 되고, 시간·운동학 6개 특징, raw x/y, 같은 finding embedding이 fixation key가 된다. 단일 cross-attention의 weight를 실제 fixation 좌표에 splat하고 Gaussian smoothing해 위치 분포를 만든다.
 
 **PR #3 최신 결과:** Phase 3 patient-level split의 같은 1,093개 test instance에서 평가했다.
@@ -76,7 +78,7 @@ Final은 Temporal-only보다 5/5 training seed에서 높았고, position shuffle
 
 **현재 증거의 경계:** 이 모델은 test-time gaze+speech 모델이지만, full fixation sequence와 signed Δt를 사용하므로 causal online model은 아직 아니다. 하나의 patient split, regex mention linker, coarse ellipse, single institution/device도 일반화 주장에 제약을 준다.
 
-**즉시 필요한 산출물:** causal prefix replay → 추가 patient split과 reader sensitivity → RadZero·Final 오류 상보성 분석 → calibrated image×behavior late fusion gate.
+**즉시 필요한 산출물:** 같은 프로토콜의 label-conditioned anatomy prior와 subgroup value map → causal prefix replay → 추가 patient split과 reader sensitivity → RadZero·Final 오류 상보성 분석 → calibrated image×behavior late fusion gate.
 
 ### 2.2 GazeImageRefine — Waiting, but offline design active
 
@@ -225,11 +227,12 @@ VLM, video encoder, multimodal biosignal을 먼저 붙이지 않는다. 작은 �
 
 ### GazeMed P0
 
-1. mention 시점 이후 fixation을 차단한 causal replay와 latency report
-2. 추가 patient split에서 핵심 비교 반복
-3. 가능한 범위의 reader-held-out sensitivity
-4. regex mention linker의 manual audit와 clinical NLP 대안
-5. RadZero·Final instance-level 오류 상보성과 calibrated late fusion
+1. 같은 split·instance·label의 anatomy-only prior와 병변 subgroup별 증분 가치
+2. mention 시점 이후 fixation을 차단한 causal replay와 latency report
+3. 추가 patient split에서 핵심 비교 반복
+4. 가능한 범위의 reader-held-out sensitivity
+5. regex mention linker의 manual audit와 clinical NLP 대안
+6. RadZero·Final instance-level 오류 상보성과 calibrated late fusion
 
 ### GazeImageRefine offline P0
 

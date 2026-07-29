@@ -82,7 +82,7 @@
 
 **해석:** 좌표 의존성과 공간 언어의 IoU 기여는 지지된다. 다만 spatial-word mask의 Pointing 효과는 약하고, 환자 split은 하나이며, full fixation sequence와 signed Δt를 사용해 causal online 성질은 아직 입증되지 않았다.
 
-**구현 방향:** causal prefix replay → split·reader sensitivity → RadZero와 instance-level 오류 상보성 → calibrated late fusion. 결과가 지지할 때만 streaming cache 또는 joint image×behavior model로 확장한다.
+**구현 방향:** label-conditioned anatomy prior → causal prefix replay → split·reader sensitivity → RadZero와 instance-level 오류 상보성 → calibrated late fusion. 결과가 지지할 때만 streaming cache 또는 joint image×behavior model로 확장한다.
 
 ## 2026-07-29 — Evidence boundary
 
@@ -90,4 +90,4 @@
 
 **이유:** Final은 실제 fixation 좌표에 attention을 splat해 해석 가능하고 RadZero와 경쟁력 있는 성능을 보이지만, 미래 fixation을 구조적으로 차단한 replay 결과는 아직 없다.
 
-**영향:** 사이트의 현재 결과와 미래 아이디어를 분리하고, causal replay와 image×behavior fusion을 각각 독립 gate로 관리한다.
+**영향:** 사이트의 현재 결과와 미래 아이디어를 분리하고, anatomy prior, causal replay, image×behavior fusion을 각각 독립 gate로 관리한다.

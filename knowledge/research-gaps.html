@@ -23,6 +23,7 @@
               <a href="#grammar">Gap의 종류</a>
               <a href="#boundary">GazeMed 근거 경계</a>
               <a href="#explorer">Gap explorer</a>
+              <a href="#workbench">Experiment builder</a>
               <a href="#fusion">Idea 01 · Fusion</a>
               <a href="#causal">Idea 02 · Causal</a>
               <a href="#sequence">실행 순서</a>
@@ -43,11 +44,13 @@
             <div><p class="eyebrow">Gap grammar</p><h2>“아무도 안 했다”보다 <em>무엇이 비어 있는가.</em></h2></div>
             <p class="section-intro">연구 공백은 서로 다른 문제를 포함합니다. 종류를 구분해야 논문 추가 조사, ablation, 새 데이터 수집 중 무엇이 필요한지 결정할 수 있습니다.</p>
           </div>
-          <div class="grid-4 gap-types">
+          <div class="grid-3 gap-types">
             <article class="card reveal"><p class="card-number">Validity</p><h3>현재 결론을 흔드는 설명</h3><p>split, leakage, metric, label noise 때문에 같은 결과가 나올 수 있는지 묻습니다.</p><small>해결 · audit, control, resampling</small></article>
             <article class="card reveal"><p class="card-number">Mechanism</p><h3>무엇이 성능을 만들었나</h3><p>시간, 위치, 언어, 모델 용량 중 실제 기여를 분리하지 못한 상태입니다.</p><small>해결 · targeted ablation</small></article>
             <article class="card reveal"><p class="card-number">Generalization</p><h3>어디까지 유지되는가</h3><p>다른 환자 split, 판독자, 기관, 장비에서도 결과가 유지되는지 열려 있습니다.</p><small>해결 · group-held-out evaluation</small></article>
             <article class="card reveal"><p class="card-number">System</p><h3>실제 흐름에서 작동하는가</h3><p>offline metric이 latency, interruption, calibration을 포함한 사용 장면으로 이어지는지 묻습니다.</p><small>해결 · causal prototype, user workflow</small></article>
+            <article class="card reveal"><p class="card-number">Construct</p><h3>관찰 신호가 무엇을 뜻하나</h3><p>같은 fixation이 진단, 확인, 일상적 탐색, distractor 중 어느 역할인지 아직 구분하지 못한 상태입니다.</p><small>해결 · role annotation, proxy, triangulation</small></article>
+            <article class="card reveal"><p class="card-number">Data</p><h3>연결과 라벨은 충분히 정확한가</h3><p>mention linker, 좌표 변환, ellipse, certainty의 오류가 학습 표적과 평가를 얼마나 바꾸는지 묻습니다.</p><small>해결 · schema audit, manual sample</small></article>
           </div>
           <div class="callout">
             <strong>Novelty gap과 evidence gap은 다릅니다.</strong>
@@ -118,7 +121,7 @@
       <section class="section alt" id="explorer">
         <div class="shell">
           <div class="section-head">
-            <div><p class="eyebrow">Gap explorer</p><h2><span data-gap-count>6 gaps</span></h2></div>
+            <div><p class="eyebrow">Gap explorer</p><h2><span data-gap-count>8 gaps</span></h2></div>
             <p class="section-intro">종류나 키워드로 좁혀보고, 각 공백을 닫는 가장 작은 실험과 그 결과가 바꿀 결정을 함께 확인합니다.</p>
           </div>
           <label for="gap-search" class="kicker">Search</label>
@@ -140,6 +143,14 @@
               <p class="gap-question">RadZero와 Final은 같은 사례에서 서로 다른 오류를 내는가?</p>
               <dl><div><dt>현재 근거</dt><dd>Final은 IoU가 높고 RadZero는 Pointing이 사실상 동률이며 입력 modality가 겹치지 않습니다.</dd></div><div><dt>비어 있는 부분</dt><dd>평균 점수만으로는 두 heatmap을 합칠 가치가 있는지 알 수 없습니다.</dd></div><div><dt>최소 실험</dt><dd>per-instance error correlation과 oracle union ceiling을 먼저 계산합니다.</dd></div></dl>
               <strong class="decision-gate">Gate · oracle gain이 충분할 때만 late-fusion calibrator 학습</strong>
+            </article>
+
+            <article class="gap-card priority" data-gap-card data-gap-type="mechanism">
+              <div class="gap-card-head"><span class="status">Priority 3</span><span>Mechanism gap</span></div>
+              <h3>Gaze beyond anatomy prior</h3>
+              <p class="gap-question">Final은 finding별 전형적 위치보다 환자별 gaze 정보를 더하는가?</p>
+              <dl><div><dt>현재 근거</dt><dd>초기 내부 probe에서는 label-conditioned anatomy prior가 gaze-only보다 강할 수 있었고, Final의 label embedding도 질환별 위치 분포를 학습할 수 있습니다.</dd></div><div><dt>비어 있는 부분</dt><dd>position shuffle은 fixation 대응을 검정하지만, 강한 anatomy-only baseline과의 직접 paired comparison은 아닙니다.</dd></div><div><dt>최소 실험</dt><dd>train ellipse로만 만든 label-conditioned prior를 같은 split·instance·metric으로 평가하고 병변 크기·중심거리별 Δ를 봅니다.</dd></div></dl>
+              <strong class="decision-gate">Gate · Final이 prior를 이기고 작은·주변부 subgroup에서 gain이 커야 patient-specific gaze claim</strong>
             </article>
 
             <article class="gap-card" data-gap-card data-gap-type="validity">
@@ -173,6 +184,35 @@
               <dl><div><dt>현재 근거</dt><dd>REFLACX Phase 3의 단일 기관·장비·수집 인터페이스 결과입니다.</dd></div><div><dt>비어 있는 부분</dt><dd>timestamp precision, tracker noise, report style 변화에 대한 견고성입니다.</dd></div><div><dt>최소 실험</dt><dd>synthetic timestamp jitter·coordinate noise로 robustness curve를 먼저 만듭니다.</dd></div></dl>
               <strong class="decision-gate">Gate · 공개 외부 데이터의 label 단위가 맞을 때 transfer 실험</strong>
             </article>
+
+            <article class="gap-card" data-gap-card data-gap-type="construct">
+              <div class="gap-card-head"><span class="status parked">Exploratory</span><span>Construct gap</span></div>
+              <h3>Diagnostic vs verification gaze</h3>
+              <p class="gap-question">모델이 병변 발견 시선과 routine·재확인 시선을 같은 supervision으로 섞고 있지 않은가?</p>
+              <dl><div><dt>현재 근거</dt><dd>raw/fixation에는 위치·시간만 있고, gaze 역할 라벨은 없습니다. revisit가 유망했던 초기 probe는 역할 차이 가능성을 보여줄 뿐입니다.</dd></div><div><dt>비어 있는 부분</dt><dd>탐색·진단·검증·routine scan을 관찰 데이터만으로 식별할 수 있는지 모릅니다.</dd></div><div><dt>최소 실험</dt><dd>150–200개 mention 주변 scanpath를 두 전문가가 blind annotation하고 first-visit·revisit·speech timing 특징의 식별 가능성을 평가합니다.</dd></div></dl>
+              <strong class="decision-gate">Gate · annotation agreement와 held-out reader 분류가 충분할 때만 phase-aware model</strong>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="workbench">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Experiment builder</p><h2>아이디어를 <em>판별 가능한 계약</em>으로.</h2></div>
+            <p class="section-intro">가설을 선택하면 비교 대상, 통제, 측정 단위, 진행·중단 기준이 한 묶음으로 바뀝니다. 모델 이름보다 어떤 결과가 다음 결정을 바꾸는지 먼저 고정합니다.</p>
+          </div>
+          <div class="workbench">
+            <div class="workbench-tabs" role="tablist" aria-label="GazeMed 실험 템플릿">
+              <button class="active" type="button" role="tab" aria-selected="true" data-workbench-template="anatomy">01 · Gaze value</button>
+              <button type="button" role="tab" aria-selected="false" data-workbench-template="causal">02 · Causal replay</button>
+              <button type="button" role="tab" aria-selected="false" data-workbench-template="fusion">03 · Modality fusion</button>
+            </div>
+            <article class="workbench-output" data-workbench-output aria-live="polite"></article>
+            <div class="workbench-actions">
+              <span data-workbench-status>Baseline과 stop rule까지 포함된 최소 실험안</span>
+              <button class="button secondary" type="button" data-workbench-copy>실험안 복사</button>
+            </div>
           </div>
         </div>
       </section>
@@ -232,9 +272,9 @@
           </div>
           <div class="research-sequence">
             <article><span>Now · validity</span><h3>Split × causal audit</h3><p>patient split sensitivity, future-gaze mask, mention-link audit로 현재 claim의 경계를 고정합니다.</p><strong>결과 · 믿을 수 있는 기준선</strong></article>
-            <article><span>Next · mechanism</span><h3>Complementarity ceiling</h3><p>RadZero와 Final의 per-instance 오류가 실제로 다른지 학습 없이 확인합니다.</p><strong>결과 · fusion 진행/중단</strong></article>
-            <article><span>Then · method</span><h3>Small late fusion</h3><p>calibrated average와 reliability gate까지만 구현해 최소 복잡도로 gain을 검증합니다.</p><strong>결과 · 논문 핵심 방법 후보</strong></article>
-            <article><span>Later · system</span><h3>Streaming prototype</h3><p>causal 성능이 유지될 때 latency·abstention을 갖춘 판독 보조 흐름으로 확장합니다.</p><strong>결과 · 실제 사용 가능성</strong></article>
+            <article><span>Next · mechanism</span><h3>Anatomy value map</h3><p>label-conditioned prior를 세우고 병변 크기·중심거리별로 gaze의 추가 가치가 생기는 영역을 찾습니다.</p><strong>결과 · gaze가 필요한 조건</strong></article>
+            <article><span>Then · complementarity</span><h3>Fusion ceiling</h3><p>RadZero와 Final의 per-instance 오류가 실제로 다른지 학습 없이 확인합니다.</p><strong>결과 · fusion 진행/중단</strong></article>
+            <article><span>Later · gated build</span><h3>Small fusion / streaming</h3><p>각 gate를 통과한 축만 calibrated fusion 또는 latency·abstention을 갖춘 streaming prototype으로 확장합니다.</p><strong>결과 · 최소 복잡도의 다음 모델</strong></article>
           </div>
           <div class="button-row section-action">
             <a class="button" href="../projects/gazemed.html">GazeMed 모델 상세로 돌아가기</a>

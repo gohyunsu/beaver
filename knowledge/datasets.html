@@ -18,17 +18,18 @@
             <p class="eyebrow">Knowledge · Data registry</p>
             <h1>데이터가 허용하는 <em>질문</em></h1>
             <p class="page-summary">데이터셋의 modality·reference annotation·access·한계를 먼저 읽고, 그 범위를 넘는 claim을 만들지 않습니다.</p>
+            <nav class="toc" aria-label="페이지 목차"><a href="#registry">Registry</a><a href="#bundle">REFLACX bundle</a><a href="#audit">Audit</a><a href="#labels">Label semantics</a></nav>
           </div>
           <aside class="page-meta">
             <div class="page-meta-row"><span>Primary</span><span>REFLACX · OneStop · team study</span></div>
             <div class="page-meta-row"><span>Restricted</span><span>MIMIC family</span></div>
             <div class="page-meta-row"><span>Policy</span><span>No raw data in Git</span></div>
-            <div class="page-meta-row"><span>Updated</span><span>2026.07.21</span></div>
+            <div class="page-meta-row"><span>Updated</span><span>2026.07.29</span></div>
           </aside>
         </div>
       </header>
 
-      <section class="section">
+      <section class="section" id="registry">
         <div class="shell">
           <div class="section-head">
             <div><p class="eyebrow">Registry</p><h2>현재 연구와 직접 연결되는 <em>데이터 자산</em></h2></div>
@@ -107,7 +108,60 @@
         </div>
       </section>
 
-      <section class="section alt">
+      <section class="section alt" id="bundle">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">REFLACX · one reading bundle</p><h2>한 판독은 <em>여섯 파일</em>로 연결됩니다.</h2></div>
+            <p class="section-intro">한 행을 곧바로 모델 입력으로 읽을 수 없습니다. reading ID를 중심으로 fixation·raw gaze·발화·ellipse·좌표·환자 정보를 묶어야 하나의 학습 instance가 됩니다.</p>
+          </div>
+          <div class="bundle-map reveal">
+            <div class="bundle-root">
+              <span>reading id</span>
+              <strong>P102R…</strong>
+              <small>한 영상에 대한 한 판독 세션</small>
+            </div>
+            <div class="bundle-files">
+              <article><code>fixations.csv</code><strong>파싱된 시선 사건</strong><p>시작·종료 시각, image-space x/y, pupil, visual angle, zoom·pan·window state.</p><span>현재 Final의 주 입력</span></article>
+              <article><code>gaze.csv</code><strong>1,000 Hz raw sample</strong><p>timestamp별 x/y와 pupil. blink처럼 눈을 찾지 못한 행은 좌표가 비어 있습니다.</p><span>raw trajectory 가설의 입력</span></article>
+              <article><code>timestamps_transcription.csv</code><strong>단어별 발화 시각</strong><p>교정된 단어와 시작·종료 시각. finding mention과 fixation의 Δt를 만듭니다.</p><span>언제 말했는가</span></article>
+              <article><code>anomaly_location_ellipses.csv</code><strong>finding 위치 reference</strong><p>ellipse 극점, certainty, 가능한 finding 열. 한 ellipse에 여러 label이 연결될 수 있습니다.</p><span>pixel mask가 아님</span></article>
+              <article><code>chest_bounding_box.csv</code><strong>해부학 좌표 기준</strong><p>폐와 심장을 포함한 chest box. 상대 위치 정규화와 anatomy-prior baseline에 사용합니다.</p><span>좌표계의 기준</span></article>
+              <article><code>metadata_phase_*.csv</code><strong>identity와 image-level label</strong><p>reading·DICOM·patient ID, image size, quality flag, MIMIC 경로와 certainty를 연결합니다.</p><span>split의 시작점</span></article>
+            </div>
+          </div>
+
+          <div class="identity-chain reveal" aria-label="REFLACX와 MIMIC 식별자 연결">
+            <div><span>reading</span><strong>id</strong><small>gaze + dictation session</small></div>
+            <b>→</b>
+            <div><span>image</span><strong>dicom_id</strong><small>MIMIC-CXR join</small></div>
+            <b>→</b>
+            <div><span>patient</span><strong>subject_id</strong><small>group split key</small></div>
+            <b>→</b>
+            <div><span>instance</span><strong>reading × finding</strong><small>PR #3 evaluation unit</small></div>
+          </div>
+
+          <div class="content-grid dataset-detail">
+            <article class="prose">
+              <h3>Phase를 섞기 전에 label vocabulary를 맞춥니다.</h3>
+              <p>Phase 1은 Mass·Nodule, Pleural effusion·thickening처럼 세분된 라벨을 사용하지만 Phase 2·3은 이를 Lung nodule or mass, Pleural abnormality 등으로 통합합니다. PR #3은 데이터의 대부분을 차지하는 Phase 3을 사용합니다.</p>
+              <div class="label-crosswalk">
+                <div><span>Phase 1</span><strong>Mass + Nodule</strong><b>→</b><span>Phase 2·3</span><strong>Lung nodule or mass</strong></div>
+                <div><span>Phase 1</span><strong>Pleural effusion + thickening</strong><b>→</b><span>Phase 2·3</span><strong>Pleural abnormality</strong></div>
+                <div><span>Phase 1</span><strong>Emphysema</strong><b>→</b><span>Phase 2·3</span><strong>High lung volume / emphysema</strong></div>
+                <div><span>Phase 1</span><strong>Fracture</strong><b>→</b><span>Phase 2·3</span><strong>Acute fracture</strong></div>
+              </div>
+            </article>
+            <aside class="side-stack">
+              <div class="metric-card"><strong>3,052 IDs</strong><span>all phases including discarded gaze records</span></div>
+              <div class="metric-card"><strong>2,507</strong><span>Phase 3 readings · current GazeMed scope</span></div>
+              <div class="metric-card"><strong>top-left</strong><span>pixel coordinate origin; x horizontal, y vertical</span></div>
+            </aside>
+          </div>
+          <p class="source-note">Schema source · <a href="https://physionet.org/content/reflacx-xray-localization/1.0.0/">REFLACX v1.0.0 on PhysioNet</a>. Restricted files are not included in this site.</p>
+        </div>
+      </section>
+
+      <section class="section" id="audit">
         <div class="shell">
           <div class="section-head">
             <div><p class="eyebrow">REFLACX audit</p><h2>학습 전에 끝내야 할 <em>무결성 검사</em></h2></div>
@@ -126,7 +180,7 @@
         </div>
       </section>
 
-      <section class="section">
+      <section class="section alt" id="labels">
         <div class="shell content-grid">
           <article class="prose">
             <p class="eyebrow">Label semantics</p>

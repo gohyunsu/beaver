@@ -24,7 +24,7 @@
             <div class="page-meta-row"><span>Core</span><span>7 evidence families</span></div>
             <div class="page-meta-row"><span>Sources</span><span>Primary / official pages</span></div>
             <div class="page-meta-row"><span>Rule</span><span>Finding + implication</span></div>
-            <div class="page-meta-row"><span>Updated</span><span>2026.07.21</span></div>
+            <div class="page-meta-row"><span>Updated</span><span>2026.07.29</span></div>
           </aside>
         </div>
       </header>
@@ -39,6 +39,69 @@
           <input class="search-box" id="reference-search" data-reference-search type="search" placeholder="예: REFLACX, temporal, saliency, calibration" />
           <div class="filters" data-reference-filters aria-label="문헌 계열 필터"></div>
           <div class="reference-grid" data-reference-grid aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="section dark">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Closest-work matrix · GazeMed</p><h2>같은 점수표에 놓기 전에 <em>입력 계약</em>을 봅니다.</h2></div>
+            <p class="section-intro">gaze를 언제 쓰는지, image를 모델이 보는지, 출력 단위가 무엇인지가 다르면 숫자만으로 우열을 정할 수 없습니다. 각 연구가 실제로 해결한 문제와 남긴 빈칸을 함께 읽습니다.</p>
+          </div>
+          <div class="table-wrap reveal">
+            <table class="comparison work-matrix">
+              <thead><tr><th>Work</th><th>Gaze의 역할</th><th>추론 입력</th><th>출력 / reference</th><th>GazeMed에 남기는 경계</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><a href="https://doi.org/10.3389/fradi.2023.1088068">Lanfredi et al. · 2023</a></td>
+                  <td>발화 1.5초 전 fixation으로 label-specific supervision 생성</td>
+                  <td>최종 학습 모델은 image-only</td>
+                  <td>localization heatmap / ellipse</td>
+                  <td>고정 시간창 B1의 직접 출발점. GazeMed의 .2082는 같은 instance set에서 다시 계산한 heuristic row이지 논문의 최종 모델 점수가 아님.</td>
+                </tr>
+                <tr>
+                  <td><a href="https://arxiv.org/abs/2503.01037">Ghelichkhan &amp; Tasdizen · 2025</a></td>
+                  <td>sentence별 gaze 후보 box를 구축</td>
+                  <td>image + report sentence</td>
+                  <td>object detection / phrase grounding</td>
+                  <td>text-conditioned CXR localization 자체는 이미 존재. gaze–speech가 test-time에 더하는 정보로 좁혀야 함.</td>
+                </tr>
+                <tr>
+                  <td><a href="https://papers.miccai.org/miccai-2025/0305-Paper1072.html">GradTrack · 2025</a></td>
+                  <td>fixation 위치·duration·order를 weak supervision에 사용</td>
+                  <td>image-only deployment setting</td>
+                  <td>pixel segmentation mask</td>
+                  <td>temporal gaze 또는 순서를 쓴다는 사실만으로는 novelty가 아님.</td>
+                </tr>
+                <tr>
+                  <td><a href="https://arxiv.org/abs/2504.07416">RadZero · 2025</a></td>
+                  <td>사용하지 않음</td>
+                  <td>image + phrase</td>
+                  <td>zero-shot similarity map / ellipse</td>
+                  <td>GazeMed와 입력이 겹치지 않는 외부 경쟁선. modality 우열이 아니라 오류 상보성과 fusion ceiling을 검정.</td>
+                </tr>
+                <tr>
+                  <td><a href="https://arxiv.org/abs/2604.14316">GazeX · 2026</a></td>
+                  <td>trajectory와 fixation을 CXR VLM prior로 학습</td>
+                  <td>넓은 image–language–gaze setting</td>
+                  <td>report generation · grounding · VQA</td>
+                  <td>범용 gaze-VLM보다 작은 finding localization과 반증 가능한 control에 집중해야 함.</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed · PR #3</a></td>
+                  <td>finding과 관련된 fixation을 test-time attention으로 선택</td>
+                  <td>gaze + speech · image pixel 없음</td>
+                  <td>finding heatmap / ellipse</td>
+                  <td>현재 강점은 timing·position·language의 분해. causal prefix, split, reader, anatomy-prior 비교는 열려 있음.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="matrix-legend">
+            <span><strong>Training-time gaze</strong> 배포 모델은 gaze 없이 작동</span>
+            <span><strong>Test-time gaze</strong> 새 사례의 판독 행동이 입력 계약에 포함</span>
+            <span><strong>Reference</strong> ellipse·box·pixel mask는 서로 교환 가능한 정답이 아님</span>
+          </div>
         </div>
       </section>
 

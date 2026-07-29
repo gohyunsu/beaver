@@ -48,6 +48,7 @@
               <tbody>
                 <tr><td>P0</td><td>GazeMed</td><td>PR #3 final model</td><td>1,093개 test instance에서 Final IoU .3188 / Pointing .7237, Temporal-only 대비 5/5 seed 개선</td><td>patient-level split</td><td><span class="status neutral">Complete</span></td></tr>
                 <tr><td>P0</td><td>GazeMed</td><td>Information controls</td><td>position shuffle collapse, spatial-word mask, B1, RadZero external baseline을 같은 instance set에서 비교</td><td>frozen evaluation set</td><td><span class="status neutral">Complete</span></td></tr>
+                <tr><td>P0</td><td>GazeMed</td><td>Anatomy value map</td><td>같은 instance·label을 쓰는 anatomy-only prior를 구축하고 병변 크기·위치·label별 Final의 증분 가치 보고</td><td>training ellipses + frozen split</td><td><span class="status">Now</span></td></tr>
                 <tr><td>P0</td><td>GazeMed</td><td>Causal replay audit</td><td>mention 시점 이후 fixation hard mask, streaming replay, latency·coverage·full-sequence gap 보고</td><td>timestamped event loader</td><td><span class="status">Now</span></td></tr>
                 <tr><td>P0</td><td>GazeMed</td><td>Split sensitivity</td><td>추가 patient split에서 핵심 비교 반복, 가능한 범위에서 reader-held-out sensitivity report</td><td>training budget</td><td><span class="status">Now</span></td></tr>
                 <tr><td>P1</td><td>GazeMed</td><td>Image × behavior fusion gate</td><td>instance별 오류 상보성 → calibrated late fusion → reliability gate 순으로 Final·RadZero 모두 개선</td><td>matched RadZero outputs</td><td><span class="status waiting">Next</span></td></tr>

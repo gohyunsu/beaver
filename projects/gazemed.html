@@ -23,6 +23,7 @@
               <a href="#one-minute">한눈에 보기</a>
               <a href="#primer">기초 개념</a>
               <a href="#data">REFLACX</a>
+              <a href="#evidence-trail">탐색의 증거</a>
               <a href="#model">PR #3 모델</a>
               <a href="#results">예비 결과</a>
               <a href="#next-model">구현 제안</a>
@@ -32,7 +33,7 @@
           </div>
           <aside class="page-meta">
             <div class="page-meta-row"><span>Status</span><span><span class="status">Active focus</span></span></div>
-            <div class="page-meta-row"><span>Task</span><span>Online lesion grounding</span></div>
+            <div class="page-meta-row"><span>Task</span><span>Finding localization</span></div>
             <div class="page-meta-row"><span>Data</span><span>REFLACX + MIMIC-CXR-JPG</span></div>
             <div class="page-meta-row"><span>Latest artifact</span><span><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">PR #3 ↗</a></span></div>
             <div class="page-meta-row"><span>Updated</span><span>2026.07.29</span></div>
@@ -124,6 +125,13 @@
             <strong>시선 ≠ 병변</strong>
             <p>정상 구조 확인, 탐색, 재검토, 놀람도 fixation을 만듭니다. 따라서 gaze는 병변의 정답 mask가 아니라 후보 위치를 좁히는 noisy evidence로 다뤄야 합니다.</p>
           </div>
+          <div class="gaze-role-strip" aria-label="판독 시선의 잠재적 역할">
+            <article><span>Detect</span><strong>이상소견 탐색</strong><p>처음 후보를 찾는 시선</p></article>
+            <article><span>Verify</span><strong>비교·재확인</strong><p>대칭 구조나 이전 영역을 다시 보는 시선</p></article>
+            <article><span>Routine</span><strong>체계적 훑기</strong><p>정상 여부를 확인하는 판독 습관</p></article>
+            <article><span>Distract</span><strong>과제와 무관한 주시</strong><p>saliency·조작·노이즈가 만든 시선</p></article>
+          </div>
+          <p class="source-note">이 역할들은 fixation에서 직접 관찰되는 라벨이 아니라 가능한 잠재 상태입니다. 현재 REFLACX만으로 확정하려면 발화·재방문·후속 annotation을 이용한 별도 검증이 필요합니다.</p>
         </div>
       </section>
 
@@ -201,6 +209,56 @@
         </div>
       </section>
 
+      <section class="section alt" id="evidence-trail">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Evidence trail · hypothesis pruning</p><h2>아이디어는 결과를 따라 <em>좁혀졌습니다.</em></h2></div>
+            <p class="section-intro">현재 모델은 처음부터 정해진 구조가 아닙니다. 같은 기록을 더 복잡하게 표현하는 시도보다, 어떤 정보가 실제로 살아남는지 대조 실험으로 확인하며 질문을 바꿨습니다.</p>
+          </div>
+          <div class="evidence-trail">
+            <article>
+              <span class="status parked">Hypothesis rejected</span>
+              <small>Raw trajectory</small>
+              <h3>1,000 Hz raw gaze가 fixation보다 강한가?</h3>
+              <p>saccade path·velocity·micro-motion을 보존한 video-like 표현을 비교했지만, Gaussian blur를 공정하게 맞추자 raw와 fixation의 차이가 사라졌습니다.</p>
+              <strong>남은 교훈 · representation 비교에는 동일한 spatial bandwidth가 필요</strong>
+            </article>
+            <article>
+              <span class="status parked">Signal screened out</span>
+              <small>Kinematics</small>
+              <h3>속도·동공이 병변 단서인가?</h3>
+              <p>초기 probe에서 velocity·saccade·pupil은 안정적인 증분 가치를 보이지 않았습니다. revisit와 발화 정렬은 더 유망했지만 효과의 원인을 분리해야 했습니다.</p>
+              <strong>남은 교훈 · 센서 해상도가 높아도 task information이 늘지는 않음</strong>
+            </article>
+            <article>
+              <span class="status waiting">Strong baseline found</span>
+              <small>Anatomy prior</small>
+              <h3>병변의 전형적 위치를 외운 것은 아닌가?</h3>
+              <p>label별 ellipse 분포로 만든 anatomy prior가 gaze-only보다 강할 수 있었습니다. 따라서 gaze 모델은 center나 random이 아니라 label-conditioned prior를 넘어야 합니다.</p>
+              <strong>열린 질문 · 작고 주변부인 병변에서 gaze의 추가 가치가 더 큰가?</strong>
+            </article>
+            <article>
+              <span class="status neutral">Controlled positive</span>
+              <small>Temporal alignment</small>
+              <h3>고정 1.5초 규칙을 학습할 수 있는가?</h3>
+              <p>finding mention과 fixation 사이의 Δt를 학습한 Temporal-only가 B1을 넘었습니다. 잘못된 mention time을 주는 초기 통제에서도 성능이 하락해 실제 시간 대응을 확인했습니다.</p>
+              <strong>남은 교훈 · 위치를 보지 않아도 timing 자체에 정보가 있음</strong>
+            </article>
+            <article class="current">
+              <span class="status">Current model</span>
+              <small>Position × language</small>
+              <h3>어느 fixation이 그 발화를 설명하는가?</h3>
+              <p>실제 x/y와 공간 descriptor를 query–key attention으로 연결한 Final이 Temporal-only보다 5/5 seed에서 높고, position shuffle에서 붕괴했습니다.</p>
+              <strong>현재 경계 · test-time 입력은 입증, causal streaming은 미입증</strong>
+            </article>
+          </div>
+          <div class="trail-reading">
+            <strong>읽는 법</strong>
+            <p>앞 단계의 음성 결과는 지워진 실패가 아니라 다음 모델의 대조군을 정의합니다. raw trajectory는 보류하고, anatomy prior는 필수 baseline으로 승격하며, 시간·좌표·언어의 증분 가치를 한 단계씩 검정합니다.</p>
+          </div>
+        </div>
+      </section>
+
       <section class="section dark" id="model">
         <div class="shell">
           <div class="section-head">
@@ -226,6 +284,10 @@
               <small>실제 x,y만 재가중 · Gaussian smoothing</small>
             </div>
           </div>
+          <figure class="source-figure model-source-figure reveal">
+            <img src="../assets/img/gazemed-pr3-pipeline.png" alt="GazeMed PR 3의 gaze key pathway, language query pathway, single-layer cross-attention과 fixation splat localization 아키텍처" loading="lazy" />
+            <figcaption><strong>GazeMed PR #3 실제 아키텍처 도식.</strong> Team BEAVER, <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, commit <code>38f5d44</code>. 원본을 수정하지 않고 사용했습니다. 오른쪽 heatmap은 구조 설명용 예시이며 실제 qualitative prediction이 아닙니다.</figcaption>
+          </figure>
           <div class="grid-4 dark-cards">
             <article class="card"><p class="card-number">B0 · No gate</p><h3>전체 gaze heatmap</h3><p>Lanfredi 문헌 0.165, 팀 재현 0.167로 평가 프로토콜의 fidelity를 먼저 확인했습니다.</p></article>
             <article class="card"><p class="card-number">B1 · Fixed gate</p><h3>발화 1.5초 전 gaze</h3><p>고정된 look-back window를 쓰는 직접 문헌 baseline입니다. 최종 동일 run에서는 IoU 0.2082입니다.</p></article>
@@ -239,7 +301,7 @@
       <section class="section" id="results">
         <div class="shell content-grid">
           <article class="prose">
-            <p class="eyebrow">Preliminary evidence</p>
+            <p class="eyebrow">Current evidence</p>
             <h2>현재 결과는 <em>방향을 고르는 증거</em>입니다.</h2>
             <p>PR #3의 최신 technical spec은 B1, RadZero, Temporal-only, Final과 두 information-removal control을 같은 1,093개 test instance에서 평가합니다. Final은 Temporal-only와 B1보다 높고, 외부 image-text 모델 RadZero보다 IoU는 높으며 Pointing은 통계적으로 동률입니다.</p>
             <div class="result-chart" aria-label="GazeMed 예비 IoU 비교">
