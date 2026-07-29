@@ -46,10 +46,11 @@
             <table class="task-table">
               <thead><tr><th>Priority</th><th>Project</th><th>Deliverable</th><th>Definition of done</th><th>Dependency</th><th>State</th></tr></thead>
               <tbody>
-                <tr><td>P0</td><td>GazeMed</td><td>PR #3 reproduction</td><td>고정 manifest·patient/image split·seed에서 IoU 0.233 / 0.29 / 0.32 계열 재현</td><td>local REFLACX + MIMIC access</td><td><span class="status">Now</span></td></tr>
-                <tr><td>P0</td><td>GazeMed</td><td>Coordinate + causal audit</td><td>zoom/pan 좌표 overlay 20건, laterality, 미래 gaze 누출 assertion 통과</td><td>reproduction pipeline</td><td><span class="status">Now</span></td></tr>
-                <tr><td>P0</td><td>GazeMed</td><td>Alignment ablation</td><td>fixed lag / learned lag / coordinate / spatial-token / shuffle 비교 + paired CI</td><td>stable reproduction</td><td><span class="status waiting">Next</span></td></tr>
-                <tr><td>P1</td><td>GazeMed</td><td>Streaming grounder gate</td><td>phrase trigger + causal fixation bank가 language-only·gaze-only보다 유의하게 개선</td><td>alignment ablation</td><td><span class="status neutral">Gate</span></td></tr>
+                <tr><td>P0</td><td>GazeMed</td><td>PR #3 final model</td><td>1,093개 test instance에서 Final IoU .3188 / Pointing .7237, Temporal-only 대비 5/5 seed 개선</td><td>patient-level split</td><td><span class="status neutral">Complete</span></td></tr>
+                <tr><td>P0</td><td>GazeMed</td><td>Information controls</td><td>position shuffle collapse, spatial-word mask, B1, RadZero external baseline을 같은 instance set에서 비교</td><td>frozen evaluation set</td><td><span class="status neutral">Complete</span></td></tr>
+                <tr><td>P0</td><td>GazeMed</td><td>Causal replay audit</td><td>mention 시점 이후 fixation hard mask, streaming replay, latency·coverage·full-sequence gap 보고</td><td>timestamped event loader</td><td><span class="status">Now</span></td></tr>
+                <tr><td>P0</td><td>GazeMed</td><td>Split sensitivity</td><td>추가 patient split에서 핵심 비교 반복, 가능한 범위에서 reader-held-out sensitivity report</td><td>training budget</td><td><span class="status">Now</span></td></tr>
+                <tr><td>P1</td><td>GazeMed</td><td>Image × behavior fusion gate</td><td>instance별 오류 상보성 → calibrated late fusion → reliability gate 순으로 Final·RadZero 모두 개선</td><td>matched RadZero outputs</td><td><span class="status waiting">Next</span></td></tr>
                 <tr><td>P0</td><td>ImageRefine</td><td>Study 1 freeze</td><td>IRB와 일치하는 protocol, primary outcome, exclusion, stopping rule</td><td>IRB review comments 가능</td><td><span class="status">Offline now</span></td></tr>
                 <tr><td>P0</td><td>ImageRefine</td><td>Stimulus + baseline pack</td><td>3-axis taxonomy, saliency-only predictor, annotation schema</td><td>no participant data needed</td><td><span class="status">Offline now</span></td></tr>
                 <tr><td>P1</td><td>ImageRefine</td><td>Tobii integration test</td><td>calibration, drift, event sync, image coordinate mapping pass</td><td>hardware delivery</td><td><span class="status waiting">Waiting</span></td></tr>
@@ -75,7 +76,8 @@
           </div>
           <div class="timeline">
             <div class="timeline-item"><time datetime="2026-07-17">07.17</time><span class="timeline-dot"></span><div><h3>ImageRefine IRB 제출</h3><p>완료. 심의 중.</p></div></div>
-            <div class="timeline-item"><time datetime="2026-07-25">07.25</time><span class="timeline-dot"></span><div><h3>GazeMed PR #3</h3><p>실시간 gaze–speech 정렬과 공간 언어 결합 모델의 아키텍처·예비 결과 공개.</p></div></div>
+            <div class="timeline-item"><time datetime="2026-07-25">07.25</time><span class="timeline-dot"></span><div><h3>GazeMed PR #3</h3><p>gaze–speech 정렬과 공간 언어 결합 모델의 아키텍처·예비 결과 공개.</p></div></div>
+            <div class="timeline-item"><time datetime="2026-07-29">07.29</time><span class="timeline-dot"></span><div><h3>GazeMed 검증 업데이트</h3><p>최종 모델·RadZero 비교·5-seed 정보 제거 대조를 정리하고, causal streaming과 fusion을 다음 검증 단계로 분리.</p></div></div>
             <div class="timeline-item"><time datetime="2026-08-15">08.15</time><span class="timeline-dot"></span><div><h3>GazeMed 내부 제출 목표</h3><p>대화에서 제시된 IEEE MedAI 2026 목표. 공식 CFP 재확인 필요.</p></div></div>
             <div class="timeline-item"><time datetime="2026-08-21">08.21+</time><span class="timeline-dot"></span><div><h3>IRB 예상 회신</h3><p>수정 요구 시 일정 변동 가능.</p></div></div>
             <div class="timeline-item"><time datetime="2026-09-11">09.11</time><span class="timeline-dot"></span><div><h3>학생자율연구 중간보고 예정</h3><p>GazeMed 결과를 중심으로 진행상황 보고 계획.</p></div></div>
@@ -98,6 +100,7 @@
             <article class="decision-card reveal"><time>2026.06.27</time><div><h3>GazeMed + GazeImageRefine 병행</h3><p>공개 expert-gaze data로 즉시 가능한 AI 연구와 구매한 eye tracker가 필요한 일반 사용자 HCI 연구를 분리했다.</p></div><span class="outcome">Active portfolio</span></article>
             <article class="decision-card reveal"><time>2026.07.17</time><div><h3>GazeMed를 단기 초점으로 지정</h3><p>ImageRefine는 IRB/배송을 기다리고 leXic은 리뷰 대응이 필요해, 즉시 접근 가능한 REFLACX 분석에 자원을 집중했다.</p></div><span class="outcome">Focus now</span></article>
             <article class="decision-card reveal"><time>2026.07.20–21</time><div><h3>Raw gaze as video를 gate 뒤로 이동</h3><p>예비실험이 유의미한 방향을 보이지 않았고 최신 temporal gaze 선행연구와 겹쳤다. event-based information ablation을 선행한다.</p></div><span class="outcome">Deprioritized</span></article>
+            <article class="decision-card reveal"><time>2026.07.29</time><div><h3>입증된 모델과 다음 가설 분리</h3><p>현재 Final은 test-time gaze+speech 모델로 고정한다. causal online replay와 RadZero 영상 특징 결합은 결과에 포함시키지 않고 각각 별도 gap과 gate로 관리한다.</p></div><span class="outcome">Evidence boundary</span></article>
           </div>
         </div>
       </section>

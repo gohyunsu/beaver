@@ -68,7 +68,7 @@
               <div>
                 <div class="project-card-top"><span class="status">Active</span><span>Medical AI</span></div>
                 <h3>GazeMed</h3>
-                <p class="muted">실시간 gaze와 판독 발화를 정렬해 흉부 X-ray의 언급된 병변 위치를 예측합니다.</p>
+                <p class="muted">expert gaze와 판독 발화를 정렬해 흉부 X-ray의 언급된 병변 위치를 예측합니다.</p>
               </div>
               <div class="project-card-foot"><span>REFLACX · temporal alignment · phrase grounding</span><span class="arrow" aria-hidden="true">↗</span></div>
             </a>
@@ -118,13 +118,13 @@
               <p>발화가 주는 방향 제약과 시선이 주는 후보 영역을 합쳐 언급된 이상소견의 위치를 예측합니다.</p>
             </article>
           </div>
-          <div class="result-strip" aria-label="GazeMed PR 3 예비 결과">
-            <div><span>Fixed rule</span><strong>0.233</strong><small>IoU · 1.5 s window</small></div>
+          <div class="result-strip" aria-label="GazeMed PR 3 최신 결과">
+            <div><span>B1 · fixed rule</span><strong>0.208</strong><small>IoU · Pointing 0.552</small></div>
             <span class="result-arrow" aria-hidden="true">→</span>
-            <div><span>Temporal</span><strong>0.29</strong><small>IoU · Pointing 0.68</small></div>
+            <div><span>Temporal-only</span><strong>0.288</strong><small>IoU · Pointing 0.682</small></div>
             <span class="result-arrow" aria-hidden="true">→</span>
-            <div class="result-best"><span>Spatial + language</span><strong>0.32</strong><small>IoU · Pointing 0.72</small></div>
-            <p>PR #3에 보고된 예비 결과 · 동일 split 재현과 신뢰구간 확인 전</p>
+            <div class="result-best"><span>Final</span><strong>0.319</strong><small>IoU · Pointing 0.724</small></div>
+            <p>PR #3 최신 technical spec · n=1,093 · patient split · 핵심 개선 5/5 training seed 유지</p>
           </div>
           <div class="button-row section-action">
             <a class="button" href="projects/gazemed.html">데이터부터 평가까지 단계별로 읽기</a>
@@ -161,6 +161,11 @@
             <a href="knowledge/related-work.html" class="learning-step reveal">
               <span>04</span>
               <div><small>Literature</small><h3>이미 알려진 것의 경계</h3><p>각 논문의 발견과 BEAVER의 주장에 미치는 영향을 함께 비교합니다.</p></div>
+              <b aria-hidden="true">→</b>
+            </a>
+            <a href="knowledge/research-gaps.html" class="learning-step reveal">
+              <span>05</span>
+              <div><small>Research gaps</small><h3>빈칸을 다음 실험으로</h3><p>미검증 주장, 약한 근거, 일반화 한계를 구분해 가장 작은 결정적 실험으로 바꿉니다.</p></div>
               <b aria-hidden="true">↗</b>
             </a>
           </div>

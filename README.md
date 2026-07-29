@@ -4,7 +4,7 @@ BEAVER의 연구 프로젝트, 배경 개념, 데이터셋, 방법론과 선행�
 
 현재 연구 포트폴리오는 다음 세 트랙입니다.
 
-1. **GazeMed — 현재 초점:** 판독 중 들어오는 expert gaze와 발화를 시간·공간적으로 정렬해 언급된 CXR 이상소견의 위치를 예측합니다.
+1. **GazeMed — 현재 초점:** expert gaze와 발화를 시간·공간적으로 정렬해 언급된 CXR 이상소견의 위치를 예측하고, causal streaming과 영상 결합의 증분 가치를 검증합니다.
 2. **GazeImageRefine — IRB/장비 대기:** 생성 이미지에서 visual attention과 dissatisfaction/edit intent를 구분하고 gaze-assisted suggestion의 효용을 검증합니다.
 3. **leXic — 보강 대기:** gaze-only reading-comprehension prediction에 precomputed lexical difficulty를 주입한 연구를 APCCAS 리뷰에 맞춰 보완합니다.
 
@@ -16,6 +16,7 @@ BEAVER의 연구 프로젝트, 배경 개념, 데이터셋, 방법론과 선행�
 - `knowledge/datasets.html` — 데이터셋 registry와 data governance
 - `knowledge/methods.html` — 방법 후보와 선택 기준
 - `knowledge/related-work.html` — 계열별 searchable literature map
+- `knowledge/research-gaps.html` — 현재 증거의 경계, 연구 공백, 다음 아이디어와 검증 순서
 - `operations/roadmap.html` — task, milestone, decision, risk
 - `docs/RESEARCH_CONTEXT.md` — 앞으로 가장 먼저 읽을 장기 맥락 문서
 - `docs/FOUNDATIONS.md` — 연구 전반의 개념적 배경과 공통 언어

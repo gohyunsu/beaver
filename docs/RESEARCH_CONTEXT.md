@@ -26,15 +26,18 @@ BEAVER는 **사람의 시선이 담는 공간·시간·맥락 정보가 기존 �
 
 **초기 아이디어:** raw 1,000 Hz gaze를 video-like spatiotemporal trajectory로 표현하면 fixation parsing이 버리는 saccade, velocity, micro-motion을 보존해 lesion localization을 개선할 것이라는 가설. 2026-07-20 예비실험에서 유의미한 방향을 찾지 못해 primary path에서 내렸다.
 
-**현재 아이디어:** 판독 중 들어오는 gaze와 timestamped speech를 추론 입력으로 사용해, 방금 언급한 병변 위치를 온라인으로 예측한다. 고정된 observation–speech lag 대신 학습 가능한 temporal alignment를 쓰고, 발화의 left/right/top/below 같은 공간 표현을 실제 gaze 좌표와 결합한다.
+**현재 모델:** 하나의 instance는 finding label과 ellipse가 있는 판독 구간이다. 추론 때 CXR pixel은 사용하지 않고, 전체 fixation sequence와 timestamped speech에서 만든 특징만 사용한다. 10개 binary text descriptor와 8차원 finding embedding이 query가 되고, 시간·운동학 6개 특징, raw x/y, 같은 finding embedding이 fixation key가 된다. 단일 cross-attention의 weight를 실제 fixation 좌표에 splat하고 Gaussian smoothing해 위치 분포를 만든다.
 
-**PR #3 예비 결과:**
+**PR #3 최신 결과:** Phase 3 patient-level split의 같은 1,093개 test instance에서 평가했다.
 
-- 발화 1.5초 전 gaze 고정 규칙: IoU 0.233
-- 시간 정렬만 학습한 모델: IoU 0.29 / Pointing 0.68
-- gaze 좌표 + 발화 공간 표현 결합: IoU 0.32 / Pointing 0.72
+- B1, 발화 1.5초 전 gaze 고정 규칙: IoU 0.2082 / Pointing 0.5517
+- RadZero, 외부 image+phrase 모델: IoU 0.2988 / Pointing 0.7255
+- Temporal-only: IoU 0.2880 / Pointing 0.6816
+- Final, 시간+좌표+공간 언어: IoU 0.3188 / Pointing 0.7237
+- Final position-shuffled: IoU 0.2101 / Pointing 0.4337
+- Final spatial-word-masked: IoU 0.2943 / Pointing 0.7118
 
-이 수치는 2026-07-25 공유된 PR의 예비 결과다. 동일 manifest·split·seed 재현, 신뢰구간, leakage audit 전에는 최종 성능으로 간주하지 않는다.
+Final은 Temporal-only보다 5/5 training seed에서 높았고, position shuffle도 5/5에서 큰 하락을 보였다. spatial-word masking은 IoU에서는 5/5 유의했지만 Pointing은 2/5만 유의해, 공간 언어의 효과는 지표별로 비대칭이다. Final은 RadZero보다 IoU가 높고 Pointing은 동률 수준이다. 두 모델의 입력이 다르므로 이는 경쟁력의 근거이지 modality 우월성의 근거가 아니다.
 
 **최신 문헌이 주는 제약:**
 
@@ -43,23 +46,23 @@ BEAVER는 **사람의 시선이 담는 공간·시간·맥락 정보가 기존 �
 - label-specific REFLACX gaze extraction과 CXR phrase-grounding 연구는 gaze–report alignment를 이미 다룬다.
 - GazeX는 CXR에서 gaze trajectory를 VLM pretraining에 사용하는 2026 preprint다.
 
-따라서 “temporal gaze를 쓴다”, “text로 병변을 grounding한다”, “gaze를 VLM에 넣는다”는 framing만으로는 충분하지 않다. 현재 차별점은 <strong>inference-time causal gaze–speech alignment</strong>로 좁힌다.
+따라서 “temporal gaze를 쓴다”, “text로 병변을 grounding한다”, “gaze를 VLM에 넣는다”는 framing만으로는 충분하지 않다. 현재 입증된 차별점은 <strong>test-time gaze+speech만으로 얻는 해석 가능한 localization과 정보 제거 대조</strong>다.
 
 **권고된 핵심 질문:**
 
-> 판독 중 현재까지 관찰된 gaze와 발화만 사용할 때, 학습 가능한 시간 정렬과 공간 언어가 fixed-lag·language-only·gaze-only baseline보다 언급된 병변 국소화를 개선하는가?
+> fixation의 시간·좌표 정보와 발화의 공간 표현이 fixed-lag 및 정보 제거 대조보다 언급된 병변 국소화를 얼마나 개선하며, 그 이득은 새로운 split과 causal replay에서도 유지되는가?
 
-**권고 태스크:** primary는 online phrase-conditioned abnormality localization. REFLACX ellipse를 pixel-perfect mask로 간주하지 않으므로 `segmentation`이라는 주장을 기본값으로 쓰지 않는다.
+**권고 태스크:** primary는 finding-conditioned abnormality localization. REFLACX ellipse를 pixel-perfect mask로 간주하지 않으므로 `segmentation`이라는 주장을 기본값으로 쓰지 않는다.
 
 **필수 비교:**
 
 1. 발화 1.5초 전 gaze 고정 규칙
-2. all-reading heatmap
-3. language-only spatial grounding
-4. gaze-only learned lag
-5. gaze 좌표 + finding phrase
-6. gaze 좌표 + spatial/anatomy tokens
-7. lag shuffle / coordinate permutation / spatial-token mask / future-gaze leak test
+2. Temporal-only
+3. Final
+4. RadZero image+phrase external baseline
+5. coordinate permutation
+6. spatial-token mask
+7. causal prefix replay와 future-gaze mask
 
 **평가 원칙:**
 
@@ -67,10 +70,13 @@ BEAVER는 **사람의 시선이 담는 공간·시간·맥락 정보가 기존 �
 - IoU + Pointing + containment + center distance, abstention을 쓰면 calibration과 risk–coverage
 - study/image bootstrap confidence interval과 paired comparison
 - pathology, certainty, reader, lesion size subgroup
-- fixed lag, language-only, gaze-only, lag shuffle, coordinate permutation sanity check
-- 발화 뒤의 미래 gaze를 볼 수 없는 causal mask와 timestamp assertion
+- fixed lag, RadZero, coordinate permutation, spatial-word mask sanity check
+- 하나의 patient split 외 추가 split과 가능한 reader-held-out sensitivity
+- 발화 뒤의 미래 fixation을 볼 수 없는 causal mask, timestamp assertion, streaming latency
 
-**즉시 필요한 산출물:** PR #3 재현 → coordinate/causal audit → 시간·좌표·공간 언어 ablation → streaming phrase–gaze grounder gate.
+**현재 증거의 경계:** 이 모델은 test-time gaze+speech 모델이지만, full fixation sequence와 signed Δt를 사용하므로 causal online model은 아직 아니다. 하나의 patient split, regex mention linker, coarse ellipse, single institution/device도 일반화 주장에 제약을 준다.
+
+**즉시 필요한 산출물:** causal prefix replay → 추가 patient split과 reader sensitivity → RadZero·Final 오류 상보성 분석 → calibrated image×behavior late fusion gate.
 
 ### 2.2 GazeImageRefine — Waiting, but offline design active
 
@@ -219,11 +225,11 @@ VLM, video encoder, multimodal biosignal을 먼저 붙이지 않는다. 작은 �
 
 ### GazeMed P0
 
-1. reproducible data manifest와 audit report
-2. frozen group split
-3. image-only와 aggregate heatmap baseline
-4. ordered fixation vs order/duration shuffle
-5. 결과에 따라 gaze–dictation alignment 또는 scope 축소
+1. mention 시점 이후 fixation을 차단한 causal replay와 latency report
+2. 추가 patient split에서 핵심 비교 반복
+3. 가능한 범위의 reader-held-out sensitivity
+4. regex mention linker의 manual audit와 clinical NLP 대안
+5. RadZero·Final instance-level 오류 상보성과 calibrated late fusion
 
 ### GazeImageRefine offline P0
 

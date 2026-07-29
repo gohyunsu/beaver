@@ -7,6 +7,7 @@ const links = [
   { id: "research", label: "Projects", href: `${root}index.html#research`, pages: ["gazemed", "refine", "lexic"] },
   { id: "knowledge", label: "Learn", href: `${root}knowledge/foundations.html`, pages: ["foundations", "datasets", "methods"] },
   { id: "literature", label: "Literature", href: `${root}knowledge/related-work.html`, pages: ["related"] },
+  { id: "gaps", label: "Research Gaps", href: `${root}knowledge/research-gaps.html`, pages: ["gaps"] },
   { id: "roadmap", label: "Roadmap", href: `${root}operations/roadmap.html`, pages: ["roadmap"] },
 ];
 
@@ -60,6 +61,7 @@ if (footer) {
           <a href="${root}index.html#research">Projects</a>
           <a href="${root}knowledge/foundations.html">Concepts</a>
           <a href="${root}knowledge/related-work.html">Literature</a>
+          <a href="${root}knowledge/research-gaps.html">Research gaps</a>
         </div>
       </div>
     </footer>`;

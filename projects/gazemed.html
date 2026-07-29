@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="GazeMed: 방사선 판독 중 실시간 시선과 발화를 정렬해 흉부 X-ray 이상소견을 국소화하는 연구." />
+    <meta name="description" content="GazeMed: 방사선 전문의의 시선과 발화를 정렬해 흉부 X-ray 이상소견을 국소화하는 연구." />
     <meta name="theme-color" content="#143d35" />
     <title>GazeMed · BEAVER</title>
     <link rel="stylesheet" href="../assets/css/site.css" />
@@ -18,7 +18,7 @@
           <div>
             <p class="eyebrow">Project 01 · Medical AI · Active</p>
             <h1>Gaze<em>Med</em></h1>
-            <p class="page-summary">방사선과 의사가 흉부 X-ray를 판독하며 보는 위치와 말하는 내용을 실시간으로 정렬해, 지금 언급한 이상소견의 위치를 예측합니다.</p>
+            <p class="page-summary">방사선과 의사가 흉부 X-ray를 판독하며 남긴 시선과 발화를 test-time 입력으로 정렬해, 언급된 이상소견의 위치를 예측합니다.</p>
             <nav class="toc" aria-label="GazeMed 페이지 목차">
               <a href="#one-minute">한눈에 보기</a>
               <a href="#primer">기초 개념</a>
@@ -44,7 +44,7 @@
         <div class="shell">
           <div class="section-head">
             <div><p class="eyebrow">One-minute brief</p><h2>한 문장과 <em>한 궤적</em>을 연결합니다.</h2></div>
-            <p class="section-intro">영상만 보고 병변을 찾는 모델이 아니라, 판독자가 현재 제공하는 행동 신호를 함께 받아 언급된 소견을 즉시 화면에 grounding하는 보조 모델입니다.</p>
+            <p class="section-intro">영상만 보고 병변을 찾는 모델이 아니라, 새 사례의 gaze scanpath와 timestamped report를 추론 입력으로 받아 finding별 위치를 grounding합니다.</p>
           </div>
           <div class="live-case reveal" aria-label="가상의 GazeMed 입력과 출력 예시">
             <div class="live-image" aria-hidden="true">
@@ -73,13 +73,13 @@
                 <span><small>WHERE</small>right · base</span>
                 <span><small>GAZE</small>x, y · duration</span>
               </div>
-              <p><strong>Output</strong> 발화 시점까지 관찰된 정보만으로 오른쪽 하부의 후보 영역을 예측합니다. 문장과 영상은 개념 설명을 위한 합성 예시이며 실제 환자 기록이 아닙니다.</p>
+              <p><strong>Output</strong> finding과 연결된 fixation의 실제 좌표를 attention weight로 다시 합쳐 오른쪽 하부 후보 영역을 만듭니다. 문장과 영상은 개념 설명을 위한 합성 예시이며 실제 환자 기록이 아닙니다.</p>
             </div>
           </div>
           <div class="concept-contrast">
             <article><span>Common setting</span><h3>학습할 때만 gaze 사용</h3><p>gaze로 모델의 attention을 유도한 뒤, 추론 시에는 X-ray만 입력합니다.</p></article>
             <div aria-hidden="true">≠</div>
-            <article class="emphasis"><span>GazeMed PR #3</span><h3>추론 중에도 gaze + speech 사용</h3><p>판독자와 모델이 같은 화면을 보는 동안, 현재 소견의 위치를 보조합니다.</p></article>
+            <article class="emphasis"><span>GazeMed PR #3</span><h3>test-time에도 gaze + speech 사용</h3><p>새 사례를 추론할 때 해당 판독에서 얻은 gaze와 report를 함께 사용합니다. 미래 gaze를 차단한 진짜 streaming 평가는 후속 gap입니다.</p></article>
           </div>
         </div>
       </section>
@@ -209,27 +209,28 @@
           </div>
           <div class="model-architecture reveal" aria-label="GazeMed PR 3 아키텍처">
             <div class="model-inputs">
-              <article><span>Stream A</span><strong>Gaze events</strong><small>x · y · duration · timestamp</small></article>
-              <article><span>Stream B</span><strong>Dictation</strong><small>tokens · timestamps · spatial phrases</small></article>
-              <article><span>Context</span><strong>CXR geometry</strong><small>image · lung/chest box · view</small></article>
+              <article><span>Key · 16 dims</span><strong>Fixation events</strong><small>6 temporal/kinematic + raw x,y + label embedding 8</small></article>
+              <article><span>Query · 18 dims</span><strong>Report descriptor</strong><small>7 spatial + 3 severity + label embedding 8</small></article>
+              <article><span>Not an input</span><strong>No image pixels</strong><small>최종 모델은 gaze + speech만 사용</small></article>
             </div>
             <div class="model-arrow" aria-hidden="true">→</div>
             <div class="model-core">
-              <span>Learned temporal alignment</span>
-              <strong>어느 gaze가<br />이 구절의 근거인가?</strong>
-              <div class="lag-cloud"><i>−0.4 s</i><i>−0.9 s</i><i>−1.5 s</i><i>−2.2 s</i></div>
+              <span>Single-layer cross-attention</span>
+              <strong>이 finding과 언어에<br />어느 fixation이 맞는가?</strong>
+              <div class="lag-cloud"><i>Δt</i><i>|Δt|</i><i>before</i><i>duration</i><i>velocity</i><i>x, y</i></div>
             </div>
             <div class="model-arrow" aria-hidden="true">→</div>
             <div class="model-output">
-              <span>Spatial fusion</span>
-              <strong>phrase-conditioned<br />lesion region</strong>
-              <small>heatmap / box + confidence</small>
+              <span>Attention-weighted splat</span>
+              <strong>observed-fixation<br />heatmap</strong>
+              <small>실제 x,y만 재가중 · Gaussian smoothing</small>
             </div>
           </div>
-          <div class="grid-3 dark-cards">
-            <article class="card"><p class="card-number">B0 · Heuristic</p><h3>1.5초 전 gaze</h3><p>발화 직전의 고정 구간을 합쳐 위치를 추정합니다. 단순하고 해석 가능하지만 개인·구절별 지연을 표현하지 못합니다.</p></article>
-            <article class="card"><p class="card-number">M1 · Temporal</p><h3>lag를 데이터에서 학습</h3><p>실제 좌표 의미를 제한한 채 gaze–speech 타이밍만으로 대응 구간을 선택해 시간 정렬 자체의 가치를 봅니다.</p></article>
-            <article class="card"><p class="card-number">M2 · Spatial-language</p><h3>좌표와 방향어 결합</h3><p>정렬된 gaze 위치에 left/right/top/below 같은 발화 제약을 결합해 병변 영역을 예측합니다.</p></article>
+          <div class="grid-4 dark-cards">
+            <article class="card"><p class="card-number">B0 · No gate</p><h3>전체 gaze heatmap</h3><p>Lanfredi 문헌 0.165, 팀 재현 0.167로 평가 프로토콜의 fidelity를 먼저 확인했습니다.</p></article>
+            <article class="card"><p class="card-number">B1 · Fixed gate</p><h3>발화 1.5초 전 gaze</h3><p>고정된 look-back window를 쓰는 직접 문헌 baseline입니다. 최종 동일 run에서는 IoU 0.2082입니다.</p></article>
+            <article class="card"><p class="card-number">Ablation · Temporal</p><h3>lag를 데이터에서 학습</h3><p>position을 attention key에서 빼고 시간·운동 특징만으로 관련 fixation을 고릅니다.</p></article>
+            <article class="card"><p class="card-number">Final</p><h3>position + language</h3><p>raw x,y와 공간·심각도 descriptor를 cross-attention으로 결합하고 실제 fixation 위치만 splat합니다.</p></article>
           </div>
           <a class="inline-source" href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">아키텍처·실험·재현 절차가 정리된 GazeMed PR #3 열기 ↗</a>
         </div>
@@ -240,11 +241,14 @@
           <article class="prose">
             <p class="eyebrow">Preliminary evidence</p>
             <h2>현재 결과는 <em>방향을 고르는 증거</em>입니다.</h2>
-            <p>PR #3에 보고된 결과에서 학습 기반 temporal alignment가 고정 규칙보다 높고, 실제 gaze 좌표와 발화의 공간 표현을 추가했을 때 다시 개선되었습니다. 이는 다음 실험을 진행할 근거지만, 최종 성능 주장을 하기에는 split·seed·신뢰구간·ablation 검증이 더 필요합니다.</p>
+            <p>PR #3의 최신 technical spec은 B1, RadZero, Temporal-only, Final과 두 information-removal control을 같은 1,093개 test instance에서 평가합니다. Final은 Temporal-only와 B1보다 높고, 외부 image-text 모델 RadZero보다 IoU는 높으며 Pointing은 통계적으로 동률입니다.</p>
             <div class="result-chart" aria-label="GazeMed 예비 IoU 비교">
-              <div><span>Fixed 1.5 s</span><i style="--score: 58.25%"></i><strong>0.233</strong></div>
-              <div><span>Temporal alignment</span><i style="--score: 72.5%"></i><strong>0.29</strong></div>
-              <div class="best"><span>+ gaze coordinates + spatial language</span><i style="--score: 80%"></i><strong>0.32</strong></div>
+              <div><span>B1 · fixed 1.5 s</span><i style="--score: 52.05%"></i><strong>0.2082</strong></div>
+              <div><span>RadZero · image + phrase</span><i style="--score: 74.7%"></i><strong>0.2988</strong></div>
+              <div><span>Temporal-only</span><i style="--score: 72%"></i><strong>0.2880</strong></div>
+              <div class="best"><span>Final · position + language</span><i style="--score: 79.7%"></i><strong>0.3188</strong></div>
+              <div><span>Position-shuffled control</span><i style="--score: 52.53%"></i><strong>0.2101</strong></div>
+              <div><span>Spatial-word-masked control</span><i style="--score: 73.58%"></i><strong>0.2943</strong></div>
             </div>
             <div class="metric-explainer">
               <div><strong>IoU</strong><code>겹친 면적 ÷ 합집합 면적</code><p>예측 영역과 reference ellipse가 얼마나 겹치는지 봅니다. 작은 병변에는 위치가 조금만 빗나가도 크게 감소합니다.</p></div>
@@ -252,13 +256,13 @@
             </div>
             <div class="callout good">
               <strong>현재 읽을 수 있는 결론</strong>
-              <p>“raw gaze 전체가 유용하다”가 아니라, <strong>발화와 연관된 gaze를 고르는 시간 정렬</strong>과 <strong>공간 표현을 좌표 제약으로 바꾸는 결합</strong>이 유망하다는 정도가 타당합니다.</p>
+              <p><strong>시간만 사용하는 attention보다 위치·언어를 함께 사용한 attention이 낫고</strong>, position shuffle 붕괴는 실제 fixation↔position 대응이 효과를 만든다는 강한 근거입니다. 공간 단어 효과는 IoU에서 5/5 seed 유지되지만 Pointing에서는 2/5 seed만 유의하므로 더 약하게 주장해야 합니다.</p>
             </div>
           </article>
-          <aside class="side-stack" aria-label="PR 3 예비 지표">
-            <div class="metric-card"><strong>0.233 → 0.32</strong><span>reported IoU · heuristic to final</span></div>
-            <div class="metric-card"><strong>0.68 → 0.72</strong><span>reported pointing · temporal to spatial-language</span></div>
-            <div class="metric-card warning"><strong>Unverified</strong><span>동일 환경 재현·CI·split audit 전 예비 결과</span></div>
+          <aside class="side-stack" aria-label="PR 3 결과 지표">
+            <div class="metric-card"><strong>n = 1,093</strong><span>same patient-level test instances</span></div>
+            <div class="metric-card"><strong>5 / 5</strong><span>Final beats Temporal across training seeds</span></div>
+            <div class="metric-card warning"><strong>1 split</strong><span>training seed 안정성은 확인, split sensitivity는 미검증</span></div>
           </aside>
         </div>
       </section>
@@ -267,55 +271,55 @@
         <div class="shell">
           <div class="section-head">
             <div><p class="eyebrow">Implementation direction</p><h2>다음 모델은 더 크기보다 <em>더 분해 가능하게.</em></h2></div>
-            <p class="section-intro">PR #3의 강점인 온라인 정렬을 유지하면서 무엇이 성능을 만드는지 드러나는 구조가 가장 효율적입니다.</p>
+            <p class="section-intro">PR #3의 작은 정렬 구조와 해석 가능한 출력은 유지하되, 미래 fixation을 차단한 조건에서도 무엇이 성능을 만드는지 드러나게 합니다.</p>
           </div>
 
           <article class="proposal-feature reveal">
             <div class="proposal-copy">
               <span class="tag">Recommended architecture</span>
-              <h3>Streaming Phrase–Gaze Grounder</h3>
-              <p>판독이 진행되는 동안 완성된 구절만 감지하고, 그 시점 이전의 fixation에서 후보를 가져온 뒤, 공간 언어와 anatomy 좌표를 결합합니다. 이미지 전체를 매번 재인코딩하지 않고 CXR feature를 한 번 cache합니다.</p>
+              <h3>Causal Streaming Grounder</h3>
+              <p>현재 모델의 cross-attention과 splat head는 유지하되, phrase가 완성된 시점 이전의 fixation만 key bank에 넣습니다. 먼저 모델 재학습 없이 causal replay로 성능 손실과 필요한 look-back horizon을 확인합니다.</p>
             </div>
             <div class="proposal-flow" aria-label="제안 모델의 온라인 처리 단계">
-              <div><span>1</span><strong>Phrase trigger</strong><small>소견·방향 구절이 완성되는 시점 감지</small></div>
+              <div><span>1</span><strong>Output clock</strong><small>finding phrase가 완성되는 t₀ 고정</small></div>
               <b aria-hidden="true">→</b>
-              <div><span>2</span><strong>Soft lag retrieval</strong><small>과거 K초 fixation에 확률 가중치 부여</small></div>
+              <div><span>2</span><strong>Causal key bank</strong><small>fixation_end ≤ t₀만 attention 후보</small></div>
               <b aria-hidden="true">→</b>
-              <div><span>3</span><strong>Anatomy grounding</strong><small>좌우·상하·관계 표현을 좌표 prior로 변환</small></div>
+              <div><span>3</span><strong>Existing query–key</strong><small>공간 descriptor와 fixation key 정렬</small></div>
               <b aria-hidden="true">→</b>
-              <div><span>4</span><strong>Region + confidence</strong><small>후보 heatmap과 보류 가능한 신뢰도 출력</small></div>
+              <div><span>4</span><strong>Splat + latency</strong><small>heatmap·confidence·응답시간 출력</small></div>
             </div>
           </article>
 
           <div class="implementation-grid">
             <article class="implementation-card reveal">
               <span>Module A</span>
-              <h3>구절 단위 trigger</h3>
+              <h3>Causal replay부터</h3>
               <p>모든 단어마다 위치를 예측하지 않고 pathology mention이나 공간 구절이 완성될 때만 grounding합니다.</p>
               <ul>
-                <li>CheXpert-style finding lexicon + anatomy/spatial lexicon으로 첫 baseline</li>
-                <li>“no”, “without” 같은 negation과 uncertainty를 별도 속성으로 보존</li>
-                <li>word timestamp 보정 오차를 고려해 phrase 끝 주변에 tolerance 부여</li>
+                <li>현재 모델을 고정하고 mention 이후 fixation만 제거</li>
+                <li>0.5/1/2/4초 look-back horizon 비교</li>
+                <li>full-sequence 결과를 oracle upper reference로 보존</li>
               </ul>
             </article>
             <article class="implementation-card reveal">
               <span>Module B</span>
-              <h3>다중 시간척도 soft lag</h3>
+              <h3>Incremental key cache</h3>
               <p>하나의 최적 lag를 고르지 않고 여러 과거 구간에 attention을 분배합니다.</p>
               <ul>
-                <li>0–0.5, 0.5–1, 1–2, 2–4초의 causal fixation bank</li>
-                <li>duration·saccade gap·phrase embedding으로 attention weight 계산</li>
-                <li>미래 gaze를 보지 못하도록 causal mask를 강제</li>
+                <li>새 fixation이 들어올 때 key를 append</li>
+                <li>query가 들어올 때 single-layer attention 한 번</li>
+                <li>전체 sequence 재계산 없이 latency 측정</li>
               </ul>
             </article>
             <article class="implementation-card reveal">
               <span>Module C</span>
-              <h3>anatomy-normalized coordinates</h3>
-              <p>원시 pixel보다 chest/lung box 안의 상대 좌표를 함께 사용해 영상 크기와 확대 상태 차이를 줄입니다.</p>
+              <h3>Image–behavior fusion gate</h3>
+              <p>RadZero와 Final의 per-instance 오류가 다를 때만 image heatmap 결합을 진행합니다.</p>
               <ul>
-                <li>screen → displayed image → original image 좌표 변환을 먼저 검증</li>
-                <li>AP/PA와 patient laterality를 명시적 feature로 입력</li>
-                <li>zoom·pan 변화가 있는 fixation은 당시 viewport로 역변환</li>
+                <li>error correlation과 oracle max ceiling 계산</li>
+                <li>calibrated average·max·product baseline</li>
+                <li>gain이 있을 때만 작은 reliability gate 학습</li>
               </ul>
             </article>
             <article class="implementation-card reveal">
@@ -323,9 +327,9 @@
               <h3>보류할 수 있는 출력</h3>
               <p>gaze와 language가 충돌하거나 근거가 약하면 억지로 병변을 표시하지 않습니다.</p>
               <ul>
-                <li>region confidence와 no-grounding probability를 함께 출력</li>
-                <li>gaze–phrase agreement를 별도 auxiliary score로 학습</li>
-                <li>risk–coverage curve로 “얼마나 자주 답할지” 결정</li>
+                <li>attention entropy와 modality agreement로 confidence 구성</li>
+                <li>근거가 약하거나 두 heatmap이 충돌하면 abstain</li>
+                <li>risk–coverage와 latency–coverage를 함께 보고</li>
               </ul>
             </article>
           </div>
@@ -341,44 +345,44 @@
         <div class="shell">
           <div class="section-head">
             <div><p class="eyebrow">Experiment contract</p><h2>각 실험은 <em>한 정보만</em> 추가합니다.</h2></div>
-            <p class="section-intro">동일한 split과 image feature 위에서 입력 정보만 단계적으로 바꿔야 temporal alignment와 spatial language의 기여를 분리할 수 있습니다.</p>
+            <p class="section-intro">모든 조건을 같은 patient split과 1,093개 instance에서 paired 비교합니다. 외부 baseline, information-removal control, 앞으로 수행할 causal audit의 역할을 섞지 않습니다.</p>
           </div>
           <div class="table-wrap">
             <table class="comparison experiment-table">
               <thead><tr><th>ID</th><th>Image</th><th>Gaze</th><th>Language</th><th>검정하는 질문</th></tr></thead>
               <tbody>
-                <tr><td>B0</td><td>optional/context</td><td>fixed −1.5 s window</td><td>finding label</td><td>REFLACX 계열 고정 규칙 재현</td></tr>
-                <tr><td>B1</td><td>same encoder</td><td>all-reading heatmap</td><td>finding label</td><td>시간 정렬 없이도 공간 밀도로 충분한가?</td></tr>
-                <tr><td>M1</td><td>same encoder</td><td>time only; coordinate masked</td><td>phrase timestamp</td><td>학습한 lag가 주는 순수 기여는?</td></tr>
-                <tr><td>M2</td><td>same encoder</td><td>x, y + duration</td><td>finding phrase</td><td>실제 fixation 위치가 추가로 필요한가?</td></tr>
-                <tr><td>M3</td><td>same encoder</td><td>x, y + duration</td><td>+ spatial/anatomy tokens</td><td>left/right/top/below가 추가 제약을 주는가?</td></tr>
-                <tr><td>M4</td><td>same encoder</td><td>multi-scale causal bank</td><td>full phrase + negation</td><td>제안한 streaming 구조가 안정적인가?</td></tr>
+                <tr><td>B0</td><td>—</td><td>all-reading heatmap</td><td>finding label</td><td>no-gating 문헌 수치와 팀 재현으로 eval fidelity 확인</td></tr>
+                <tr><td>B1</td><td>—</td><td>fixed −1.5 s gate</td><td>finding timing</td><td>학습된 alignment가 직접 prior work를 이기는가?</td></tr>
+                <tr><td>RadZero</td><td>image pixels</td><td>—</td><td>finding phrase</td><td>외부 image-text grounding과 경쟁 가능한가?</td></tr>
+                <tr><td>Temporal</td><td>—</td><td>6 temporal/kinematic features</td><td>label + mention timing</td><td>학습된 시간 정렬만의 기여는?</td></tr>
+                <tr><td>Final</td><td>—</td><td>temporal + raw x,y</td><td>7 spatial + 3 severity descriptors</td><td>position과 language가 시간을 넘어 무엇을 더하는가?</td></tr>
+                <tr><td>Controls</td><td>—</td><td>position shuffle</td><td>spatial-word mask</td><td>실제 대응과 공간 언어가 성능의 정보원인가?</td></tr>
               </tbody>
             </table>
           </div>
           <div class="grid-4 ablation-grid">
-            <article class="card"><p class="card-number">Time</p><h3>lag shuffle</h3><p>phrase와 다른 record의 시간차를 섞었을 때 성능이 유지되면 temporal alignment 주장은 약합니다.</p></article>
-            <article class="card"><p class="card-number">Space</p><h3>coordinate permutation</h3><p>fixation 좌표를 영상 안에서 섞어도 같다면 실제 시선 위치가 아니라 다른 단서가 작동합니다.</p></article>
-            <article class="card"><p class="card-number">Language</p><h3>spatial token mask</h3><p>left/right/top/below를 지워 M2와 M3의 차이가 언어 공간 제약에서 오는지 확인합니다.</p></article>
-            <article class="card"><p class="card-number">Causality</p><h3>future-gaze leak test</h3><p>발화 뒤 gaze를 사용할 때만 좋아지면 online 추론 결과로 주장할 수 없습니다.</p></article>
+            <article class="card"><p class="card-number">Completed</p><h3>Position shuffle</h3><p>instance 안에서 fixation identity와 x,y 대응을 깨자 성능이 크게 붕괴해 실제 공간 대응의 기여를 확인했습니다.</p></article>
+            <article class="card"><p class="card-number">Completed</p><h3>Spatial-word mask</h3><p>공간 descriptor 제거는 IoU에서 5/5 seed 저하했지만 Pointing 유의성은 2/5로 더 약합니다.</p></article>
+            <article class="card"><p class="card-number">Completed</p><h3>Training seed sweep</h3><p>고정 split에서 seed 0–4를 반복해 핵심 claim 1–2는 모든 seed에서 유지됐습니다.</p></article>
+            <article class="card"><p class="card-number">Open</p><h3>Split × future-gaze audit</h3><p>patient partition 변화와 mention 이후 gaze 차단은 아직 열려 있는 가장 중요한 validity gap입니다.</p></article>
           </div>
           <div class="content-grid validation-grid">
             <article>
               <h3>분할과 통계</h3>
               <ul class="check-list">
                 <li>동일 <code>subject_id</code>·<code>dicom_id</code>가 train/test를 넘지 않는 patient/image group split</li>
-                <li>가능하면 reader-held-out 결과를 별도로 보고해 개인화 의존성 확인</li>
-                <li>동일 case에 대한 모델별 paired bootstrap CI와 permutation test</li>
+                <li>3–5개 patient split과 leave-one-reader-out을 분리해 확인</li>
+                <li>동일 instance에 대한 paired Wilcoxon과 metric에 맞는 effect size</li>
                 <li>질환, 병변 크기, certainty, 판독자별 subgroup 결과</li>
               </ul>
             </article>
             <article>
               <h3>완료 기준</h3>
               <ul class="check-list">
-                <li>PR #3 결과를 고정 manifest·split·seed에서 재현</li>
-                <li>IoU뿐 아니라 Pointing, containment, center distance를 함께 보고</li>
-                <li>20개 이상 overlay를 수동 감사해 좌우 반전·zoom/pan 좌표 오류 제거</li>
-                <li>고정 lag와 동일하거나 낮으면 복잡도 확대 전에 error taxonomy 작성</li>
+                <li>B1·RadZero·Temporal·Final·두 control을 한 run/instance set에서 유지</li>
+                <li>IoU와 Pointing을 함께 보고 masking metric asymmetry를 숨기지 않음</li>
+                <li>threshold sweep 경계 hit와 per-instance join key를 assertion으로 확인</li>
+                <li>causal replay와 fusion oracle ceiling 뒤에만 새 architecture 확대</li>
               </ul>
             </article>
           </div>
@@ -404,13 +408,18 @@
         <div class="shell">
           <div class="section-head">
             <div><p class="eyebrow">Closest work</p><h2>새로움은 <em>교집합</em>에서 좁혀집니다.</h2></div>
-            <p class="section-intro">gaze supervision, temporal gaze, phrase grounding은 각각 이미 연구되었습니다. GazeMed의 가장 강한 경계는 실시간 입력에서 세 요소를 인과적 시간축으로 결합하는 지점입니다.</p>
+            <p class="section-intro">gaze supervision, temporal gaze, phrase grounding은 각각 이미 연구되었습니다. GazeMed의 현재 기여는 test-time gaze+speech의 learned alignment이며, causal streaming과 image–behavior fusion은 다음 연구 공백입니다.</p>
           </div>
           <div class="claim-matrix">
             <article class="claim-row featured">
-              <div><span>GazeMed · PR #3</span><h3>Online phrase–gaze lesion grounding</h3></div>
-              <div class="claim-bits"><span class="yes">gaze at inference</span><span class="yes">timestamped speech</span><span class="yes">spatial language</span><span class="yes">online/causal target</span></div>
-              <p>가장 중요한 검증: causal input만 썼는지, language-only보다 gaze가 실제로 추가 가치를 주는지.</p>
+              <div><span>GazeMed · PR #3</span><h3>Test-time phrase–gaze lesion grounding</h3></div>
+              <div class="claim-bits"><span class="yes">gaze at inference</span><span class="yes">timestamped speech</span><span class="yes">spatial language</span><span>causal streaming · open</span></div>
+              <p>Temporal-only·position shuffle·spatial-word mask와 외부 RadZero 비교까지 완료. split sensitivity와 causal replay가 다음 경계입니다.</p>
+            </article>
+            <article class="claim-row">
+              <div><span>RadZero · external baseline</span><h3>Zero-shot image–text grounding</h3></div>
+              <div class="claim-bits"><span>image pixels</span><span>finding phrase</span><span>no gaze</span></div>
+              <p>Final은 IoU에서 우세하고 Pointing은 동률입니다. 입력이 겹치지 않아 다음 fusion 아이디어의 직접 근거가 됩니다. <a href="https://github.com/deepnoid-ai/RadZero">코드 ↗</a></p>
             </article>
             <article class="claim-row">
               <div><span>Lanfredi et al. · 2023</span><h3>Label-specific eye-tracking supervision</h3></div>
@@ -430,11 +439,11 @@
             <article class="claim-row">
               <div><span>GazeX · 2026 preprint</span><h3>Gaze-informed CXR VLM</h3></div>
               <div class="claim-bits"><span>trajectory prior</span><span>report generation</span><span>grounding/VQA</span></div>
-              <p>gaze trajectory를 VLM의 폭넓은 행동 prior로 학습합니다. GazeMed는 더 작은 online alignment task와 반증 가능한 ablation으로 구분해야 합니다. <a href="https://arxiv.org/abs/2604.14316">논문 ↗</a></p>
+              <p>gaze trajectory를 VLM의 폭넓은 행동 prior로 학습합니다. GazeMed는 더 좁은 finding localization task와 반증 가능한 ablation으로 구분해야 합니다. <a href="https://arxiv.org/abs/2604.14316">논문 ↗</a></p>
             </article>
           </div>
           <div class="button-row section-action">
-            <a class="button" href="../knowledge/related-work.html">전체 문헌 지도에서 비교하기</a>
+            <a class="button" href="../knowledge/research-gaps.html">Research Gap Lab에서 다음 실험 보기</a>
             <a class="button secondary" href="../knowledge/methods.html">방법론 선택 기준 보기</a>
           </div>
         </div>

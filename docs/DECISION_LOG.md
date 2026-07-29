@@ -76,10 +76,18 @@
 
 ## 2026-07-25 — Active GazeMed direction
 
-**결정:** GazeMed PR #3의 실시간 gaze–speech lesion grounding을 현재 primary path로 채택.
+**결정:** GazeMed PR #3의 test-time gaze–speech lesion grounding을 현재 primary path로 채택.
 
-**근거:** fixed 1.5-second baseline IoU 0.233, learned temporal alignment IoU 0.29 / Pointing 0.68, gaze coordinates + spatial language 모델 IoU 0.32 / Pointing 0.72가 예비 결과로 공유됨.
+**근거:** 2026-07-29 최신 technical spec 기준 Final은 1,093개 test instance에서 IoU 0.3188 / Pointing 0.7237이고 Temporal-only는 0.2880 / 0.6816이다. Final은 5/5 training seed에서 Temporal-only보다 높고, position shuffle은 5/5에서 크게 하락한다.
 
-**해석:** 결과는 재현·신뢰구간·split 감사 전 예비 수치다. 다음 단계는 모델 확대가 아니라 fixed lag, language-only, gaze-only, coordinate/spatial-token ablation과 causal leak test다.
+**해석:** 좌표 의존성과 공간 언어의 IoU 기여는 지지된다. 다만 spatial-word mask의 Pointing 효과는 약하고, 환자 split은 하나이며, full fixation sequence와 signed Δt를 사용해 causal online 성질은 아직 입증되지 않았다.
 
-**구현 방향:** pathology/spatial phrase trigger → multi-scale causal fixation retrieval → anatomy-normalized spatial grounding → abstention 가능한 region confidence.
+**구현 방향:** causal prefix replay → split·reader sensitivity → RadZero와 instance-level 오류 상보성 → calibrated late fusion. 결과가 지지할 때만 streaming cache 또는 joint image×behavior model로 확장한다.
+
+## 2026-07-29 — Evidence boundary
+
+**결정:** 현재 Final을 “image-free, test-time gaze+speech localization”으로 부르고 “real-time/causal”은 다음 연구 질문으로 분리한다.
+
+**이유:** Final은 실제 fixation 좌표에 attention을 splat해 해석 가능하고 RadZero와 경쟁력 있는 성능을 보이지만, 미래 fixation을 구조적으로 차단한 replay 결과는 아직 없다.
+
+**영향:** 사이트의 현재 결과와 미래 아이디어를 분리하고, causal replay와 image×behavior fusion을 각각 독립 gate로 관리한다.

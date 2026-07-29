@@ -5,42 +5,40 @@
 
 ## P0 — GazeMed
 
-### GM-01 PR #3 reproduction + data audit
+### GM-01 PR #3 evidence freeze
 
-- **산출물:** 고정 manifest·split·seed의 PR #3 재현표, `audit.md`, 20개 coordinate overlay figure
-- **완료 조건:**
-  - reading→image→study→subject join coverage
-  - 동일 image/multiple reader 중복 group
-  - phase와 class별 certainty/ellipse count
-  - invalid raw gaze, fixation count/duration, pupil missingness
-  - screen→image coordinate와 zoom/pan 반영 표본 확인
-  - 미래 gaze 누출이 없는 causal window assertion
-  - reported IoU 0.233 / 0.29 / 0.32 계열 재현 여부
-- **의존:** 승인된 로컬 REFLACX/MIMIC access
+- **상태:** 완료
+- **산출물:** B1, RadZero, Temporal-only, Final, position shuffle, spatial-word mask의 같은 1,093-instance 결과표와 5-seed 비교
+- **핵심 결과:** Final IoU 0.3188 / Pointing 0.7237, Temporal-only 대비 5/5 seed 개선
 
-### GM-02 Fixed-lag and unimodal baselines
+### GM-02 Causal prefix replay
 
-- **산출물:** fixed 1.5 s, all-reading heatmap, gaze-only, language-only 결과
-- **완료 조건:** 같은 split/config에서 IoU, Pointing, containment, center distance와 paired bootstrap CI
-- **의존:** GM-01
+- **산출물:** mention 시점에 이용 가능한 fixation만 사용하는 replay loader와 결과표
+- **완료 조건:** 미래 fixation hard-mask assertion, full-sequence 대비 paired IoU/Pointing, end-to-end latency, no-fixation coverage
+- **의존:** timestamp·mention alignment audit
 
-### GM-03 Temporal–spatial alignment ablation
+### GM-03 Split and reader sensitivity
 
-- **산출물:** learned lag, coordinate, duration, spatial-token, lag-shuffled, coordinate-permuted 결과
-- **완료 조건:** 시간·좌표·공간 언어별 증분 효과와 future-gaze leak test, at least 5 seeds 또는 사전 정의한 반복
-- **의존:** GM-02
+- **산출물:** 추가 patient split의 핵심 네 조건과 가능한 reader-held-out 결과
+- **완료 조건:** split별 effect direction, seed variance, paired interval, 실패 subgroup
+- **의존:** training budget
 
-### GM-04 Streaming grounder gate
+### GM-04 Mention linker audit
 
-- **결정:** phrase trigger + causal multi-scale fixation bank 구현 확대 / 현재 모델 유지 / stop
-- **기준:** language-only·gaze-only 대비 effect size, CI, 병변 크기·판독자 subgroup, oracle fixation ceiling
-- **의존:** GM-03
+- **산출물:** regex linker의 false-link/missed-link manual audit, clinical NLP 대안 비교
+- **완료 조건:** pathology·negation·uncertainty·공간 표현별 오류표와 downstream sensitivity
 
-### GM-05 Streaming implementation
+### GM-05 Image × behavior complementarity gate
 
-- **산출물:** pathology/spatial phrase trigger, multi-scale causal fixation bank, anatomy-normalized grounding, no-grounding confidence
-- **완료 조건:** latency와 risk–coverage, fixed-lag 대비 paired result, 재현 명령
-- **의존:** GM-04 통과
+- **산출물:** RadZero와 Final의 instance-level error map, calibrated average, reliability-gated late fusion
+- **완료 조건:** frozen test protocol에서 각 단일 모델을 모두 개선하고 calibration 악화가 없음
+- **의존:** matched RadZero prediction
+
+### GM-06 Streaming implementation
+
+- **산출물:** incremental phrase trigger, causal fixation key cache, no-grounding confidence
+- **완료 조건:** GM-02에서 signal retention 확인, latency와 risk–coverage, 재현 명령
+- **의존:** GM-02 gate 통과
 
 ## P0 — GazeImageRefine offline work
 
