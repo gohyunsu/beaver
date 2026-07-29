@@ -3,9 +3,10 @@ const root = body.dataset.root || "./";
 const current = body.dataset.page || "";
 
 const links = [
-  { id: "overview", label: "Overview", href: `${root}index.html`, pages: ["overview"] },
-  { id: "research", label: "Core Research", href: `${root}index.html#core-portfolio`, pages: ["gazemed", "refine", "lexic"] },
-  { id: "knowledge", label: "Knowledge Base", href: `${root}knowledge/foundations.html`, pages: ["foundations", "datasets", "methods", "related"] },
+  { id: "overview", label: "Home", href: `${root}index.html`, pages: ["overview"] },
+  { id: "research", label: "Projects", href: `${root}index.html#research`, pages: ["gazemed", "refine", "lexic"] },
+  { id: "knowledge", label: "Learn", href: `${root}knowledge/foundations.html`, pages: ["foundations", "datasets", "methods"] },
+  { id: "literature", label: "Literature", href: `${root}knowledge/related-work.html`, pages: ["related"] },
   { id: "roadmap", label: "Roadmap", href: `${root}operations/roadmap.html`, pages: ["roadmap"] },
 ];
 
@@ -22,9 +23,9 @@ if (header) {
     <a class="skip-link" href="#main">본문으로 이동</a>
     <header class="site-header">
       <div class="nav-shell">
-        <a class="brand" href="${root}index.html" aria-label="BEAVER Research Atlas 홈">
+        <a class="brand" href="${root}index.html" aria-label="BEAVER 홈">
           <span class="brand-mark" aria-hidden="true">B</span>
-          <span>BEAVER <small>Research Atlas</small></span>
+          <span>BEAVER <small>Human signals × AI</small></span>
         </a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
         <nav class="nav-links" id="site-nav" aria-label="주요 탐색">${nav}</nav>
@@ -37,6 +38,13 @@ if (header) {
     const open = menu.classList.toggle("open");
     toggle.setAttribute("aria-expanded", String(open));
   });
+
+  menu?.addEventListener("click", (event) => {
+    if (event.target.closest("a")) {
+      menu.classList.remove("open");
+      toggle?.setAttribute("aria-expanded", "false");
+    }
+  });
 }
 
 const footer = document.querySelector("[data-site-footer]");
@@ -45,13 +53,13 @@ if (footer) {
     <footer class="site-footer">
       <div class="shell footer-grid">
         <div>
-          <div class="brand"><span class="brand-mark" aria-hidden="true">B</span><span>BEAVER <small>Research Atlas</small></span></div>
-          <p>2026 학생자율연구의 연구 질문, 근거, 의사결정과 실행 상태를 한곳에서 관리합니다. 원본 대화의 개인정보와 제한 데이터는 포함하지 않습니다.</p>
+          <div class="brand"><span class="brand-mark" aria-hidden="true">B</span><span>BEAVER <small>Human signals × AI</small></span></div>
+          <p>시선·언어·행동이 지능형 시스템에 제공하는 추가 정보를 연구합니다.</p>
         </div>
         <div class="footer-links">
-          <a href="${root}docs/RESEARCH_CONTEXT.md">Core context</a>
-          <a href="${root}docs/TASKS.md">Core tasks</a>
-          <a href="${root}docs/DECISION_LOG.md">Decisions</a>
+          <a href="${root}index.html#research">Projects</a>
+          <a href="${root}knowledge/foundations.html">Concepts</a>
+          <a href="${root}knowledge/related-work.html">Literature</a>
         </div>
       </div>
     </footer>`;
@@ -70,3 +78,16 @@ const observer = new IntersectionObserver(
 );
 
 document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
+
+const readingProgress = document.querySelector("[data-reading-progress]");
+if (readingProgress) {
+  const updateReadingProgress = () => {
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0;
+    readingProgress.style.width = `${percent}%`;
+  };
+
+  updateReadingProgress();
+  window.addEventListener("scroll", updateReadingProgress, { passive: true });
+  window.addEventListener("resize", updateReadingProgress);
+}

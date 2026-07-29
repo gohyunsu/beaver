@@ -1,45 +1,46 @@
 # Tasks
 
-> Snapshot: 2026-07-21<br>
+> Snapshot: 2026-07-29<br>
 > Owner는 GitHub issue에서 지정한다. 날짜는 공식 deadline을 재확인한 뒤 issue에 둔다.
 
 ## P0 — GazeMed
 
-### GM-01 Data audit
+### GM-01 PR #3 reproduction + data audit
 
-- **산출물:** `audit.md`, machine-readable manifest, 20개 coordinate overlay figure
+- **산출물:** 고정 manifest·split·seed의 PR #3 재현표, `audit.md`, 20개 coordinate overlay figure
 - **완료 조건:**
   - reading→image→study→subject join coverage
   - 동일 image/multiple reader 중복 group
   - phase와 class별 certainty/ellipse count
   - invalid raw gaze, fixation count/duration, pupil missingness
   - screen→image coordinate와 zoom/pan 반영 표본 확인
-  - leakage-safe group split proposal
+  - 미래 gaze 누출이 없는 causal window assertion
+  - reported IoU 0.233 / 0.29 / 0.32 계열 재현 여부
 - **의존:** 승인된 로컬 REFLACX/MIMIC access
 
-### GM-02 Frozen split and baseline
+### GM-02 Fixed-lag and unimodal baselines
 
-- **산출물:** versioned split IDs, image-only I0, heatmap G1 results
-- **완료 조건:** 같은 backbone/config에서 paired results, per-class AUROC/AUPRC/localization, bootstrap CI, center/random prior
+- **산출물:** fixed 1.5 s, all-reading heatmap, gaze-only, language-only 결과
+- **완료 조건:** 같은 split/config에서 IoU, Pointing, containment, center distance와 paired bootstrap CI
 - **의존:** GM-01
 
-### GM-03 Fixation information ablation
+### GM-03 Temporal–spatial alignment ablation
 
-- **산출물:** ordered event G2, order-shuffled, duration-shuffled, spatially permuted result table
-- **완료 조건:** 정보원별 효과와 compute cost, at least 5 seeds 또는 사전 정의한 반복
+- **산출물:** learned lag, coordinate, duration, spatial-token, lag-shuffled, coordinate-permuted 결과
+- **완료 조건:** 시간·좌표·공간 언어별 증분 효과와 future-gaze leak test, at least 5 seeds 또는 사전 정의한 반복
 - **의존:** GM-02
 
-### GM-04 Scope gate
+### GM-04 Streaming grounder gate
 
-- **결정:** full method / short empirical report / stop
-- **기준:** baseline 대비 effect size, CI, subgroup consistency, novelty matrix, 남은 시간
+- **결정:** phrase trigger + causal multi-scale fixation bank 구현 확대 / 현재 모델 유지 / stop
+- **기준:** language-only·gaze-only 대비 effect size, CI, 병변 크기·판독자 subgroup, oracle fixation ceiling
 - **의존:** GM-03
 
-### GM-05 Gaze–dictation alignment
+### GM-05 Streaming implementation
 
-- **산출물:** pathology mention extraction, lag-window sweep, label-specific gaze maps
-- **완료 조건:** 기존 label-specific eye-tracking work와 같은/다른 점을 명시한 baseline
-- **의존:** GM-04에서 계속 결정
+- **산출물:** pathology/spatial phrase trigger, multi-scale causal fixation bank, anatomy-normalized grounding, no-grounding confidence
+- **완료 조건:** latency와 risk–coverage, fixed-lag 대비 paired result, 재현 명령
+- **의존:** GM-04 통과
 
 ## P0 — GazeImageRefine offline work
 

@@ -15,10 +15,11 @@
 - **GazeMedSeg:** static heatmap→pseudo-mask baseline.
 - **GradTrack:** fixation duration과 order가 이미 사용됨.
 - **Label-specific eye-tracking annotation:** REFLACX gaze–report temporal alignment가 이미 연구됨.
+- **Object detection vs phrase grounding (2025):** report sentence별 gaze 후보 영역과 text-conditioned CXR localization을 비교하므로 phrase grounding 자체는 novelty가 아님.
 - **Look & Mark / GazeSAM:** gaze를 prompt 또는 interactive annotation으로 쓰는 대안.
 - **GazeX / CoRaX:** broad CXR gaze-VLM과 blind-spot correction이 이미 경쟁 중.
 
-**결론:** GazeMed는 새로운 modality fusion보다 controlled information decomposition, robust split, class/reader/uncertainty analysis가 더 방어 가능하다.
+**결론:** GazeMed는 inference-time의 causal gaze–speech alignment와 공간 언어의 증분 가치를 fixed-lag·language-only·gaze-only baseline 및 leak test로 입증해야 한다.
 
 ## 3. Temporal / gaze–language 계열
 

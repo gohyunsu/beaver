@@ -73,3 +73,13 @@
 - leXic: empirical study of low-cost lexical conditioning and its limits.
 
 **상태:** 대화 기록의 사실이 아니라 관련 문헌과 현재 제약을 바탕으로 한 권고안. 다음 팀 회의에서 승인·수정 필요.
+
+## 2026-07-25 — Active GazeMed direction
+
+**결정:** GazeMed PR #3의 실시간 gaze–speech lesion grounding을 현재 primary path로 채택.
+
+**근거:** fixed 1.5-second baseline IoU 0.233, learned temporal alignment IoU 0.29 / Pointing 0.68, gaze coordinates + spatial language 모델 IoU 0.32 / Pointing 0.72가 예비 결과로 공유됨.
+
+**해석:** 결과는 재현·신뢰구간·split 감사 전 예비 수치다. 다음 단계는 모델 확대가 아니라 fixed lag, language-only, gaze-only, coordinate/spatial-token ablation과 causal leak test다.
+
+**구현 방향:** pathology/spatial phrase trigger → multi-scale causal fixation retrieval → anatomy-normalized spatial grounding → abstention 가능한 region confidence.

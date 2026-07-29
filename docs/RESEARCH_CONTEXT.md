@@ -1,6 +1,6 @@
 # BEAVER 연구 맥락
 
-> 기준일: 2026-07-21<br>
+> 기준일: 2026-07-29<br>
 > 주요 근거: `KakaoTalk_20260721_1823_50_609_group.txt` 전체 대화, 팀이 공유한 공개 논문·데이터셋 페이지<br>
 > 목적: 새로운 팀원·연구 보조자·AI agent가 이 문서를 먼저 읽고 연구의 현재 상태와 판단 근거를 복구할 수 있게 한다.<br>
 > 개인정보: 원본 대화의 연락처, 학번, 이메일, 서명, 행정 첨부물은 의도적으로 배제했다.
@@ -24,43 +24,53 @@ BEAVER는 **사람의 시선이 담는 공간·시간·맥락 정보가 기존 �
 
 **현재 상태:** 접근 가능한 REFLACX와 MIMIC-CXR-JPG를 바탕으로 즉시 실험할 수 있어 2026-07-17 이후 팀의 단기 초점이 되었다. 대화에서는 2026-08-15 IEEE MedAI 제출을 내부 목표로 제시했으나, 공식 CFP와 적합성은 재확인이 필요하다.
 
-**초기 아이디어:** raw 1,000 Hz gaze를 video-like spatiotemporal trajectory로 표현하면 fixation parsing이 버리는 saccade, velocity, micro-motion을 보존해 lesion localization을 개선할 것이라는 가설.
+**초기 아이디어:** raw 1,000 Hz gaze를 video-like spatiotemporal trajectory로 표현하면 fixation parsing이 버리는 saccade, velocity, micro-motion을 보존해 lesion localization을 개선할 것이라는 가설. 2026-07-20 예비실험에서 유의미한 방향을 찾지 못해 primary path에서 내렸다.
 
-**현재 증거:** 2026-07-20 대화에서 raw gaze-as-video 예비실험이 잘 되지 않았다고 보고됐다. 아직 재현 가능한 상세 결과나 baseline table은 없다.
+**현재 아이디어:** 판독 중 들어오는 gaze와 timestamped speech를 추론 입력으로 사용해, 방금 언급한 병변 위치를 온라인으로 예측한다. 고정된 observation–speech lag 대신 학습 가능한 temporal alignment를 쓰고, 발화의 left/right/top/below 같은 공간 표현을 실제 gaze 좌표와 결합한다.
+
+**PR #3 예비 결과:**
+
+- 발화 1.5초 전 gaze 고정 규칙: IoU 0.233
+- 시간 정렬만 학습한 모델: IoU 0.29 / Pointing 0.68
+- gaze 좌표 + 발화 공간 표현 결합: IoU 0.32 / Pointing 0.72
+
+이 수치는 2026-07-25 공유된 PR의 예비 결과다. 동일 manifest·split·seed 재현, 신뢰구간, leakage audit 전에는 최종 성능으로 간주하지 않는다.
 
 **최신 문헌이 주는 제약:**
 
 - GazeMedSeg는 static gaze heatmap을 weak segmentation supervision으로 쓴다.
 - GradTrack은 fixation position, duration, temporal order를 이미 사용한다.
-- label-specific REFLACX gaze extraction과 FG-CXR은 gaze–report alignment를 이미 다룬다.
+- label-specific REFLACX gaze extraction과 CXR phrase-grounding 연구는 gaze–report alignment를 이미 다룬다.
 - GazeX는 CXR에서 gaze trajectory를 VLM pretraining에 사용하는 2026 preprint다.
 
-따라서 “temporal gaze를 쓴다” 또는 “gaze를 VLM에 넣는다”는 framing은 충분하지 않다.
+따라서 “temporal gaze를 쓴다”, “text로 병변을 grounding한다”, “gaze를 VLM에 넣는다”는 framing만으로는 충분하지 않다. 현재 차별점은 <strong>inference-time causal gaze–speech alignment</strong>로 좁힌다.
 
 **권고된 핵심 질문:**
 
-> 동일 데이터·동일 image backbone·동일 split에서 spatial density, fixation duration, temporal order, raw dynamics, pathology mention alignment가 CXR abnormality localization에 각각 어느 정도의 증분 가치를 주는가?
+> 판독 중 현재까지 관찰된 gaze와 발화만 사용할 때, 학습 가능한 시간 정렬과 공간 언어가 fixed-lag·language-only·gaze-only baseline보다 언급된 병변 국소화를 개선하는가?
 
-**권고 태스크:** primary는 class-aware abnormality localization, secondary는 multi-label classification. REFLACX ellipse를 pixel-perfect mask로 간주하지 않으므로 `segmentation`이라는 주장을 기본값으로 쓰지 않는다.
+**권고 태스크:** primary는 online phrase-conditioned abnormality localization. REFLACX ellipse를 pixel-perfect mask로 간주하지 않으므로 `segmentation`이라는 주장을 기본값으로 쓰지 않는다.
 
 **필수 비교:**
 
-1. image only
-2. duration-weighted aggregate gaze heatmap
-3. ordered fixation event tokens
-4. order-shuffled / duration-shuffled event tokens
-5. pathology mention-aligned gaze windows
-6. raw event samples는 3–4에서 정보가 보일 때만 확대
+1. 발화 1.5초 전 gaze 고정 규칙
+2. all-reading heatmap
+3. language-only spatial grounding
+4. gaze-only learned lag
+5. gaze 좌표 + finding phrase
+6. gaze 좌표 + spatial/anatomy tokens
+7. lag shuffle / coordinate permutation / spatial-token mask / future-gaze leak test
 
 **평가 원칙:**
 
 - 동일 subject/study/image의 여러 reading이 train/test를 넘지 않는 group split
-- lesion-aware localization metric + multi-label AUROC/AUPRC + calibration
+- IoU + Pointing + containment + center distance, abstention을 쓰면 calibration과 risk–coverage
 - study/image bootstrap confidence interval과 paired comparison
 - pathology, certainty, reader, lesion size subgroup
-- random/center prior, order shuffle, coordinate permutation sanity check
+- fixed lag, language-only, gaze-only, lag shuffle, coordinate permutation sanity check
+- 발화 뒤의 미래 gaze를 볼 수 없는 causal mask와 timestamp assertion
 
-**즉시 필요한 산출물:** data audit → image/heatmap baseline → event/shuffle ablation → scope gate.
+**즉시 필요한 산출물:** PR #3 재현 → coordinate/causal audit → 시간·좌표·공간 언어 ablation → streaming phrase–gaze grounder gate.
 
 ### 2.2 GazeImageRefine — Waiting, but offline design active
 

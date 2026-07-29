@@ -1,10 +1,10 @@
-# BEAVER Research Atlas
+# BEAVER
 
-BEAVER 팀의 2026 학생자율연구를 위한 연구 운영 문서와 정적 사이트입니다. 대화록을 그대로 보관하는 대신, 연구 질문·근거·결정·작업 상태를 개인정보 없이 재구성했습니다.
+BEAVER의 연구 프로젝트, 배경 개념, 데이터셋, 방법론과 선행연구를 연결한 정적 사이트입니다.
 
 현재 연구 포트폴리오는 다음 세 트랙입니다.
 
-1. **GazeMed — 현재 초점:** REFLACX에서 expert gaze의 공간 밀도, 지속시간, 순서, raw signal, dictation alignment가 CXR abnormality localization에 주는 증분 가치를 분해합니다.
+1. **GazeMed — 현재 초점:** 판독 중 들어오는 expert gaze와 발화를 시간·공간적으로 정렬해 언급된 CXR 이상소견의 위치를 예측합니다.
 2. **GazeImageRefine — IRB/장비 대기:** 생성 이미지에서 visual attention과 dissatisfaction/edit intent를 구분하고 gaze-assisted suggestion의 효용을 검증합니다.
 3. **leXic — 보강 대기:** gaze-only reading-comprehension prediction에 precomputed lexical difficulty를 주입한 연구를 APCCAS 리뷰에 맞춰 보완합니다.
 
@@ -21,7 +21,7 @@ BEAVER 팀의 2026 학생자율연구를 위한 연구 운영 문서와 정적 �
 - `docs/FOUNDATIONS.md` — 연구 전반의 개념적 배경과 공통 언어
 - `docs/DECISION_LOG.md` — 의사결정과 이유
 - `docs/TASKS.md` — 실행 backlog
-- `assets/img/` — 원 논문 도판 복제가 아닌, 출처를 명시한 자체 설명용 SVG
+- `assets/img/` — 자체 설명용 SVG와 라이선스·출처를 확인한 외부 도판
 
 ## 로컬 실행
 
@@ -40,6 +40,6 @@ python3 -m http.server 8000
 - 방법을 추가할 때는 그것이 검정하는 정보와 필수 baseline을 함께 적습니다.
 - 실험 결과에는 dataset version, manifest hash, split, seed, commit SHA를 연결합니다.
 - 새 문헌은 제목과 요약만 추가하지 않고 “BEAVER의 claim을 어떻게 바꾸는가”를 적습니다.
-- 외부 그림은 license와 필요성을 확인하고, 기본값은 1차 출처를 인용한 자체 재구성 도식입니다.
+- 외부 그림은 license와 필요성을 확인하고, 본문 caption과 `docs/ASSET_ATTRIBUTIONS.md`에 출처·변경 여부를 기록합니다.
 
 상세 규칙은 [CONTRIBUTING.md](CONTRIBUTING.md)를 참고하세요.

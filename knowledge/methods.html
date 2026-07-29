@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="BEAVER gaze 연구의 방법론 후보, 선택 기준, 평가 프로토콜과 중단 기준." />
     <meta name="theme-color" content="#143d35" />
-    <title>Methods · BEAVER Research Atlas</title>
+    <title>Methods · BEAVER</title>
     <link rel="stylesheet" href="../assets/css/site.css" />
     <script src="../assets/js/site.js" defer></script>
   </head>
@@ -24,7 +24,7 @@
             <div class="page-meta-row"><span>Default</span><span>Simple baseline first</span></div>
             <div class="page-meta-row"><span>Required</span><span>Grouped split + ablation</span></div>
             <div class="page-meta-row"><span>Avoid</span><span>Architecture-before-question</span></div>
-            <div class="page-meta-row"><span>Updated</span><span>2026.07.21</span></div>
+            <div class="page-meta-row"><span>Updated</span><span>2026.07.29</span></div>
           </aside>
         </div>
       </header>
@@ -54,16 +54,16 @@
       <section class="section alt" id="med">
         <div class="shell">
           <div class="section-head">
-            <div><p class="eyebrow">GazeMed candidates</p><h2>추천은 event token + <em>shuffle ablation</em></h2></div>
-            <p class="section-intro">Raw video branch는 중복과 비용이 크며 예비결과도 약했습니다. 작은 sequence encoder와 통제 ablation이 현재 질문에 더 직접적입니다.</p>
+            <div><p class="eyebrow">GazeMed candidates</p><h2>추천은 causal <em>phrase–gaze alignment</em></h2></div>
+            <p class="section-intro">PR #3의 online grounding을 중심에 두고, phrase trigger와 과거 fixation bank를 작게 결합합니다. 각 입력은 language-only·gaze-only·shuffle baseline으로 분해합니다.</p>
           </div>
           <div class="grid-3">
-            <article class="card reveal"><span class="status">Recommended</span><h3>Event-token fusion</h3><p>각 fixation을 (x, y, duration, Δt, optional pupil) token으로 만들고 corresponding image patch feature와 결합합니다. Transformer/LSTM 규모를 작게 유지합니다.</p></article>
-            <article class="card reveal"><span class="status">Recommended</span><h3>Label-aligned heatmap</h3><p>timestamped dictation에서 pathology mention을 찾고 observation–speech lag window 안 gaze만 모아 class-specific map을 만듭니다.</p></article>
+            <article class="card reveal"><span class="status">Recommended</span><h3>Streaming phrase–gaze grounder</h3><p>pathology·공간 구절이 완성될 때, 그 이전 fixation event bank만 causal attention으로 검색하고 CXR patch feature와 결합합니다.</p></article>
+            <article class="card reveal"><span class="status">Recommended</span><h3>Multi-scale soft lag</h3><p>고정 1.5초 대신 0–0.5, 0.5–1, 1–2, 2–4초 과거 구간에 확률 가중치를 두어 구절·판독자별 observation–speech lag를 학습합니다.</p></article>
             <article class="card reveal"><span class="status parked">Deprioritized</span><h3>Dense video tensor</h3><p>1,000 Hz point stream을 frame stack으로 만들면 sparse tensor와 시간 중복이 큽니다. event branch가 raw 정보의 이점을 보일 때만 재검토합니다.</p></article>
-            <article class="card reveal"><span class="status neutral">Baseline</span><h3>Heatmap regularization</h3><p>image classifier의 attention/CAM과 gaze heatmap을 alignment loss로 맞춥니다. 단순하고 강한 비교군입니다.</p></article>
+            <article class="card reveal"><span class="status neutral">Baseline</span><h3>Fixed lag + unimodal controls</h3><p>REFLACX 계열 1.5초 규칙, language-only, gaze-only, all-reading heatmap을 동일 split에서 비교합니다.</p></article>
             <article class="card reveal"><span class="status parked">Too broad now</span><h3>Generative medical VLM</h3><p>report generation·VQA·grounding을 동시에 수행하는 방향은 GazeX·Gaze2Report와 경쟁하며 현재 일정과 데이터 규모에 비해 넓습니다.</p></article>
-            <article class="card reveal"><span class="status waiting">Analysis</span><h3>Temporal state discovery</h3><p>scan/discover/verify/report phase를 먼저 명명하지 말고 HMM/change-point 또는 speech anchors로 탐색한 뒤 재현성을 확인합니다.</p></article>
+            <article class="card reveal"><span class="status waiting">Analysis</span><h3>Anatomy coordinate prior</h3><p>left/right/upper/base를 chest·lung box 안의 상대 좌표 제약으로 바꾸고 AP/PA, zoom/pan, patient laterality를 명시적으로 보정합니다.</p></article>
           </div>
         </div>
       </section>
