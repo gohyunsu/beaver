@@ -6303,6 +6303,43 @@ code {
 
 /* Research notes */
 
+.note-language-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: .15rem;
+  margin: 0 0 1.6rem;
+  padding: .22rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 253, 247, .68);
+}
+
+.notes-hero .breadcrumb,
+.note-header .breadcrumb {
+  margin-bottom: .9rem;
+}
+
+.note-language-switch a {
+  min-width: 3rem;
+  padding: .38rem .72rem;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: .65rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+}
+
+.note-language-switch a[aria-current="page"] {
+  background: var(--forest);
+  color: white;
+}
+
+.note-language-switch a:not([aria-current="page"]):hover {
+  color: var(--forest);
+}
+
 .notes-index {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
@@ -6772,6 +6809,30 @@ code {
   font-size: .72rem;
   font-weight: 850;
   text-decoration: none;
+}
+
+body[data-note-lang="ko"] .chapter-hero h1,
+body[data-note-lang="ko"] .note-card h2,
+body[data-note-lang="ko"] .note-header h1,
+body[data-note-lang="ko"] .note-standfirst,
+body[data-note-lang="ko"] .note-body h2,
+body[data-note-lang="ko"] .note-body h3,
+body[data-note-lang="ko"] .note-body p,
+body[data-note-lang="ko"] .note-body li,
+body[data-note-lang="ko"] .note-thesis strong,
+body[data-note-lang="ko"] .note-conclusion strong {
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+
+body[data-note-lang="ko"] .note-header h1 {
+  letter-spacing: -.045em;
+  line-height: 1.08;
+}
+
+body[data-note-lang="ko"] .note-body h2 {
+  letter-spacing: -.025em;
+  line-height: 1.2;
 }
 
 /* Secondary project sites */

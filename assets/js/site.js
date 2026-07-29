@@ -3,6 +3,7 @@ const root = body.dataset.root || "./";
 const current = body.dataset.page || "";
 const project = body.dataset.project || "";
 const projectRoot = body.dataset.projectRoot || "./";
+const noteLang = body.dataset.noteLang || "en";
 
 const globalLinks = [
   { label: "Research program", href: `${root}index.html#program` },
@@ -74,8 +75,11 @@ if (header) {
           <nav class="project-links" aria-label="${projectSpec.name} sections">
             ${projectSpec.links
               .map(
-                ([id, label, href]) =>
-                  `<a href="${projectRoot}${href}"${id === current ? ' aria-current="page"' : ""}>${label}</a>`,
+                ([id, label, href]) => {
+                  const localizedHref =
+                    id === "gazemed-notes" && noteLang === "ko" ? "notes/ko/index.html" : href;
+                  return `<a href="${projectRoot}${localizedHref}"${id === current ? ' aria-current="page"' : ""}>${label}</a>`;
+                },
               )
               .join("")}
           </nav>

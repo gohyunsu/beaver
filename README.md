@@ -30,6 +30,9 @@ projects/
     notes/
       index.html                        project notebook
       spatial-language.html             research note 001
+      ko/
+        index.html                      Korean project notebook
+        spatial-language.html           Korean research note 001
   gaze-image-refine/index.html          project mini-site
   lexic/index.html                      project mini-site
 assets/
@@ -55,6 +58,11 @@ A research note should follow:
 question → current evidence → alternative explanations
 → recommendation → experiment that could change the recommendation
 ```
+
+Research notes are maintained in English and Korean. Each translation uses the same
+slug and section anchors under `notes/` and `notes/ko/`, so evidence, source links,
+and recommendations can be reviewed as one paired record. The rest of the public
+site remains English.
 
 ## Local preview
 

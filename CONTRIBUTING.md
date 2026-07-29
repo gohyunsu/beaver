@@ -40,7 +40,15 @@ Each note must include:
 
 Notes may be provisional. Stable chapters should change only after the evidence or project position changes.
 
-## 4. Record experiments reproducibly
+## 4. Keep research-note translations paired
+
+- Keep the English note at `notes/<slug>.html` and its Korean counterpart at `notes/ko/<slug>.html`.
+- Use the same note number, publication date, section IDs, result values, source links, and recommendation structure in both versions.
+- Add reciprocal language links and `hreflang` metadata to the note and both note indexes.
+- Treat evidence changes as one edit: update and review both languages in the same pull request.
+- Translation may adapt phrasing for clarity, but it must not strengthen, weaken, or omit a claim.
+
+## 5. Record experiments reproducibly
 
 Include:
 
@@ -52,7 +60,7 @@ Include:
 - primary metric and uncertainty,
 - failed runs and exclusion reasons.
 
-## 5. Use explicit project states
+## 6. Use explicit project states
 
 - **Active:** receiving current research effort.
 - **Study design:** measurement and protocol are being defined.
@@ -62,7 +70,7 @@ Include:
 - **Archived:** retained only as decision history.
 - **Proposed:** a recommendation that has not been adopted.
 
-## 6. Protect restricted and personal data
+## 7. Protect restricted and personal data
 
 Never commit:
 
@@ -74,7 +82,7 @@ Never commit:
 
 Store restricted files in access-controlled systems. Commit only schemas, synthetic fixtures, checksums, and reproducible transformation code.
 
-## 7. Add literature for its implication
+## 8. Add literature for its implication
 
 Every work should have:
 
@@ -84,7 +92,7 @@ Every work should have:
 - publication status,
 - and the concrete boundary it places on novelty, baseline choice, or scope.
 
-## 8. Attribute visuals
+## 9. Attribute visuals
 
 - Prefer original explanatory diagrams for concepts and comparisons.
 - Reproduce an external figure only when it materially improves understanding and its license or ownership permits reuse.
@@ -92,10 +100,11 @@ Every work should have:
 - Record source, creator, license, and modifications in `docs/ASSET_ATTRIBUTIONS.md`.
 - Never imply that an illustrative figure is a model output.
 
-## 9. Validate before publishing
+## 10. Validate before publishing
 
 - Check HTML structure, local paths, and anchors.
 - Check JavaScript syntax.
-- Confirm all user-facing pages are in English.
+- Confirm the site remains English outside `projects/<project>/notes/ko/`.
+- Compare paired research-note section IDs, result values, source links, and language-switch destinations.
 - Test the hub, each mini-site, each research note, and redirected legacy paths over HTTP.
 - Verify the deployed pages contain the new content, not only a successful workflow status.
