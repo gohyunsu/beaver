@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A step-by-step introduction to gaze, dictation, chest X-ray localization, and weak supervision for GazeMed." />
+    <meta name="theme-color" content="#143d35" />
+    <title>Foundations · GazeMed</title>
+    <link rel="stylesheet" href="../../assets/css/site.css" />
+    <script src="../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-foundations">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>Foundations</p>
+            <p class="eyebrow">Chapter 01 · Foundations</p>
+            <h1>From eye movement to <em>evidence.</em></h1>
+            <p class="page-summary">GazeMed connects three domains that use similar words in different ways: medical imaging, eye tracking, and machine learning. This chapter establishes the common vocabulary.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>In this chapter</span>
+            <a href="#task">1. The localization task</a>
+            <a href="#cxr">2. Chest X-ray coordinates</a>
+            <a href="#gaze">3. Gaze representations</a>
+            <a href="#time">4. Speech and temporal alignment</a>
+            <a href="#meaning">5. What a fixation can mean</a>
+            <a href="#supervision">6. Weak supervision</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="task">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">01</p>
+            <h2>First, distinguish classification, localization, and segmentation.</h2>
+            <p>A model can answer several different questions about the same chest X-ray. The output contract determines what counts as a correct prediction.</p>
+            <div class="concept-stair">
+              <div><span>Classification</span><strong>Is pleural effusion present?</strong><p>One score for the image. No location is required.</p></div>
+              <div><span>Localization</span><strong>Where is the mentioned effusion?</strong><p>A point, box, ellipse, or probability map identifies a region.</p></div>
+              <div><span>Segmentation</span><strong>Which exact pixels belong to it?</strong><p>A pixel-level boundary is expected.</p></div>
+            </div>
+            <div class="article-note">
+              <strong>GazeMed is a localization study.</strong>
+              <p>REFLACX ellipses are coarse reference regions drawn by radiologists. They are not pixel-perfect lesion masks, so “segmentation” would overstate the target.</p>
+            </div>
+            <h3>The unit of prediction</h3>
+            <p>One GazeMed instance is not simply an image. It is a <strong>reading × finding</strong> pair: a particular radiologist interpreting a particular image, with one finding mention linked to one or more reference ellipses.</p>
+            <div class="equation-line">
+              <span>one reading</span><b>+</b><span>one finding mention</span><b>+</b><span>its reference region</span><b>=</b><strong>one localization instance</strong>
+            </div>
+          </article>
+          <aside class="article-aside">
+            <span>Checkpoint</span>
+            <p>If two radiologists read the same image, they produce two readings—and potentially different gaze paths, reports, and ellipses.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="cxr">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">02</p>
+            <h2>Spatial words only make sense inside a coordinate system.</h2>
+            <p>A frontal chest X-ray is displayed as if the viewer were facing the patient. The patient’s right side appears on the viewer’s left. Pixel coordinates, however, normally begin at the top-left of the displayed image.</p>
+            <div class="coordinate-primer">
+              <div class="cxr-frame" aria-label="Simplified chest X-ray coordinate diagram">
+                <span class="axis-x">x →</span><span class="axis-y">y ↓</span>
+                <div class="lung left-lung">patient<br /><strong>right</strong></div>
+                <div class="lung right-lung">patient<br /><strong>left</strong></div>
+                <span class="zone upper">upper</span><span class="zone middle">middle</span><span class="zone lower">lower</span>
+              </div>
+              <div>
+                <h3>Three frames can coexist</h3>
+                <dl class="definition-list">
+                  <div><dt>Image frame</dt><dd>Pixel x/y measured from the top-left.</dd></div>
+                  <div><dt>Patient frame</dt><dd>Left/right and superior/inferior described clinically.</dd></div>
+                  <div><dt>Anatomical frame</dt><dd>Relations such as retrocardiac, hilar, basilar, or adjacent to the pleura.</dd></div>
+                </dl>
+              </div>
+            </div>
+            <p>Simple directional tokens are useful, but radiology language is often relational. “Retrocardiac opacity” is not merely left or lower; it identifies a region behind the heart. “Bibasilar” combines two sides with a vertical zone. A robust model must eventually represent these compositions.</p>
+          </article>
+          <aside class="article-aside">
+            <span>Common failure</span>
+            <p>A left/right feature can be internally consistent and still be clinically reversed if the image and patient frames are mixed.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="article-section" id="gaze">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">03</p>
+            <h2>Raw gaze, fixations, scanpaths, and heatmaps are not interchangeable.</h2>
+            <p>An eye tracker produces a rapid stream of samples. Most modeling begins by compressing that stream into events or spatial summaries.</p>
+            <div class="representation-stack">
+              <article><span>Raw sample</span><strong>(x, y, t, pupil)</strong><p>A single tracker measurement. High temporal resolution also preserves noise, blinks, and redundant points.</p></article>
+              <article><span>Fixation</span><strong>stable gaze over an interval</strong><p>A cluster summarized by mean position, start/end time, and duration.</p></article>
+              <article><span>Saccade</span><strong>movement between fixations</strong><p>A rapid transition. Its path and velocity may reflect search behavior but are harder to model reliably.</p></article>
+              <article><span>Scanpath</span><strong>ordered fixation sequence</strong><p>Retains where the reader looked and in what order.</p></article>
+              <article><span>Heatmap</span><strong>spatial density</strong><p>Aggregates gaze over space. Easy to use, but usually discards order and phase.</p></article>
+            </div>
+            <h3>Why bandwidth matters</h3>
+            <p>A point becomes a heatmap by spreading mass around its coordinate, often with a Gaussian kernel. A wider kernel creates a smoother and larger region, which can improve overlap with a coarse ellipse even when the underlying gaze has not improved.</p>
+            <div class="formula-card">
+              <code>H(p) = Σᵢ wᵢ · exp(−‖p − gᵢ‖² / 2σ²)</code>
+              <p><strong>gᵢ</strong> is a fixation coordinate, <strong>wᵢ</strong> is its weight, and <strong>σ</strong> controls spatial smoothing. Representation comparisons must use matched or explicitly tuned bandwidths.</p>
+            </div>
+          </article>
+          <aside class="article-aside">
+            <span>GazeMed choice</span>
+            <p>The current model uses fixation events. An early raw-trajectory comparison did not retain an advantage after spatial smoothing was matched.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="time">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04</p>
+            <h2>Seeing and saying are synchronized—but not simultaneous.</h2>
+            <p>A radiologist generally observes evidence before dictating it. The delay varies with the finding, reader, sentence structure, and whether the gaze reflects discovery or verification.</p>
+            <div class="temporal-example">
+              <div class="temporal-axis"><span>earlier</span><i></i><span>mention time</span><i></i><span>later</span></div>
+              <div><strong>Fixations</strong><span class="fix f1"></span><span class="fix f2"></span><span class="fix f3"></span><span class="fix f4"></span></div>
+              <div><strong>Dictation</strong><span class="utterance">“small right pleural effusion”</span></div>
+            </div>
+            <h3>Fixed lag versus learned alignment</h3>
+            <p>A fixed-lag heuristic selects gaze from a hand-chosen interval, such as 1.5 seconds before a mention. A learned model instead assigns a relevance weight to each fixation from its temporal relationship to the mention.</p>
+            <div class="compare-two">
+              <article><span>Fixed window</span><h3>One delay for every case</h3><p>Simple and reproducible, but brittle when speaking patterns differ.</p></article>
+              <article><span>Learned alignment</span><h3>A distribution over fixations</h3><p>Can represent variable delays, but must be tested against timestamp shuffling and future-gaze leakage.</p></article>
+            </div>
+          </article>
+          <aside class="article-aside">
+            <span>Causal boundary</span>
+            <p>Using gaze at inference time is not sufficient to call a model real-time. A real-time claim also requires future fixations to be structurally unavailable.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="article-section" id="meaning">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">05</p>
+            <h2>A fixation records orientation, not intention.</h2>
+            <p>The same location can be viewed for different reasons. Treating every fixation near a lesion as diagnostic evidence creates label noise at the level of meaning, even when the coordinates are accurate.</p>
+            <div class="role-grid">
+              <article><span>Detect</span><h3>Evidence first becomes salient.</h3><p>Potentially useful for discovery-oriented localization.</p></article>
+              <article><span>Verify</span><h3>A suspected finding is checked again.</h3><p>Often occurs near dictation and may be easier to align.</p></article>
+              <article><span>Routine</span><h3>Anatomy is inspected systematically.</h3><p>Can reproduce common scan patterns without indicating abnormality.</p></article>
+              <article><span>Distract</span><h3>A visually salient region is rejected.</h3><p>Attention is present, but positive supervision would be wrong.</p></article>
+            </div>
+            <p>REFLACX provides coordinates and timestamps, not gaze-role labels. GazeMed therefore learns a latent relevance weight. Revisit patterns, speech timing, negative statements, and small expert annotations could help determine whether these roles are identifiable.</p>
+          </article>
+          <aside class="article-aside">
+            <span>Interpretation rule</span>
+            <p>“Looked at” should never be translated directly into “diagnosed” without additional evidence.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="supervision">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">06</p>
+            <h2>Gaze is weak supervision because it is informative and imperfect.</h2>
+            <p>Strong supervision directly labels the target—for example, a carefully traced lesion mask. Weak supervision provides a related signal that is cheaper or naturally produced, but noisy.</p>
+            <div class="supervision-spectrum">
+              <div><span>Weak</span><strong>gaze density</strong><small>cheap, indirect, temporally rich</small></div>
+              <i></i>
+              <div><strong>rough box or ellipse</strong><small>localized, coarse boundary</small></div>
+              <i></i>
+              <div><span>Strong</span><strong>pixel mask</strong><small>precise, expensive, not always well-defined</small></div>
+            </div>
+            <h3>What GazeMed learns</h3>
+            <p>The target ellipse evaluates where the abnormality was marked. Gaze and speech provide the inference input. The model’s task is not to reproduce every fixation, but to select the subset that best predicts the finding’s reference region.</p>
+            <div class="next-chapter">
+              <span>Next chapter</span>
+              <h3>See how REFLACX stores each part of this learning problem.</h3>
+              <a href="data.html">Continue to Data →</a>
+            </div>
+            <h3>Primary sources</h3>
+            <ul class="source-list">
+              <li><a href="https://www.nature.com/articles/s41597-022-01441-z">Lanfredi et al. (2022), REFLACX dataset paper</a></li>
+              <li><a href="https://physionet.org/content/reflacx-xray-localization/1.0.0/">REFLACX v1.0.0 data documentation on PhysioNet</a></li>
+              <li><a href="https://doi.org/10.3389/fradi.2023.1088068">Lanfredi et al. (2023), label-specific gaze supervision</a></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

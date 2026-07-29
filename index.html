@@ -1,208 +1,157 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="BEAVER의 연구 프로젝트, 핵심 개념, 데이터셋, 방법론과 선행연구를 연결한 연구 허브." />
+    <meta name="description" content="BEAVER is a research program studying what human attention, language, and behavior add to intelligent systems." />
     <meta name="theme-color" content="#143d35" />
-    <title>BEAVER</title>
+    <title>BEAVER · Human signals × intelligent systems</title>
     <link rel="stylesheet" href="assets/css/site.css" />
     <script src="assets/js/site.js" defer></script>
   </head>
-  <body data-root="./" data-page="overview">
+  <body data-root="./" data-page="home">
     <div data-site-header></div>
     <main id="main">
-      <section class="hero home-hero">
-        <div class="shell hero-grid">
+      <section class="hub-hero">
+        <div class="shell hub-hero-grid">
           <div>
-            <p class="eyebrow">Human signals × intelligent systems</p>
-            <h1>사람이 남긴 <em>흔적</em>에서 다음 단서를 찾습니다.</h1>
-            <p class="hero-lede">
-              BEAVER는 시선, 언어, 행동처럼 판단 과정에서 자연스럽게 생기는 신호가 AI에 어떤 정보를 더할 수 있는지 연구합니다. 현재는 방사선 판독 중 시선과 발화를 함께 해석하는 GazeMed에 집중합니다.
-            </p>
+            <p class="eyebrow">BEAVER Research Program</p>
+            <h1>We study the traces left by <em>human judgment.</em></h1>
+            <p class="hub-lede">Where people look, what they say, and how they act reveal different parts of a decision. BEAVER asks when those traces provide useful information to an intelligent system—and when they are only noise, habit, or distraction.</p>
             <div class="button-row">
-              <a class="button" href="projects/gazemed.html">GazeMed 살펴보기 <span aria-hidden="true">→</span></a>
-              <a class="button secondary" href="knowledge/foundations.html">핵심 개념부터 시작</a>
+              <a class="button" href="projects/gazemed/index.html">Enter GazeMed <span aria-hidden="true">→</span></a>
+              <a class="text-link" href="#projects">View all projects</a>
             </div>
           </div>
-          <aside class="focus-panel reveal" aria-label="현재 연구 초점">
-            <div class="focus-panel-top">
-              <span class="status">Current focus</span>
-              <span class="focus-index">01 / 03</span>
-            </div>
-            <p class="kicker">GazeMed</p>
-            <strong>판독 중인 그 순간, 시선과 말이 같은 병변을 가리키는가?</strong>
-            <div class="focus-signal" aria-label="GazeMed 입력 신호">
-              <span>gaze<br /><small>x, y, t</small></span>
-              <i aria-hidden="true">+</i>
-              <span>speech<br /><small>phrase, t</small></span>
-              <i aria-hidden="true">→</i>
-              <span>lesion<br /><small>region</small></span>
-            </div>
-            <a href="projects/gazemed.html#model">PR #3 모델과 예비 결과 보기</a>
+          <aside class="signal-constellation reveal" aria-label="BEAVER research signals">
+            <div class="constellation-core"><span>Human<br />judgment</span></div>
+            <div class="constellation-node node-gaze"><small>01</small><strong>Attention</strong><span>gaze · dwell · sequence</span></div>
+            <div class="constellation-node node-language"><small>02</small><strong>Language</strong><span>report · phrase · context</span></div>
+            <div class="constellation-node node-action"><small>03</small><strong>Behavior</strong><span>choice · edit · verification</span></div>
           </aside>
         </div>
       </section>
 
-      <section class="section alt" id="research">
+      <section class="section alt" id="program">
         <div class="shell">
           <div class="section-head">
             <div>
-              <p class="eyebrow">Research portfolio</p>
-              <h2>하나의 질문을 <em>세 맥락</em>에서 검증합니다.</h2>
+              <p class="eyebrow">Research program</p>
+              <h2>One question, examined across <em>three settings.</em></h2>
             </div>
-            <p class="section-intro">관찰된 시선이 기존 입력보다 실제로 무엇을 더 설명하는지 전문가 판독, 생성 이미지 수정, 읽기 이해의 세 장면에서 확인합니다.</p>
+            <p class="section-intro">A signal is useful only when it explains something that a simpler source—an image, the text itself, or visual saliency—cannot already explain.</p>
           </div>
-          <div class="program-question reveal">
-            <span>Program question</span>
-            <strong>“어디를 봤는가”는 언제 정보가 되고, 언제 단지 눈에 띈 흔적인가?</strong>
-            <div class="program-axis" aria-label="공통 연구 축">
-              <span>공간<br /><small>where</small></span>
-              <span>시간<br /><small>when</small></span>
-              <span>맥락<br /><small>why</small></span>
-              <span>검증<br /><small>extra value</small></span>
+          <div class="program-statement reveal">
+            <span>Central question</span>
+            <strong>What does a human signal add beyond the task context that produced it?</strong>
+          </div>
+          <div class="program-lens">
+            <article>
+              <span>Observe</span>
+              <h3>Capture a trace</h3>
+              <p>Measure gaze, language, or action without assuming what it means.</p>
+            </article>
+            <article>
+              <span>Interpret</span>
+              <h3>Name the context</h3>
+              <p>Separate attention from intent, difficulty, verification, and habit.</p>
+            </article>
+            <article>
+              <span>Compare</span>
+              <h3>Test added value</h3>
+              <p>Use strong priors and information-removal controls before adding complexity.</p>
+            </article>
+            <article>
+              <span>Translate</span>
+              <h3>Define a useful role</h3>
+              <p>Turn a supported signal into supervision, assistance, or explanation.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="projects">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Projects</p>
+              <h2>Each project is its own <em>research workspace.</em></h2>
             </div>
+            <p class="section-intro">The hub holds the common direction. Each project site develops its own foundations, evidence, literature, decisions, and research notes.</p>
           </div>
-          <div class="grid-3 portfolio-grid">
-            <a class="project-card primary reveal" href="projects/gazemed.html">
-              <div>
+          <div class="project-index">
+            <a class="project-entry project-entry-featured reveal" href="projects/gazemed/index.html">
+              <div class="project-entry-number">01</div>
+              <div class="project-entry-copy">
                 <div class="project-card-top"><span class="status">Active</span><span>Medical AI</span></div>
                 <h3>GazeMed</h3>
-                <p class="muted">expert gaze와 판독 발화를 정렬해 흉부 X-ray의 언급된 병변 위치를 예측합니다.</p>
+                <p>Can a radiologist’s gaze and spoken report localize the finding being described—without relying on the image pixels at inference time?</p>
+                <small>Live behavioral grounding · chest X-ray · REFLACX</small>
               </div>
-              <div class="project-card-foot"><span>REFLACX · temporal alignment · phrase grounding</span><span class="arrow" aria-hidden="true">↗</span></div>
+              <span class="project-entry-arrow" aria-hidden="true">↗</span>
             </a>
-            <a class="project-card waiting reveal" href="projects/gaze-image-refine.html">
-              <div>
-                <div class="project-card-top"><span class="status waiting">Waiting</span><span>Generative HCI</span></div>
-                <h3>GazeImage<br />Refine</h3>
-                <p class="muted">생성 이미지의 시각적 주목과 실제 수정 의도를 분리해, 필요한 순간에만 편집을 제안합니다.</p>
+            <a class="project-entry reveal" href="projects/gaze-image-refine/index.html">
+              <div class="project-entry-number">02</div>
+              <div class="project-entry-copy">
+                <div class="project-card-top"><span class="status waiting">Study design</span><span>Generative HCI</span></div>
+                <h3>GazeImageRefine</h3>
+                <p>Can gaze help identify where a generated image needs revision without confusing attention with the intention to edit?</p>
+                <small>Attention vs intent · selective assistance · image editing</small>
               </div>
-              <div class="project-card-foot"><span>Tobii · intent · mixed initiative</span><span class="arrow" aria-hidden="true">↗</span></div>
+              <span class="project-entry-arrow" aria-hidden="true">↗</span>
             </a>
-            <a class="project-card parked reveal" href="projects/lexic.html">
-              <div>
-                <div class="project-card-top"><span class="status parked">Revise</span><span>Reading</span></div>
+            <a class="project-entry reveal" href="projects/lexic/index.html">
+              <div class="project-entry-number">03</div>
+              <div class="project-entry-copy">
+                <div class="project-card-top"><span class="status parked">Revision study</span><span>Reading</span></div>
                 <h3>leXic</h3>
-                <p class="muted">어휘 난이도 신호가 gaze-only 읽기 이해 예측에 주는 작지만 측정 가능한 기여를 분석합니다.</p>
+                <p>Do inexpensive lexical cues explain the part of reading-comprehension performance that gaze alone misses?</p>
+                <small>Reading gaze · lexical difficulty · generalization</small>
               </div>
-              <div class="project-card-foot"><span>EyeBench · lexical cues · calibration</span><span class="arrow" aria-hidden="true">↗</span></div>
+              <span class="project-entry-arrow" aria-hidden="true">↗</span>
             </a>
           </div>
         </div>
       </section>
 
-      <section class="section" id="gazemed-brief">
+      <section class="section dark" id="connections">
         <div class="shell">
           <div class="section-head">
             <div>
-              <p class="eyebrow">GazeMed in one view</p>
-              <h2>정적인 heatmap에서 <em>판독의 순간</em>으로.</h2>
+              <p class="eyebrow">Shared structure</p>
+              <h2>Different tasks, the same <em>discipline of evidence.</em></h2>
             </div>
-            <p class="section-intro">PR #3은 “발화 1.5초 전 시선”이라는 고정 규칙을 학습 가능한 시간 정렬로 바꾸고, 발화의 공간 단어와 실제 시선 좌표를 함께 사용합니다.</p>
+            <p class="section-intro">The projects do not assume that gaze has a single meaning. They share a method for discovering which interpretation survives comparison.</p>
           </div>
-          <div class="gazemed-story reveal">
-            <article>
-              <span class="story-step">01 · Observe</span>
-              <h3>방사선과 의사가 영상을 훑고 소견을 말합니다.</h3>
-              <p>REFLACX는 1,000 Hz gaze, fixation, 단어별 timestamp, 병변 ellipse를 같은 판독 기록에 담습니다.</p>
-            </article>
-            <article>
-              <span class="story-step">02 · Align</span>
-              <h3>본 시점과 말한 시점 사이의 지연을 학습합니다.</h3>
-              <p>finding mention 시점과 각 fixation의 signed Δt를 계산하고, 관련 fixation에 둘 attention weight를 학습합니다.</p>
-            </article>
-            <article>
-              <span class="story-step">03 · Ground</span>
-              <h3>“left/right”, “upper/lower”, “retrocardiac”을 영상 좌표와 결합합니다.</h3>
-              <p>발화가 주는 방향 제약과 시선이 주는 후보 영역을 합쳐 언급된 이상소견의 위치를 예측합니다.</p>
-            </article>
-          </div>
-          <div class="result-strip" aria-label="GazeMed PR 3 최신 결과">
-            <div><span>B1 · fixed rule</span><strong>0.208</strong><small>IoU · Pointing 0.552</small></div>
-            <span class="result-arrow" aria-hidden="true">→</span>
-            <div><span>Temporal-only</span><strong>0.288</strong><small>IoU · Pointing 0.682</small></div>
-            <span class="result-arrow" aria-hidden="true">→</span>
-            <div class="result-best"><span>Final</span><strong>0.319</strong><small>IoU · Pointing 0.724</small></div>
-            <p>PR #3 최신 technical spec · n=1,093 · patient split · 핵심 개선 5/5 training seed 유지</p>
-          </div>
-          <div class="grid-3 evidence-route">
-            <a class="card reveal" href="projects/gazemed.html#evidence-trail">
-              <p class="card-number">01 · Evidence trail</p>
-              <h3>가설이 어떻게 바뀌었나</h3>
-              <p>raw trajectory, 운동학 특징, anatomy prior, 시간 정렬을 차례로 검토한 뒤 현재 모델에 도달한 근거를 읽습니다.</p>
-            </a>
-            <a class="card reveal" href="knowledge/datasets.html#bundle">
-              <p class="card-number">02 · Data bundle</p>
-              <h3>한 판독 기록을 조립하기</h3>
-              <p>fixation·원시 gaze·발화 timestamp·ellipse·CXR ID가 어떤 key와 좌표계로 연결되는지 확인합니다.</p>
-            </a>
-            <a class="card reveal" href="knowledge/research-gaps.html#workbench">
-              <p class="card-number">03 · Experiment builder</p>
-              <h3>열린 질문을 판별 실험으로</h3>
-              <p>anatomy prior, causal replay, image–behavior fusion의 비교군·판정 기준·중단 규칙을 바로 설계합니다.</p>
-            </a>
-          </div>
-          <div class="button-row section-action">
-            <a class="button" href="projects/gazemed.html">데이터부터 평가까지 단계별로 읽기</a>
-            <a class="button secondary" href="knowledge/related-work.html">가장 가까운 선행연구 비교</a>
+          <div class="connection-table">
+            <div class="connection-row connection-head"><span>Project</span><span>Observed trace</span><span>Possible meaning</span><span>Necessary comparison</span></div>
+            <div class="connection-row"><strong>GazeMed</strong><span>Fixations + dictation</span><span>Finding-level visual evidence</span><span>Anatomy and image–text priors</span></div>
+            <div class="connection-row"><strong>GazeImageRefine</strong><span>Dwell + revisits + edit action</span><span>Dissatisfaction or edit intent</span><span>Visual saliency and prompt mismatch</span></div>
+            <div class="connection-row"><strong>leXic</strong><span>Reading scanpath</span><span>Processing difficulty</span><span>Word difficulty and reader identity</span></div>
           </div>
         </div>
       </section>
 
-      <section class="section dark" id="learn">
+      <section class="section" id="principles">
         <div class="shell">
           <div class="section-head">
             <div>
-              <p class="eyebrow">Learn the context</p>
-              <h2>용어가 아니라 <em>연결</em>을 배웁니다.</h2>
+              <p class="eyebrow">Principles</p>
+              <h2>How a claim becomes <em>credible.</em></h2>
             </div>
-            <p class="section-intro">개념 → 데이터 → 방법 → 문헌 순서로 읽으면 각 모델이 무엇을 가정하고, 어떤 비교로 그 가정을 검증하는지 이어집니다.</p>
           </div>
-          <div class="learning-path">
-            <a href="knowledge/foundations.html" class="learning-step reveal">
-              <span>01</span>
-              <div><small>Concepts</small><h3>시선 신호의 문법</h3><p>sample, fixation, saccade, heatmap, scanpath와 weak supervision을 구분합니다.</p></div>
-              <b aria-hidden="true">→</b>
-            </a>
-            <a href="knowledge/datasets.html" class="learning-step reveal">
-              <span>02</span>
-              <div><small>Data</small><h3>관찰값이 저장되는 방식</h3><p>REFLACX의 timestamp, 좌표계, ellipse, certainty와 MIMIC 연결을 읽습니다.</p></div>
-              <b aria-hidden="true">→</b>
-            </a>
-            <a href="knowledge/methods.html" class="learning-step reveal">
-              <span>03</span>
-              <div><small>Methods</small><h3>가설을 모델 비교로 바꾸기</h3><p>baseline, alignment, ablation, split, calibration을 실험 설계로 연결합니다.</p></div>
-              <b aria-hidden="true">→</b>
-            </a>
-            <a href="knowledge/related-work.html" class="learning-step reveal">
-              <span>04</span>
-              <div><small>Literature</small><h3>이미 알려진 것의 경계</h3><p>각 논문의 발견과 BEAVER의 주장에 미치는 영향을 함께 비교합니다.</p></div>
-              <b aria-hidden="true">→</b>
-            </a>
-            <a href="knowledge/research-gaps.html" class="learning-step reveal">
-              <span>05</span>
-              <div><small>Research gaps</small><h3>빈칸을 다음 실험으로</h3><p>미검증 주장, 약한 근거, 일반화 한계를 구분해 가장 작은 결정적 실험으로 바꿉니다.</p></div>
-              <b aria-hidden="true">↗</b>
-            </a>
+          <div class="grid-4 principle-grid">
+            <article class="card reveal"><p class="card-number">01</p><h3>Do not equate observation with intent.</h3><p>A fixation records visual orientation. Its role must be established with timing, task context, and later behavior.</p></article>
+            <article class="card reveal"><p class="card-number">02</p><h3>Compare against the strongest simple explanation.</h3><p>Center bias, anatomy, saliency, text difficulty, and image-only models are part of the question—not optional baselines.</p></article>
+            <article class="card reveal"><p class="card-number">03</p><h3>Remove information, not only modules.</h3><p>Shuffle time, position, order, or language while preserving capacity to test what the model actually uses.</p></article>
+            <article class="card reveal"><p class="card-number">04</p><h3>Keep the boundary of evidence visible.</h3><p>Observed results, supported interpretations, open alternatives, and future ideas should never collapse into one claim.</p></article>
           </div>
-        </div>
-      </section>
-
-      <section class="section" id="evidence">
-        <div class="shell">
-          <div class="section-head">
+          <div class="focus-invitation">
             <div>
-              <p class="eyebrow">How evidence is built</p>
-              <h2>성능표 앞에 놓이는 <em>네 질문</em></h2>
+              <span>Current focus</span>
+              <h2>Follow GazeMed from first principles to the next experiment.</h2>
             </div>
-            <p class="section-intro">시선은 정답 그 자체가 아닙니다. 모델이 더 좋아졌다는 주장보다 어떤 정보가 기여했는지 분리하는 실험을 우선합니다.</p>
-          </div>
-          <div class="grid-4">
-            <article class="card reveal"><p class="card-number">Signal</p><h3>무엇을 관찰했나?</h3><p>좌표, 지속시간, 순서, 발화 시각 중 실제 입력으로 들어간 정보를 명시합니다.</p></article>
-            <article class="card reveal"><p class="card-number">Baseline</p><h3>무엇보다 나은가?</h3><p>image-only, fixed-lag, heatmap-only처럼 더 단순한 설명을 먼저 세웁니다.</p></article>
-            <article class="card reveal"><p class="card-number">Ablation</p><h3>왜 나아졌나?</h3><p>시간·좌표·공간 단어를 하나씩 제거하거나 섞어 기여를 분리합니다.</p></article>
-            <article class="card reveal"><p class="card-number">Generalize</p><h3>어디까지 유지되나?</h3><p>환자·영상·판독자를 분리하고 질환과 병변 크기별 실패를 확인합니다.</p></article>
+            <a class="button" href="projects/gazemed/index.html">Open the project site →</a>
           </div>
         </div>
       </section>

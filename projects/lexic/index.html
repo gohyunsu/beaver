@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="leXic studies how precomputed lexical difficulty features affect gaze-based reading-comprehension prediction and generalization." />
+    <meta name="theme-color" content="#143d35" />
+    <title>leXic · BEAVER</title>
+    <link rel="stylesheet" href="../../assets/css/site.css" />
+    <script src="../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../" data-project="lexic" data-project-root="./" data-page="lexic">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="project-masthead secondary-project">
+        <div class="shell project-masthead-grid">
+          <div>
+            <p class="eyebrow">Project 03 · Reading and cognition</p>
+            <h1>leXic</h1>
+            <p class="project-deck">Testing whether inexpensive lexical difficulty features explain the part of reading-comprehension performance that a gaze-only model misses.</p>
+          </div>
+          <aside class="project-snapshot">
+            <span>Project snapshot</span>
+            <dl>
+              <div><dt>Question</dt><dd>Lexical context for gaze models</dd></div>
+              <div><dt>Dataset</dt><dd>EyeBench · OneStop</dd></div>
+              <div><dt>Task</dt><dd>Reading-comprehension prediction</dd></div>
+              <div><dt>Current evidence</dt><dd>Small AUROC gains</dd></div>
+              <div><dt>Evidence state</dt><dd>Revision study</dd></div>
+            </dl>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section alt" id="foundations">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">01 · Foundations</p>
+            <h2>Reading gaze reflects both the reader and the text.</h2>
+            <p>A long fixation may indicate difficulty, importance, novelty, or a reader’s strategy. A gaze-only model observes the behavioral result but may not know which words were intrinsically difficult.</p>
+            <div class="reading-mechanism">
+              <article><span>Text properties</span><strong>length · frequency · surprisal</strong><p>Change how predictable and costly a word is to process.</p></article>
+              <b>→</b>
+              <article><span>Reading behavior</span><strong>fixation · skip · regression</strong><p>Combines lexical difficulty with reader ability and strategy.</p></article>
+              <b>→</b>
+              <article><span>Outcome</span><strong>question response</strong><p>Provides an imperfect measure of whether the passage was understood.</p></article>
+            </div>
+            <dl class="definition-list">
+              <div><dt>Word length</dt><dd>A surface measure correlated with visual and morphological processing cost.</dd></div>
+              <div><dt>Word frequency</dt><dd>How often a word appears in a reference corpus; rare words are often processed more slowly.</dd></div>
+              <div><dt>Surprisal</dt><dd><code>−log P(word | previous context)</code>. Higher surprisal means the word was less expected in context.</dd></div>
+            </dl>
+            <div class="plain-callout">
+              <span>Project hypothesis</span>
+              <p>Precomputed lexical features can supply text context at deployment without running a large language model alongside every prediction.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="approach">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Approach</p><h2>Two ways to add lexical context.</h2></div>
+          </div>
+          <div class="compare-two large">
+            <article>
+              <span>LEXIC-Concat</span>
+              <h3>Direct feature fusion</h3>
+              <p>Concatenate word length, frequency, and GPT-2 surprisal to the gaze feature associated with each fixated word.</p>
+              <strong>Strength · simple and reproducible</strong>
+            </article>
+            <article>
+              <span>LEXIC-Res</span>
+              <h3>Typical-reader residual</h3>
+              <p>Predict expected gaze from lexical difficulty, then condition the comprehension model on the difference between expected and observed behavior.</p>
+              <strong>Risk · the “typical” reader may not transfer</strong>
+            </article>
+          </div>
+          <div class="generalization-grid">
+            <article><span>Unseen reader</span><p>New person, familiar text distribution</p></article>
+            <article><span>Unseen text</span><p>Familiar readers, new passage</p></article>
+            <article><span>Unseen both</span><p>New reader and new passage</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="evidence">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">02 · Evidence</p>
+            <h2>A small signal exists; its meaning remains open.</h2>
+            <p>The <a href="https://arxiv.org/abs/2607.08152">current preprint</a> reports K=5 seed ensembles over ten folds. Both lexical variants improve unseen-text AUROC by approximately 1.8–2.2 percentage points, and Concat improves unseen-reader AUROC by about 2.9 points.</p>
+            <div class="evidence-columns">
+              <article><span>Observed</span><ul><li>Small AUROC gains</li><li>Concat is the more stable design</li><li>Residual transfer is weaker</li></ul></article>
+              <article><span>Possible interpretation</span><ul><li>Lexical context explains some gaze-only error</li><li>Simple fusion may be sufficient</li><li>Typical-reader gaze may be reader-specific</li></ul></article>
+              <article><span>Not established</span><ul><li>Practical decision value</li><li>Feature-level attribution</li><li>Other datasets or backbones</li><li>Deployment-cost advantage</li></ul></article>
+            </div>
+            <div class="article-note">
+              <strong>Precise wording</strong>
+              <p>GPT-2 surprisal is computed in advance. The method is not “language-model-free”; the defensible claim is “no language-model inference at deployment” or “precomputed lexical conditioning.”</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="literature">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">03 · Literature</p>
+            <h2>The study sits between psycholinguistic features and gaze benchmarks.</h2>
+            <div class="reading-list">
+              <a href="https://eyebench.github.io/eyebench/"><span>Benchmark</span><strong>EyeBench</strong><small>Datasets, tasks, baselines, and reader/text generalization regimes</small></a>
+              <a href="https://www.nature.com/articles/s41597-025-06272-2"><span>Dataset</span><strong>OneStop</strong><small>Natural reading with comprehension questions and eye tracking</small></a>
+              <a href="https://www3.cs.stonybrook.edu/~arunab/papers/etra20.pdf"><span>Gaze model</span><strong>Towards Predicting Reading Comprehension From Gaze</strong><small>AhnCNN lineage · ETRA 2020</small></a>
+              <a href="https://arxiv.org/abs/2410.04484"><span>Fine-grained prediction</span><strong>Reading comprehension at question level</strong><small>Multimodal baselines and task framing</small></a>
+            </div>
+            <p>Because lexical feature fusion is well established, the strongest contribution is not architectural novelty. It is a controlled empirical account of <strong>which inexpensive cues help under which generalization shift, at what computational and calibration cost.</strong></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section dark" id="direction">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Direction and progress</p><h2>Turn a small gain into an <em>explanatory study.</em></h2></div>
+            <p class="section-intro">The initial model and evaluation exist. The revision question is whether the gain can be attributed, generalized, calibrated, and justified by cost.</p>
+          </div>
+          <div class="direction-grid">
+            <article><span>Attribute</span><h3>Feature matrix</h3><p>Length, frequency, surprisal, all three pairwise combinations, and all features under identical folds and seeds.</p></article>
+            <article><span>Generalize</span><h3>Model and dataset</h3><p>Repeat on at least one different gaze backbone and, where compatible, another EyeBench task or corpus.</p></article>
+            <article><span>Calibrate</span><h3>Decision quality</h3><p>Add AUPRC, balanced accuracy, ECE, Brier score, and subgroup error analysis.</p></article>
+            <article><span>Measure</span><h3>True cost</h3><p>Separate one-time feature precomputation from deployment parameters, latency, memory, and operations.</p></article>
+          </div>
+          <div class="project-position">
+            <span>Working research question</span>
+            <strong>Which precomputed lexical cues improve gaze-based comprehension prediction under reader and text shift, and are the gains calibrated and inexpensive enough to matter?</strong>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

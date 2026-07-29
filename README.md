@@ -1,46 +1,79 @@
 # BEAVER
 
-BEAVER의 연구 프로젝트, 배경 개념, 데이터셋, 방법론과 선행연구를 연결한 정적 사이트입니다.
+BEAVER is a static research site about what human attention, language, and behavior add to intelligent systems.
 
-현재 연구 포트폴리오는 다음 세 트랙입니다.
+The site uses a hub-and-project architecture:
 
-1. **GazeMed — 현재 초점:** expert gaze와 발화를 시간·공간적으로 정렬해 언급된 CXR 이상소견의 위치를 예측하고, causal streaming과 영상 결합의 증분 가치를 검증합니다.
-2. **GazeImageRefine — IRB/장비 대기:** 생성 이미지에서 visual attention과 dissatisfaction/edit intent를 구분하고 gaze-assisted suggestion의 효용을 검증합니다.
-3. **leXic — 보강 대기:** gaze-only reading-comprehension prediction에 precomputed lexical difficulty를 주입한 연구를 APCCAS 리뷰에 맞춰 보완합니다.
+- **BEAVER hub:** the shared research question, portfolio, and evidence principles.
+- **Project mini-sites:** project-specific foundations, data, methods, evidence, literature, directions, and research notes.
+- **Internal research records:** decision history, tasks, and long-term context under `docs/`.
 
-## 사이트 구조
+## Projects
 
-- `index.html` — 연구 프로그램의 큰 그림과 현재 우선순위
-- `projects/` — 프로젝트별 research question, scope, method, evaluation, gate
-- `knowledge/foundations.html` — gaze, construct validity, weak supervision, multimodal alignment의 개념 지도
-- `knowledge/datasets.html` — 데이터셋 registry와 data governance
-- `knowledge/methods.html` — 방법 후보와 선택 기준
-- `knowledge/related-work.html` — 계열별 searchable literature map
-- `knowledge/research-gaps.html` — 현재 증거의 경계, 연구 공백, 다음 아이디어와 검증 순서
-- `operations/roadmap.html` — task, milestone, decision, risk
-- `docs/RESEARCH_CONTEXT.md` — 앞으로 가장 먼저 읽을 장기 맥락 문서
-- `docs/FOUNDATIONS.md` — 연구 전반의 개념적 배경과 공통 언어
-- `docs/DECISION_LOG.md` — 의사결정과 이유
-- `docs/TASKS.md` — 실행 backlog
-- `assets/img/` — 자체 설명용 SVG와 라이선스·출처를 확인한 외부 도판
+1. **GazeMed — active:** localize the chest X-ray finding a radiologist is describing from test-time gaze and speech.
+2. **GazeImageRefine — study design:** identify revision intent in generated images after controlling for visual saliency.
+3. **leXic — revision study:** measure which precomputed lexical cues improve gaze-based reading-comprehension prediction.
 
-## 로컬 실행
+## Site structure
 
-빌드 도구가 없는 정적 사이트입니다.
+```text
+index.html                              BEAVER research-program hub
+projects/
+  gazemed/
+    index.html                          project overview
+    foundations.html                    concepts and vocabulary
+    data.html                           REFLACX and instance construction
+    approach.html                       model, baselines, and controls
+    evidence.html                       results and claim boundaries
+    literature.html                     research lineage and closest work
+    directions.html                     evidence gates and next questions
+    notes/
+      index.html                        project notebook
+      spatial-language.html             research note 001
+  gaze-image-refine/index.html          project mini-site
+  lexic/index.html                      project mini-site
+assets/
+  css/site.css                          shared visual system
+  js/site.js                            shared global and project navigation
+  img/                                  attributed or original visuals
+docs/                                   internal research context and records
+```
+
+Legacy pages under `knowledge/`, `operations/`, and the old flat `projects/*.html` paths redirect to the relevant project mini-site.
+
+## Content model
+
+Project content has three stability levels:
+
+1. **Overview and chapters** contain the current stable explanation.
+2. **Research notes** contain focused, provisional arguments about direction.
+3. **Internal records** preserve tasks, decisions, and operational details that should not interrupt the public learning path.
+
+A research note should follow:
+
+```text
+question → current evidence → alternative explanations
+→ recommendation → experiment that could change the recommendation
+```
+
+## Local preview
+
+No build step is required.
 
 ```bash
 python3 -m http.server 8000
 ```
 
-그다음 `http://localhost:8000`을 엽니다. 파일을 직접 열어도 대부분 작동하지만, 로컬 서버 사용을 권장합니다.
+Open `http://localhost:8000`.
 
-## 업데이트 원칙
+## Update principles
 
-- raw 대화록, 연락처, 학번, 서명, IRB 제출 파일, 제한 데이터는 commit하지 않습니다.
-- 사실, 팀 내부 목표, 분석·권고를 구분합니다.
-- 방법을 추가할 때는 그것이 검정하는 정보와 필수 baseline을 함께 적습니다.
-- 실험 결과에는 dataset version, manifest hash, split, seed, commit SHA를 연결합니다.
-- 새 문헌은 제목과 요약만 추가하지 않고 “BEAVER의 claim을 어떻게 바꾸는가”를 적습니다.
-- 외부 그림은 license와 필요성을 확인하고, 본문 caption과 `docs/ASSET_ATTRIBUTIONS.md`에 출처·변경 여부를 기록합니다.
+- Keep the BEAVER homepage abstract; project details belong in project mini-sites.
+- Introduce concepts before using them in methods or evidence pages.
+- Separate observed results, supported interpretations, open alternatives, and future ideas.
+- Link every result to its dataset version, split, seed, and source commit.
+- Add literature for the boundary it establishes, not only for topical similarity.
+- Keep raw conversations, personal information, restricted medical data, credentials, and participant records out of the repository.
+- Record the license, source, and modifications for every redistributed external visual in `docs/ASSET_ATTRIBUTIONS.md`.
 
-상세 규칙은 [CONTRIBUTING.md](CONTRIBUTING.md)를 참고하세요.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the editing workflow.

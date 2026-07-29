@@ -1,126 +1,13 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="BEAVER 연구 작업 보드, milestone, 의사결정 기록, 리스크와 gate." />
-    <meta name="theme-color" content="#143d35" />
-    <title>Roadmap · BEAVER</title>
-    <link rel="stylesheet" href="../assets/css/site.css" />
-    <script src="../assets/js/site.js" defer></script>
+    <meta http-equiv="refresh" content="0; url=../projects/gazemed/directions.html" />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="../projects/gazemed/directions.html" />
+    <title>Project direction has moved · GazeMed</title>
   </head>
-  <body data-root="../" data-page="roadmap">
-    <div data-site-header></div>
-    <main id="main">
-      <header class="page-hero">
-        <div class="shell page-hero-grid">
-          <div>
-            <p class="eyebrow">Operations · Research roadmap</p>
-            <h1>일정이 아니라 <em>의존성</em>을 관리합니다.</h1>
-            <p class="page-summary">대화 기록에서 확인된 세 핵심 연구의 실행 상태와 의존성을 관리합니다.</p>
-            <nav class="toc" aria-label="페이지 목차"><a href="#scope">Portfolio</a><a href="#board">Core board</a><a href="#milestones">Milestones</a><a href="#decisions">Decisions</a><a href="#risks">Risks</a></nav>
-          </div>
-          <aside class="page-meta">
-            <div class="page-meta-row"><span>Focus</span><span>GazeMed</span></div>
-            <div class="page-meta-row"><span>Waiting</span><span>IRB + Tobii</span></div>
-            <div class="page-meta-row"><span>Parked</span><span>leXic revision</span></div>
-            <div class="page-meta-row"><span>Snapshot</span><span>2026.07.29</span></div>
-          </aside>
-        </div>
-      </header>
-
-      <section class="section alt" id="scope">
-        <div class="shell">
-          <div class="section-head"><div><p class="eyebrow">Core portfolio</p><h2>상태와 우선순위를 <em>명시적으로</em> 봅니다.</h2></div><p class="section-intro">GazeMed·GazeImageRefine·leXic만 이 저장소의 현재 연구 포트폴리오로 관리합니다.</p></div>
-          <article class="branch-card core"><span class="status">Core Research</span><h3>현재 실행 포트폴리오</h3><p class="muted">아래 P0–P2 board, milestone, risk는 세 연구에만 적용됩니다.</p><div class="branch-list"><span>Focus · GazeMed</span><span>Waiting · ImageRefine</span><span>Parked · leXic</span></div></article>
-        </div>
-      </section>
-
-      <section class="section" id="board">
-        <div class="shell">
-          <div class="section-head">
-            <div><p class="eyebrow">Core Research board only</p><h2>우선순위별 <em>작업 계약</em></h2></div>
-            <p class="section-intro">담당자는 GitHub issue에서 확정합니다. 이 표에는 대화에서 확인된 세 gaze-centered 핵심 트랙만 포함됩니다.</p>
-          </div>
-          <div class="table-wrap reveal">
-            <table class="task-table">
-              <thead><tr><th>Priority</th><th>Project</th><th>Deliverable</th><th>Definition of done</th><th>Dependency</th><th>State</th></tr></thead>
-              <tbody>
-                <tr><td>P0</td><td>GazeMed</td><td>PR #3 final model</td><td>1,093개 test instance에서 Final IoU .3188 / Pointing .7237, Temporal-only 대비 5/5 seed 개선</td><td>patient-level split</td><td><span class="status neutral">Complete</span></td></tr>
-                <tr><td>P0</td><td>GazeMed</td><td>Information controls</td><td>position shuffle collapse, spatial-word mask, B1, RadZero external baseline을 같은 instance set에서 비교</td><td>frozen evaluation set</td><td><span class="status neutral">Complete</span></td></tr>
-                <tr><td>P0</td><td>GazeMed</td><td>Anatomy value map</td><td>같은 instance·label을 쓰는 anatomy-only prior를 구축하고 병변 크기·위치·label별 Final의 증분 가치 보고</td><td>training ellipses + frozen split</td><td><span class="status">Now</span></td></tr>
-                <tr><td>P0</td><td>GazeMed</td><td>Causal replay audit</td><td>mention 시점 이후 fixation hard mask, streaming replay, latency·coverage·full-sequence gap 보고</td><td>timestamped event loader</td><td><span class="status">Now</span></td></tr>
-                <tr><td>P0</td><td>GazeMed</td><td>Split sensitivity</td><td>추가 patient split에서 핵심 비교 반복, 가능한 범위에서 reader-held-out sensitivity report</td><td>training budget</td><td><span class="status">Now</span></td></tr>
-                <tr><td>P1</td><td>GazeMed</td><td>Image × behavior fusion gate</td><td>instance별 오류 상보성 → calibrated late fusion → reliability gate 순으로 Final·RadZero 모두 개선</td><td>matched RadZero outputs</td><td><span class="status waiting">Next</span></td></tr>
-                <tr><td>P0</td><td>ImageRefine</td><td>Study 1 freeze</td><td>IRB와 일치하는 protocol, primary outcome, exclusion, stopping rule</td><td>IRB review comments 가능</td><td><span class="status">Offline now</span></td></tr>
-                <tr><td>P0</td><td>ImageRefine</td><td>Stimulus + baseline pack</td><td>3-axis taxonomy, saliency-only predictor, annotation schema</td><td>no participant data needed</td><td><span class="status">Offline now</span></td></tr>
-                <tr><td>P1</td><td>ImageRefine</td><td>Tobii integration test</td><td>calibration, drift, event sync, image coordinate mapping pass</td><td>hardware delivery</td><td><span class="status waiting">Waiting</span></td></tr>
-                <tr><td>P1</td><td>ImageRefine</td><td>Pilot</td><td>IRB-approved pilot + identifiability gate</td><td>IRB approval + device</td><td><span class="status waiting">Waiting</span></td></tr>
-                <tr><td>P2</td><td>leXic</td><td>Revision owner</td><td>named owner, compute budget, target venue, date</td><td>team choice</td><td><span class="status parked">Parked</span></td></tr>
-                <tr><td>P2</td><td>leXic</td><td>Reviewer response matrix</td><td>feature ablation, cost, calibration, extra model/data 결과 연결</td><td>revision owner</td><td><span class="status parked">Parked</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <section class="section alt" id="milestones">
-        <div class="shell content-grid">
-          <div>
-            <p class="eyebrow">Milestones</p>
-            <h2>확정·대기·내부 목표를 <em>분리</em></h2>
-            <p class="section-intro">학회 deadline과 행정 일정은 변경될 수 있습니다. 공식 사이트 또는 담당기관에서 다시 확인한 뒤 issue due date로 사용합니다.</p>
-            <div class="callout">
-              <strong>일정 표기 원칙</strong>
-              <p>대화에서 나온 날짜는 “팀 내부 목표”, 기관 회신 날짜는 “외부 의존”, 완료된 제출은 “사실”로 구분합니다.</p>
-            </div>
-          </div>
-          <div class="timeline">
-            <div class="timeline-item"><time datetime="2026-07-17">07.17</time><span class="timeline-dot"></span><div><h3>ImageRefine IRB 제출</h3><p>완료. 심의 중.</p></div></div>
-            <div class="timeline-item"><time datetime="2026-07-25">07.25</time><span class="timeline-dot"></span><div><h3>GazeMed PR #3</h3><p>gaze–speech 정렬과 공간 언어 결합 모델의 아키텍처·예비 결과 공개.</p></div></div>
-            <div class="timeline-item"><time datetime="2026-07-29">07.29</time><span class="timeline-dot"></span><div><h3>GazeMed 검증 업데이트</h3><p>최종 모델·RadZero 비교·5-seed 정보 제거 대조를 정리하고, causal streaming과 fusion을 다음 검증 단계로 분리.</p></div></div>
-            <div class="timeline-item"><time datetime="2026-08-15">08.15</time><span class="timeline-dot"></span><div><h3>GazeMed 내부 제출 목표</h3><p>대화에서 제시된 IEEE MedAI 2026 목표. 공식 CFP 재확인 필요.</p></div></div>
-            <div class="timeline-item"><time datetime="2026-08-21">08.21+</time><span class="timeline-dot"></span><div><h3>IRB 예상 회신</h3><p>수정 요구 시 일정 변동 가능.</p></div></div>
-            <div class="timeline-item"><time datetime="2026-09-11">09.11</time><span class="timeline-dot"></span><div><h3>학생자율연구 중간보고 예정</h3><p>GazeMed 결과를 중심으로 진행상황 보고 계획.</p></div></div>
-            <div class="timeline-item"><time datetime="2026-10">10월</time><span class="timeline-dot"></span><div><h3>leXic 대체 투고 후보</h3><p>담당자가 없으면 ICCE-ASIA 계열을 고려한다는 팀 내부 안. 확정 아님.</p></div></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="decisions">
-        <div class="shell">
-          <div class="section-head">
-            <div><p class="eyebrow">Decision log</p><h2>무엇보다 <em>왜</em> 바뀌었는가</h2></div>
-            <p class="section-intro">아이디어의 흔적은 맥락을 복구하지만, 현재 scope와 혼동하면 안 됩니다. 결과는 active·waiting·parked·retired로 남깁니다.</p>
-          </div>
-          <div class="decision-log">
-            <article class="decision-card reveal"><time>2026.04.06</time><div><h3>ZombieClicks / AI recommendation oversight 선택</h3><p>시의성과 gaze 기반 ML 가능성을 고려했다. 하지만 gaze–trust 관계의 불안정성과 ground truth 부재가 후속 설계를 어렵게 했다.</p></div><span class="outcome">Superseded</span></article>
-            <article class="decision-card reveal"><time>2026.05.11</time><div><h3>Verification gap에 EEG 추가</h3><p>disengagement와 misallocated attention을 다중모달로 설명하려 했으나 EEG 노이즈, 의료 IRB, 기기 수입과 해석 부담이 핵심 기여보다 커졌다.</p></div><span class="outcome">Retired</span></article>
-            <article class="decision-card reveal"><time>2026.05.23</time><div><h3>leXic APCCAS 제출</h3><p>EyeBench/OneStop과 lexical difficulty injection으로 빠른 dataset-based 연구를 완성했다.</p></div><span class="outcome">Rejected · revise</span></article>
-            <article class="decision-card reveal"><time>2026.05.26–29</time><div><h3>Cursor/DOM agent oversight 탐색</h3><p>continuous vs symbolic visibility, scripted errors, WoZ를 검토했으나 비교 가능성과 실험 복잡성 문제가 남았다.</p></div><span class="outcome">Archived</span></article>
-            <article class="decision-card reveal"><time>2026.06.27</time><div><h3>GazeMed + GazeImageRefine 병행</h3><p>공개 expert-gaze data로 즉시 가능한 AI 연구와 구매한 eye tracker가 필요한 일반 사용자 HCI 연구를 분리했다.</p></div><span class="outcome">Active portfolio</span></article>
-            <article class="decision-card reveal"><time>2026.07.17</time><div><h3>GazeMed를 단기 초점으로 지정</h3><p>ImageRefine는 IRB/배송을 기다리고 leXic은 리뷰 대응이 필요해, 즉시 접근 가능한 REFLACX 분석에 자원을 집중했다.</p></div><span class="outcome">Focus now</span></article>
-            <article class="decision-card reveal"><time>2026.07.20–21</time><div><h3>Raw gaze as video를 gate 뒤로 이동</h3><p>예비실험이 유의미한 방향을 보이지 않았고 최신 temporal gaze 선행연구와 겹쳤다. event-based information ablation을 선행한다.</p></div><span class="outcome">Deprioritized</span></article>
-            <article class="decision-card reveal"><time>2026.07.29</time><div><h3>입증된 모델과 다음 가설 분리</h3><p>현재 Final은 test-time gaze+speech 모델로 고정한다. causal online replay와 RadZero 영상 특징 결합은 결과에 포함시키지 않고 각각 별도 gap과 gate로 관리한다.</p></div><span class="outcome">Evidence boundary</span></article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section dark" id="risks">
-        <div class="shell">
-          <div class="section-head">
-            <div><p class="eyebrow">Portfolio risks</p><h2>좋은 이야기를 만드는 것보다 <em>빨리 틀리기</em></h2></div>
-            <p class="section-intro">각 위험은 대응 행동과 중단 기준을 함께 가져야 합니다.</p>
-          </div>
-          <div class="grid-4">
-            <article class="card"><h3>Scope sprawl</h3><p>세 프로젝트를 동시에 full speed로 진행하지 않습니다. GazeMed P0가 끝날 때까지 leXic compute를 시작하지 않습니다.</p></article>
-            <article class="card"><h3>Novelty collision</h3><p>새 preprint가 나오면 related-work card와 claim matrix를 업데이트하고 abstract 문구를 즉시 축소합니다.</p></article>
-            <article class="card"><h3>Data leakage</h3><p>split assertion이 통과하지 않으면 어떤 성능 결과도 공유·해석하지 않습니다.</p></article>
-            <article class="card"><h3>IRB / hardware delay</h3><p>ImageRefine는 offline stimulus·baseline 작업만 진행하고 승인 전 participant pilot을 하지 않습니다.</p></article>
-          </div>
-        </div>
-      </section>
-    </main>
-    <div data-site-footer></div>
+  <body>
+    <p>Public research direction is now maintained inside each project site. <a href="../projects/gazemed/directions.html">Open GazeMed Directions</a>.</p>
   </body>
 </html>

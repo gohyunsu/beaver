@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="The research lineage around REFLACX, gaze supervision, chest X-ray phrase grounding, temporal gaze, and spatial radiology language." />
+    <meta name="theme-color" content="#143d35" />
+    <title>Literature · GazeMed</title>
+    <link rel="stylesheet" href="../../assets/css/site.css" />
+    <script src="../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-literature">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>Literature</p>
+            <p class="eyebrow">Chapter 05 · Literature</p>
+            <h1>Follow the field by <em>input contract.</em></h1>
+            <p class="page-summary">Two papers may both “use gaze” while solving different problems. The decisive questions are when gaze is available, what the model receives at inference, and what spatial target it predicts.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>In this chapter</span>
+            <a href="#lineage">1. Research lineage</a>
+            <a href="#matrix">2. Closest-work matrix</a>
+            <a href="#language">3. Spatial language</a>
+            <a href="#position">4. GazeMed’s position</a>
+            <a href="#reading">5. Reading list</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="lineage">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Research lineage</p><h2>From collecting gaze to using it <em>during inference.</em></h2></div>
+            <p class="section-intro">The field has progressed along several branches rather than one straight line. Gaze can create labels, guide training, define local image–text pairs, or become a live model input.</p>
+          </div>
+          <div class="literature-lineage">
+            <article>
+              <time>2022</time>
+              <span>Data foundation</span>
+              <h3>REFLACX</h3>
+              <p>Synchronized radiologist gaze, timestamped dictation, image-level labels, and localization ellipses make alignment questions measurable.</p>
+              <a href="https://www.nature.com/articles/s41597-022-01441-z">Dataset paper ↗</a>
+            </article>
+            <article>
+              <time>2023</time>
+              <span>Label construction</span>
+              <h3>Label-specific gaze supervision</h3>
+              <p>Fixations before a spoken finding create localized supervision for an image model. Gaze helps training; deployment remains image-based.</p>
+              <a href="https://doi.org/10.3389/fradi.2023.1088068">Frontiers paper ↗</a>
+            </article>
+            <article>
+              <time>2024–25</time>
+              <span>Richer supervision</span>
+              <h3>Heatmaps, tracks, and local text</h3>
+              <p>GazeMedSeg and GradTrack use spatial density, duration, and temporal order; LATTE-CXR turns REFLACX into local image–sentence pairs.</p>
+              <a href="https://papers.miccai.org/miccai-2025/0305-Paper1072.html">GradTrack ↗</a>
+            </article>
+            <article class="current">
+              <time>GazeMed</time>
+              <span>Behavior at test time</span>
+              <h3>Finding-conditioned grounding</h3>
+              <p>A new reading’s fixation sequence and report content remain part of the inference contract. The image is not consumed by the current model.</p>
+              <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">PR #3 ↗</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section dark" id="matrix">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Closest-work matrix</p><h2>“Uses gaze” is not a sufficient <em>comparison.</em></h2></div>
+          </div>
+          <div class="table-wrap">
+            <table class="comparison work-matrix">
+              <thead><tr><th>Work</th><th>Role of gaze</th><th>Inference input</th><th>Output / reference</th><th>Boundary for GazeMed</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><a href="https://doi.org/10.3389/fradi.2023.1088068">Lanfredi et al. · 2023</a></td>
+                  <td>Build label-specific supervision from a fixed pre-mention window</td>
+                  <td>Image for the learned model</td>
+                  <td>Localization map / ellipse</td>
+                  <td>Direct origin of the fixed-lag baseline; learned alignment must outperform it.</td>
+                </tr>
+                <tr>
+                  <td><a href="https://papers.miccai.org/miccai-2024/843-Paper1675.html">GazeMedSeg · 2024</a></td>
+                  <td>Turn aggregate gaze into pseudo-masks</td>
+                  <td>Image after training</td>
+                  <td>Segmentation mask</td>
+                  <td>Static gaze supervision is established; GazeMed needs a test-time behavior claim.</td>
+                </tr>
+                <tr>
+                  <td><a href="https://papers.miccai.org/miccai-2025/0305-Paper1072.html">GradTrack · 2025</a></td>
+                  <td>Use fixation position, duration, and order as weak supervision</td>
+                  <td>Image after training</td>
+                  <td>Pixel segmentation</td>
+                  <td>Temporal order alone is not novel; the distinction is inference-time use and controlled alignment.</td>
+                </tr>
+                <tr>
+                  <td><a href="https://physionet.org/content/latte-cxr/1.0.0/">LATTE-CXR · 2025</a></td>
+                  <td>Derive local image–sentence pairs from REFLACX</td>
+                  <td>Depends on downstream model</td>
+                  <td>Boxes + sentences</td>
+                  <td>Phrase-level local alignment already exists as data construction.</td>
+                </tr>
+                <tr>
+                  <td><a href="https://arxiv.org/abs/2504.07416">RadZero · 2025</a></td>
+                  <td>None</td>
+                  <td>Image + phrase</td>
+                  <td>Similarity map / ellipse</td>
+                  <td>External reference with a disjoint input contract; useful for competitiveness and fusion.</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed · PR #3</a></td>
+                  <td>Select finding-relevant fixations at test time</td>
+                  <td>Gaze + speech</td>
+                  <td>Finding map / ellipse</td>
+                  <td>Distinct current claim: interpretable behavioral grounding with information controls.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="matrix-legend">
+            <span><strong>Training-time gaze</strong> Gaze creates supervision; the deployed model can operate without a new user’s gaze.</span>
+            <span><strong>Test-time gaze</strong> A new reading’s behavior is required to produce the output.</span>
+            <span><strong>Reference type</strong> Ellipses, boxes, and pixel masks have different annotation meaning and metric behavior.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="language">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">03</p>
+            <h2>Spatial radiology language is richer than directional keywords.</h2>
+            <p>GazeMed currently uses seven binary location descriptors. This is an interpretable first test, but prior language research already provides a more expressive vocabulary.</p>
+            <div class="language-ladder">
+              <article><span>Level 1</span><strong>Directional tokens</strong><p>left · right · upper · lower</p></article>
+              <article><span>Level 2</span><strong>Anatomical entities</strong><p>heart · hilum · pleura · costophrenic angle</p></article>
+              <article><span>Level 3</span><strong>Relations</strong><p>behind · adjacent to · above · involving</p></article>
+              <article><span>Level 4</span><strong>Composed frames</strong><p>finding + anatomical anchor + relation + uncertainty</p></article>
+            </div>
+            <p><a href="https://aclanthology.org/2020.lrec-1.274/">Rad-SpatialNet</a> represents spatial language as frames containing a trigger and related entities. This suggests a principled extension: make speech produce an anatomy-anchored constraint rather than a flat bag of location bits.</p>
+            <div class="article-note">
+              <strong>Example</strong>
+              <p>“Small opacity behind the heart” can be represented as finding = opacity, anchor = heart, relation = behind, extent = small. The model can then compare the gaze path with the anchor region and relation—not only with a generic “lower” token.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="position">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04</p>
+            <h2>The strongest positioning is narrow and falsifiable.</h2>
+            <div class="positioning-block">
+              <span>GazeMed asks</span>
+              <strong>Can a simple, finding-conditioned mechanism use a radiologist’s test-time gaze and speech to localize the described abnormality, and can targeted controls identify which parts of that behavior carry the value?</strong>
+            </div>
+            <h3>Claims to avoid</h3>
+            <ul class="avoid-list">
+              <li><strong>“The first use of temporal gaze.”</strong><span>Fixation order and gaze–language alignment already appear in prior work.</span></li>
+              <li><strong>“Gaze is better than the image.”</strong><span>The current models use different inputs; their comparison does not isolate modality superiority.</span></li>
+              <li><strong>“Real-time localization.”</strong><span>The full-sequence model has not yet passed causal replay.</span></li>
+              <li><strong>“Spatial language solves grounding.”</strong><span>The current language effect is smaller and weaker on Pointing.</span></li>
+            </ul>
+            <h3>What remains genuinely interesting</h3>
+            <p>The project can contribute a clean test-time behavioral grounding task, a minimal interpretable mechanism, and controls that separate timing, coordinate correspondence, and language content. Its next novelty should come from stronger evidence—not a larger architecture by default.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="reading">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">05</p>
+            <h2>A focused reading list</h2>
+            <div class="reading-list">
+              <a href="https://www.nature.com/articles/s41597-022-01441-z"><span>Dataset</span><strong>REFLACX: reports and eye-tracking data for localization of abnormalities in chest X-rays</strong><small>Lanfredi et al. · Scientific Data · 2022</small></a>
+              <a href="https://doi.org/10.3389/fradi.2023.1088068"><span>Gaze supervision</span><strong>Improving abnormality localization with label-specific eye-tracking annotations</strong><small>Lanfredi et al. · Frontiers in Radiology · 2023</small></a>
+              <a href="https://papers.miccai.org/miccai-2024/843-Paper1675.html"><span>Weak segmentation</span><strong>Weakly-Supervised Medical Image Segmentation with Gaze Annotations</strong><small>MICCAI · 2024</small></a>
+              <a href="https://papers.miccai.org/miccai-2025/0305-Paper1072.html"><span>Temporal gaze</span><strong>Enjoying Information Dividend: Gaze Track-based Medical Weakly Supervised Segmentation</strong><small>MICCAI · 2025</small></a>
+              <a href="https://physionet.org/content/latte-cxr/1.0.0/"><span>Local image–text data</span><strong>LATTE-CXR</strong><small>PhysioNet · 2025</small></a>
+              <a href="https://arxiv.org/abs/2504.07416"><span>Image–text grounding</span><strong>RadZero</strong><small>Park et al. · 2025</small></a>
+              <a href="https://aclanthology.org/2020.lrec-1.274/"><span>Spatial language</span><strong>Rad-SpatialNet</strong><small>Datta et al. · LREC · 2020</small></a>
+            </div>
+            <div class="next-chapter">
+              <span>Next chapter</span>
+              <h3>Convert the open boundary into a small number of decisive research directions.</h3>
+              <a href="directions.html">Continue to Directions →</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

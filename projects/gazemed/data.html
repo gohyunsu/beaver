@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A practical guide to REFLACX, its synchronized gaze and dictation files, coordinates, labels, and GazeMed instances." />
+    <meta name="theme-color" content="#143d35" />
+    <title>Data · GazeMed</title>
+    <link rel="stylesheet" href="../../assets/css/site.css" />
+    <script src="../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-data">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>Data</p>
+            <p class="eyebrow">Chapter 02 · Data</p>
+            <h1>One reading, assembled from <em>synchronized traces.</em></h1>
+            <p class="page-summary">REFLACX joins a chest X-ray reading with gaze, word timestamps, labels, and localization ellipses. Understanding that join is part of the model.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>In this chapter</span>
+            <a href="#dataset">1. What REFLACX contains</a>
+            <a href="#bundle">2. The file bundle</a>
+            <a href="#instance">3. Building an instance</a>
+            <a href="#coordinates">4. Space and time</a>
+            <a href="#labels">5. Labels and phases</a>
+            <a href="#split">6. Split and access rules</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="dataset">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">01</p>
+            <h2>REFLACX records interpretation, then adds validation labels.</h2>
+            <p>Five radiologists interpreted frontal chest X-rays while an EyeLink 1000 Plus recorded gaze and a microphone recorded dictation. The transcript was aligned to time. After interpretation, radiologists selected findings and drew ellipses for localizable abnormalities.</p>
+            <div class="data-facts">
+              <div><strong>3,032</strong><span>synchronized gaze–report readings</span></div>
+              <div><strong>2,616</strong><span>unique chest X-rays</span></div>
+              <div><strong>2,199</strong><span>unique subjects</span></div>
+              <div><strong>5</strong><span>radiologists</span></div>
+            </div>
+            <figure class="source-figure">
+              <img src="../../assets/img/reflacx-dataset-overview.png" alt="REFLACX collection pipeline from chest X-ray interpretation to gaze, report, labels, and localization ellipses" loading="lazy" />
+              <figcaption><strong>REFLACX collection and data products.</strong> Figure 1 from Lanfredi et al., <a href="https://www.nature.com/articles/s41597-022-01441-z">Scientific Data 9, 350 (2022)</a>, used under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; resized without content changes.</figcaption>
+            </figure>
+            <div class="article-note">
+              <strong>Two moments of evidence</strong>
+              <p>Gaze and dictation are traces produced during interpretation. Ellipses and certainty scores are later validation annotations. They should not be treated as if they were collected at the same cognitive moment.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="bundle">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">02</p>
+            <h2>A reading is a folder, not a row.</h2>
+            <p>Each reading ID names a bundle of files. GazeMed must join them before it can form a single finding-level example.</p>
+            <div class="bundle-diagram">
+              <div class="bundle-id"><span>reading ID</span><strong>P102R…</strong><small>one radiologist × one CXR</small></div>
+              <div class="bundle-grid">
+                <article><code>fixations.csv</code><strong>Parsed gaze events</strong><p>Start/end time, mean image position, duration, pupil, and display state.</p></article>
+                <article><code>gaze.csv</code><strong>Raw gaze samples</strong><p>1,000 Hz coordinates and pupil measurements, including missing rows around blinks.</p></article>
+                <article><code>timestamps_transcription.csv</code><strong>Timed words</strong><p>Corrected transcript tokens with word start and end times.</p></article>
+                <article><code>anomaly_location_ellipses.csv</code><strong>Reference regions</strong><p>Ellipse extremes, certainty, and one or more finding columns.</p></article>
+                <article><code>chest_bounding_box.csv</code><strong>Anatomical frame</strong><p>A box around lungs and heart for chest-relative normalization.</p></article>
+                <article><code>metadata_phase_*.csv</code><strong>Identity and labels</strong><p>Reading, DICOM, subject, image size, quality flags, and image-level certainty.</p></article>
+              </div>
+            </div>
+            <p>The raw image is linked through the DICOM identifier to MIMIC-CXR. Restricted source files are not part of this website or its repository.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="instance">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">03</p>
+            <h2>Build the identity graph before building the model.</h2>
+            <p>The same image can appear in multiple readings. A finding can have multiple mentions or ellipses. The join must preserve these relationships without allowing the same patient or image to cross an evaluation boundary.</p>
+            <div class="identity-chain">
+              <div><span>session</span><strong>reading ID</strong><small>gaze + dictation</small></div>
+              <b>→</b>
+              <div><span>image</span><strong>DICOM ID</strong><small>CXR join</small></div>
+              <b>→</b>
+              <div><span>patient</span><strong>subject ID</strong><small>split group</small></div>
+              <b>→</b>
+              <div><span>target</span><strong>reading × finding</strong><small>model instance</small></div>
+            </div>
+            <h3>A practical instance-construction sequence</h3>
+            <ol class="process-list">
+              <li><span>1</span><div><strong>Choose an eligible reading.</strong><p>Require usable gaze, transcript, image dimensions, and the selected collection phase.</p></div></li>
+              <li><span>2</span><div><strong>Identify a positive finding.</strong><p>Apply the predefined certainty rule and label crosswalk.</p></div></li>
+              <li><span>3</span><div><strong>Link the finding to speech.</strong><p>Find its mention while handling negation, uncertainty, synonyms, and repeated mentions.</p></div></li>
+              <li><span>4</span><div><strong>Attach candidate fixations.</strong><p>Compute each fixation’s temporal relation to the chosen mention.</p></div></li>
+              <li><span>5</span><div><strong>Construct the target map.</strong><p>Rasterize the matching ellipse or ellipses only for evaluation and supervision.</p></div></li>
+            </ol>
+          </article>
+          <aside class="article-aside">
+            <span>Current weak link</span>
+            <p>PR #3 uses a rule-based mention linker. Its errors affect timing and language features at the same time, so a manual audit is a high-value validation step.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="coordinates">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04</p>
+            <h2>Every coordinate and timestamp needs an explicit frame.</h2>
+            <p>REFLACX pixel coordinates use the top-left image origin: x increases to the right and y increases downward. Timestamp columns are measured in seconds from the beginning of the audio recording.</p>
+            <div class="audit-grid">
+              <article><span>Coordinate audit</span><h3>Screen → image</h3><p>Verify zoom, pan, windowing, display offsets, image size, and chest-relative normalization with visual samples.</p></article>
+              <article><span>Time audit</span><h3>Tracker → audio</h3><p>Verify synchronization messages, word timestamp interpolation, fixation start/end conventions, and unit conversions.</p></article>
+              <article><span>Quality audit</span><h3>Missing → invalid</h3><p>Quantify blink intervals, missing pupil values, recording duration, fixation count, and discarded recordings.</p></article>
+            </div>
+            <figure class="source-figure">
+              <img src="../../assets/img/reflacx-collection-interface.png" alt="REFLACX interface used for chest X-ray reading, manual labels, localization ellipses, and transcript correction" loading="lazy" />
+              <figcaption><strong>The collection interface connects several coordinate and annotation stages.</strong> Figure 2 from Lanfredi et al., <a href="https://www.nature.com/articles/s41597-022-01441-z">Scientific Data 9, 350 (2022)</a>, used under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; resized without content changes.</figcaption>
+            </figure>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="labels">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">05</p>
+            <h2>Label vocabulary changes across collection phases.</h2>
+            <p>REFLACX was collected in three phases. Phase 1 used several narrower labels; Phases 2 and 3 merged some of them. GazeMed currently uses Phase 3, the main collection phase with 2,507 readings.</p>
+            <div class="crosswalk-table">
+              <div class="crosswalk-head"><span>Earlier wording</span><span>Phase 2–3 wording</span></div>
+              <div><span>Mass + Nodule</span><strong>Lung nodule or mass</strong></div>
+              <div><span>Pleural effusion + thickening</span><strong>Pleural abnormality</strong></div>
+              <div><span>Emphysema</span><strong>High lung volume / emphysema</strong></div>
+              <div><span>Fracture</span><strong>Acute fracture</strong></div>
+            </div>
+            <h3>Certainty is not a binary truth</h3>
+            <p>Image-level and ellipse annotations use a 0–5 certainty scale. Zero means the label was not selected; values 1–5 move from unlikely to consistent with. Any conversion to positive/negative examples needs a predefined threshold and sensitivity analysis.</p>
+            <div class="article-note">
+              <strong>An ellipse is a reference region.</strong>
+              <p>Its size reflects the annotation interface and the radiologist’s judgment, not necessarily a histologically precise boundary. IoU must be interpreted with that coarseness in mind.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="split">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">06</p>
+            <h2>The evaluation split must follow the entity structure.</h2>
+            <p>A patient-level split is the minimum requirement. Readings of the same image must remain together. Because the same five radiologists may appear on both sides of a patient split, reader generalization remains a separate question.</p>
+            <div class="split-rules">
+              <article><span>Keep together</span><strong>patient · study · image · repeated readings</strong></article>
+              <article><span>Measure separately</span><strong>new patient · new reader · new institution</strong></article>
+              <article><span>Never expose</span><strong>test ellipses · test label locations · restricted raw data</strong></article>
+            </div>
+            <h3>Access and provenance</h3>
+            <p>REFLACX and MIMIC-derived files require credentialed access and data-use compliance. The public project should contain preprocessing code, schemas, synthetic fixtures, and reproducible split rules—not the source images, gaze recordings, or reports.</p>
+            <div class="next-chapter">
+              <span>Next chapter</span>
+              <h3>Build the models from the fixed-lag baseline to the current final architecture.</h3>
+              <a href="approach.html">Continue to Approach →</a>
+            </div>
+            <h3>Primary sources</h3>
+            <ul class="source-list">
+              <li><a href="https://physionet.org/content/reflacx-xray-localization/1.0.0/">REFLACX v1.0.0 data description and file schema</a></li>
+              <li><a href="https://www.nature.com/articles/s41597-022-01441-z">REFLACX dataset paper and collection methodology</a></li>
+              <li><a href="https://physionet.org/content/mimic-cxr-jpg/2.1.0/">MIMIC-CXR-JPG documentation</a></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

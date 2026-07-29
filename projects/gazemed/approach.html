@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A step-by-step account of the GazeMed baseline, temporal alignment model, final cross-attention architecture, and controls." />
+    <meta name="theme-color" content="#143d35" />
+    <title>Approach · GazeMed</title>
+    <link rel="stylesheet" href="../../assets/css/site.css" />
+    <script src="../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-approach">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>Approach</p>
+            <p class="eyebrow">Chapter 03 · Approach</p>
+            <h1>Replace a fixed rule with <em>learned relevance.</em></h1>
+            <p class="page-summary">The architecture is intentionally small. Each step adds a specific information source so that its contribution can be isolated.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>In this chapter</span>
+            <a href="#baseline">1. Fixed-lag baseline</a>
+            <a href="#temporal">2. Learned timing</a>
+            <a href="#final">3. Position and language</a>
+            <a href="#heatmap">4. Spatial output</a>
+            <a href="#training">5. Training and controls</a>
+            <a href="#boundary">6. Inference boundary</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="baseline">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">01</p>
+            <h2>Baseline: take gaze from 1.5 seconds before the mention.</h2>
+            <p>The original REFLACX label-specific heuristic assumes that gaze shortly before a finding is spoken is likely to correspond to that finding. It gives every case the same temporal rule.</p>
+            <div class="baseline-window">
+              <div class="window-axis"><span>−3 s</span><i></i><span>−1.5 s</span><i class="active"></i><span>mention</span></div>
+              <div class="window-selection"><span>discard</span><strong>selected gaze window</strong><span>speech</span></div>
+            </div>
+            <p>The baseline is valuable because it is simple, interpretable, and connected to prior work. Its limitation is equally clear: radiologists do not all speak with the same delay, and the delay may differ across findings within the same reading.</p>
+          </article>
+          <aside class="article-aside">
+            <span>Reference point</span>
+            <p>The site reports the team’s re-evaluation of this heuristic on the PR #3 instance set—not the final score of the original published model.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="temporal">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">02</p>
+            <h2>V1: learn the temporal association for every fixation.</h2>
+            <p>For a finding mention at time <em>t</em><sub>m</sub>, the model computes a feature vector for each fixation. These features describe when the fixation occurred and how it moved, without exposing its x/y position to the attention mechanism.</p>
+            <div class="feature-ledger">
+              <div><span>1</span><strong>signed Δt</strong><small>fixation time − mention time</small></div>
+              <div><span>2</span><strong>|Δt|</strong><small>absolute temporal distance</small></div>
+              <div><span>3</span><strong>before indicator</strong><small>whether gaze precedes the mention</small></div>
+              <div><span>4</span><strong>legacy-window indicator</strong><small>whether the fixation falls in the fixed rule</small></div>
+              <div><span>5</span><strong>duration</strong><small>how long the fixation lasts</small></div>
+              <div><span>6</span><strong>velocity</strong><small>displacement from the preceding fixation over time</small></div>
+            </div>
+            <p>An 8-dimensional finding embedding is added because the relevant timing may differ by finding. A small network produces one score per fixation, then a softmax converts those scores into a relevance distribution.</p>
+            <div class="equation-line">
+              <span>6 temporal / kinematic features</span><b>+</b><span>finding embedding</span><b>→</b><strong>attention over fixations</strong>
+            </div>
+            <div class="article-note">
+              <strong>What “temporal-only” means</strong>
+              <p>The model cannot use x/y to decide attention. After attention is computed, the selected weights are still placed at the real fixation positions to form a localization map.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="final">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">03</p>
+            <h2>Final: let language ask which positioned fixation is relevant.</h2>
+            <p>The final model adds spatial position to each fixation key and compact language content to a single query. A one-layer scaled dot-product cross-attention connects them.</p>
+            <div class="architecture-ledger">
+              <article>
+                <span>Query · 18 dimensions before projection</span>
+                <h3>What are we trying to locate?</h3>
+                <ul>
+                  <li>8-dimensional learned finding embedding</li>
+                  <li>7 spatial descriptors: left, right, bilateral, upper, lower, middle, retrocardiac</li>
+                  <li>3 extent descriptors: small-type, large-type, diffuse-type</li>
+                </ul>
+              </article>
+              <div class="architecture-operator" aria-hidden="true">attends<br />to</div>
+              <article>
+                <span>Keys · one per fixation</span>
+                <h3>Which visual event fits?</h3>
+                <ul>
+                  <li>6 temporal and kinematic features</li>
+                  <li>2 raw coordinates: normalized x and y</li>
+                  <li>8-dimensional learned finding embedding</li>
+                </ul>
+              </article>
+            </div>
+            <div class="attention-explainer">
+              <div><span>Query</span><strong>right pleural abnormality</strong></div>
+              <b>×</b>
+              <div class="key-list">
+                <span><i style="--weight:.12"></i>early, left, short fixation</span>
+                <span><i style="--weight:.86"></i>pre-mention, right-base fixation</span>
+                <span><i style="--weight:.27"></i>late, central fixation</span>
+              </div>
+              <b>→</b>
+              <div><span>Attention</span><strong>0.10 · 0.71 · 0.19</strong></div>
+            </div>
+            <p>The language representation is deliberately interpretable, but coarse. It does not parse anatomical relations, compositional phrases, negation scope, or uncertainty. Those limits define the next language experiments.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="heatmap">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04</p>
+            <h2>The model can only place mass where the radiologist looked.</h2>
+            <p>There is no learned image decoder. Each attention weight is splatted at its fixation’s real x/y coordinate, spread with a Gaussian kernel, and normalized into a probability map.</p>
+            <div class="splat-flow">
+              <div><span>Weighted points</span><div class="dot-field"><i></i><i></i><i></i><i></i></div></div>
+              <b>→</b>
+              <div><span>Gaussian splat</span><div class="blur-field"></div></div>
+              <b>→</b>
+              <div><span>Thresholded map</span><div class="mask-field"></div></div>
+            </div>
+            <p>This restriction makes the output easy to interpret and makes position-shuffling a meaningful test: if the correspondence between a fixation’s features and its coordinate is broken, performance should fall.</p>
+            <figure class="model-source-figure">
+              <img src="../../assets/img/gazemed-pr3-pipeline.png" alt="GazeMed fixation encoder, report query, cross-attention, and heatmap pipeline" loading="lazy" />
+              <figcaption>Pipeline from <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, copied without visual modification. The example heatmap in the source diagram is illustrative.</figcaption>
+            </figure>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="training">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">05</p>
+            <h2>Train attention to place probability mass inside the ellipse.</h2>
+            <p>The loss rewards attention mass that lands inside the target region, with a small entropy term. Validation selects the map threshold and smoothing bandwidth; test evaluation keeps them fixed.</p>
+            <div class="control-stack">
+              <article><span>Comparison A</span><h3>Fixed rule → learned timing</h3><p>Tests whether a learned temporal association improves on one shared lag.</p></article>
+              <article><span>Comparison B</span><h3>Temporal → final</h3><p>Tests the joint addition of position-aware attention and language descriptors.</p></article>
+              <article><span>Control C</span><h3>Shuffle fixation positions</h3><p>Breaks each fixation’s feature-to-coordinate pairing while preserving the aggregate coordinate set.</p></article>
+              <article><span>Control D</span><h3>Mask spatial words</h3><p>Zeros only the seven spatial descriptors in the trained final model.</p></article>
+            </div>
+            <h3>Why the controls answer different questions</h3>
+            <p>Position shuffling tests whether the model uses true instance-level spatial correspondence rather than only capacity or aggregate gaze shape. Spatial-word masking tests whether report language contributes location information beyond the finding label.</p>
+          </article>
+          <aside class="article-aside">
+            <span>Reproducibility</span>
+            <p>Both weight initialization and example order must be seeded. Small order changes are large enough to alter the significance of the weaker language control.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="boundary">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">06</p>
+            <h2>Test-time input is established; causal streaming is not.</h2>
+            <p>The current model consumes gaze and speech for each new reading, which distinguishes it from methods that use gaze only to train an image-only model. However, it receives the full fixation sequence and uses signed time offsets. Future fixations are therefore candidates unless explicitly masked.</p>
+            <div class="boundary-line">
+              <div class="confirmed"><span>Current evidence</span><strong>offline, test-time gaze + speech localization</strong></div>
+              <b>≠</b>
+              <div><span>Future claim</span><strong>causal, low-latency streaming localization</strong></div>
+            </div>
+            <p>A causal replay must reveal events in timestamp order, emit a map at a defined output clock, prevent any fixation ending after that clock from entering the model, and report both latency and cases with insufficient gaze history.</p>
+            <div class="next-chapter">
+              <span>Next chapter</span>
+              <h3>Examine the measurements that support the architecture—and their limits.</h3>
+              <a href="evidence.html">Continue to Evidence →</a>
+            </div>
+            <h3>Implementation source</h3>
+            <ul class="source-list">
+              <li><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3: architecture, technical specification, results, and reproduction code</a></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

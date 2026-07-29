@@ -1,6 +1,6 @@
 # Related Work Synthesis
 
-사이트의 searchable index는 `assets/js/references.js`에 있다. 이 문서는 계열별 결론과 연구 설계에 미치는 영향만 보존한다.
+공개 사이트의 GazeMed 문헌 흐름은 `projects/gazemed/literature.html`에 있다. 이 문서는 계열별 결론과 연구 설계에 미치는 영향만 보존한다.
 
 ## 1. Dataset / benchmark 계열
 

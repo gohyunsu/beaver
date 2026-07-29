@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="GazeMed studies whether radiologists' gaze and spoken reports can localize the chest X-ray finding being described." />
+    <meta name="theme-color" content="#143d35" />
+    <title>GazeMed · BEAVER</title>
+    <link rel="stylesheet" href="../../assets/css/site.css" />
+    <script src="../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-home">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="project-masthead">
+        <div class="shell project-masthead-grid">
+          <div>
+            <p class="eyebrow">Project 01 · Medical AI</p>
+            <h1>GazeMed</h1>
+            <p class="project-deck">Localizing the finding a radiologist is describing from two traces of interpretation: where they looked and what they said.</p>
+            <div class="button-row">
+              <a class="button" href="foundations.html">Start from the foundations →</a>
+              <a class="text-link" href="evidence.html">Read the evidence</a>
+            </div>
+          </div>
+          <aside class="project-snapshot">
+            <span>Project snapshot</span>
+            <dl>
+              <div><dt>Question</dt><dd>Finding localization</dd></div>
+              <div><dt>Inference input</dt><dd>Gaze + speech</dd></div>
+              <div><dt>Image pixels</dt><dd>Not used by the current model</dd></div>
+              <div><dt>Dataset</dt><dd>REFLACX · Phase 3</dd></div>
+              <div><dt>Evidence state</dt><dd>PR #3 · preliminary</dd></div>
+            </dl>
+          </aside>
+        </div>
+      </header>
+
+      <section class="section alt">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">The problem</p><h2>A report says <em>what.</em> Gaze may help recover <em>where.</em></h2></div>
+            <p class="section-intro">A chest X-ray report usually describes findings in language, while many downstream tasks need an image region. During interpretation, gaze and speech are naturally synchronized but do not align perfectly.</p>
+          </div>
+          <div class="problem-sequence reveal">
+            <article><span>01</span><strong>Inspect</strong><p>A radiologist moves through anatomical regions and candidate abnormalities.</p></article>
+            <i aria-hidden="true">→</i>
+            <article><span>02</span><strong>Decide</strong><p>A visual impression becomes a finding, a verification step, or a rejected hypothesis.</p></article>
+            <i aria-hidden="true">→</i>
+            <article><span>03</span><strong>Dictate</strong><p>The finding is spoken after a variable delay and may include location or severity.</p></article>
+            <i aria-hidden="true">→</i>
+            <article><span>04</span><strong>Ground</strong><p>The model must identify which earlier fixations correspond to that mention.</p></article>
+          </div>
+          <div class="plain-callout">
+            <span>Core distinction</span>
+            <p><strong>GazeMed does not ask whether gaze can train a later image-only model.</strong> It asks whether a new radiologist’s gaze and speech can serve as inputs for localization during that interpretation.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Current approach</p><h2>Learn <em>which fixation</em> belongs to a finding mention.</h2></div>
+            <p class="section-intro">The current model forms a query from a finding and compact language descriptors, compares it with every fixation, then places the resulting attention weights back at the recorded gaze coordinates.</p>
+          </div>
+          <div class="input-contract reveal">
+            <div>
+              <span>Speech query</span>
+              <strong>finding + spatial and severity descriptors</strong>
+              <small>What is being described?</small>
+            </div>
+            <b aria-hidden="true">×</b>
+            <div>
+              <span>Fixation keys</span>
+              <strong>timing + motion + x/y + finding</strong>
+              <small>Which visual event is relevant?</small>
+            </div>
+            <b aria-hidden="true">→</b>
+            <div class="accent">
+              <span>Output</span>
+              <strong>finding-conditioned spatial map</strong>
+              <small>Where was the described evidence?</small>
+            </div>
+          </div>
+          <figure class="model-source-figure reveal">
+            <img src="../../assets/img/gazemed-pr3-pipeline.png" alt="GazeMed pipeline from live gaze and dictation through fixation attention to a lesion probability map" loading="lazy" />
+            <figcaption><strong>Architecture in GazeMed PR #3.</strong> The diagram is reproduced from the project repository. Its heatmap is explanatory, not a qualitative model result. <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">Source and implementation</a>.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section dark">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Evidence snapshot</p><h2>What the current experiments <em>do—and do not—show.</em></h2></div>
+            <p class="section-intro">These are the latest values in the PR #3 technical specification, evaluated on the same 1,093 finding-level instances from one patient-level split.</p>
+          </div>
+          <div class="result-triptych">
+            <article><span>Fixed 1.5 s rule</span><strong>0.208</strong><small>IoU · Pointing 0.552</small></article>
+            <article><span>Learned timing</span><strong>0.288</strong><small>IoU · Pointing 0.682</small></article>
+            <article class="selected"><span>Timing + position + language</span><strong>0.319</strong><small>IoU · Pointing 0.724</small></article>
+          </div>
+          <div class="evidence-boundary-compact">
+            <div><span>Supported</span><p>Learned timing outperforms a fixed lag. Actual fixation positions are necessary. Spatial language adds a smaller, metric-dependent contribution.</p></div>
+            <div><span>Not yet supported</span><p>Causal real-time operation, robustness to a new split or reader, and value beyond a label-conditioned anatomy prior.</p></div>
+          </div>
+          <a class="button light" href="evidence.html">Inspect results and controls →</a>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Project guide</p><h2>Read the study in a <em>deliberate order.</em></h2></div>
+            <p class="section-intro">Each chapter answers one kind of question. The sequence moves from vocabulary to claims so that later sections never depend on unexplained assumptions.</p>
+          </div>
+          <div class="chapter-grid">
+            <a href="foundations.html"><span>01</span><small>Foundations</small><h3>How gaze, dictation, and localization relate</h3><p>Start with fixations, scanpaths, temporal lag, weak supervision, and the meaning of a heatmap.</p></a>
+            <a href="data.html"><span>02</span><small>Data</small><h3>How a REFLACX reading becomes an instance</h3><p>Follow identifiers, timestamps, coordinates, labels, and ellipses through the data bundle.</p></a>
+            <a href="approach.html"><span>03</span><small>Approach</small><h3>From a fixed window to learned alignment</h3><p>Build the baseline, temporal model, and final attention model one step at a time.</p></a>
+            <a href="evidence.html"><span>04</span><small>Evidence</small><h3>Read metrics, controls, and claim boundaries</h3><p>Understand what improved, what collapsed under shuffling, and what remains uncertain.</p></a>
+            <a href="literature.html"><span>05</span><small>Literature</small><h3>Place GazeMed in the research landscape</h3><p>Distinguish training-time gaze, test-time gaze, phrase grounding, and gaze-based supervision.</p></a>
+            <a href="directions.html"><span>06</span><small>Directions</small><h3>Turn open questions into decisive experiments</h3><p>Prioritize anatomy, causal replay, spatial language, and multimodal complementarity.</p></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section alt">
+        <div class="shell latest-note">
+          <div>
+            <p class="eyebrow">Research notes · 001</p>
+            <h2>How far can spatial language take GazeMed?</h2>
+            <p>The first project note revisits the idea behind PR #3, corrects the boundary of the real-time claim, and develops spatial expressions from a short list of words into anatomy-grounded relations and testable experiments.</p>
+          </div>
+          <a class="button" href="notes/spatial-language.html">Read the note →</a>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="GazeMed research directions organized as evidence gates: anatomy priors, causal replay, spatial language, generalization, gaze roles, and multimodal fusion." />
+    <meta name="theme-color" content="#143d35" />
+    <title>Directions · GazeMed</title>
+    <link rel="stylesheet" href="../../assets/css/site.css" />
+    <script src="../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-directions">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>Directions</p>
+            <p class="eyebrow">Chapter 06 · Directions</p>
+            <h1>Advance the claim by <em>closing alternatives.</em></h1>
+            <p class="page-summary">The next step is not the largest possible multimodal model. It is the smallest experiment that changes what GazeMed can honestly claim.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>In this chapter</span>
+            <a href="#state">1. Current state</a>
+            <a href="#priorities">2. Evidence priorities</a>
+            <a href="#language">3. Spatial-language program</a>
+            <a href="#fusion">4. Multimodal expansion</a>
+            <a href="#decision">5. Decision framework</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="state">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Current state</p><h2>A working mechanism with a <em>defined evidence boundary.</em></h2></div>
+            <p class="section-intro">The project has moved beyond basic feasibility. Its next value comes from determining exactly when the behavioral signal is patient-specific, causal, and complementary.</p>
+          </div>
+          <div class="state-map">
+            <article class="done"><span>Established in PR #3</span><h3>Mechanism evidence</h3><ul><li>Learned timing beats a fixed lag</li><li>Final beats Temporal-only</li><li>Position shuffle causes collapse</li><li>Spatial language improves IoU</li></ul></article>
+            <article class="now"><span>Immediate evidence gates</span><h3>Validity and incremental value</h3><ul><li>Label-conditioned anatomy prior</li><li>Causal prefix replay</li><li>Additional grouped splits</li><li>Mention-link audit</li></ul></article>
+            <article><span>Conditional expansion</span><h3>New modeling questions</h3><ul><li>Anatomy-grounded language</li><li>Reader adaptation and gaze roles</li><li>Image–behavior fusion</li><li>Streaming implementation</li></ul></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="priorities">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Evidence priorities</p><h2>Six questions, ordered by <em>dependency.</em></h2></div>
+          </div>
+          <div class="priority-stack">
+            <article>
+              <div class="priority-index"><span>Gate 01</span><strong>Incremental value</strong></div>
+              <div>
+                <h3>Does gaze outperform a finding-conditioned anatomy prior?</h3>
+                <p>The finding embedding can encode common locations. Build a prior only from training ellipses and evaluate it on the exact same instances. Report the Final–prior difference by lesion size, chest-center distance, finding, and reader.</p>
+                <dl><div><dt>Advance if</dt><dd>Final wins overall and shows interpretable gains in predefined subgroups.</dd></div><div><dt>Narrow if</dt><dd>Gaze helps only small, peripheral, or anatomically atypical findings.</dd></div></dl>
+              </div>
+            </article>
+            <article>
+              <div class="priority-index"><span>Gate 02</span><strong>Causal validity</strong></div>
+              <div>
+                <h3>Does the model work without future gaze?</h3>
+                <p>Replay the interpretation in timestamp order. At each mention endpoint, expose only fixations that have already ended. Sweep the available history and report accuracy, coverage, and latency.</p>
+                <dl><div><dt>Advance if</dt><dd>A causal prefix retains a predefined fraction of full-sequence performance.</dd></div><div><dt>Reframe if</dt><dd>Performance depends heavily on post-mention verification gaze.</dd></div></dl>
+              </div>
+            </article>
+            <article>
+              <div class="priority-index"><span>Gate 03</span><strong>Data validity</strong></div>
+              <div>
+                <h3>Are finding mentions linked correctly?</h3>
+                <p>Stratify a manual audit by finding, negation, uncertainty, repeated mention, and spatial expression. Compare the current regex linker with a clinical relation extractor only after the error profile is known.</p>
+                <dl><div><dt>Advance if</dt><dd>Linker replacement reduces measured alignment error and improves paired downstream results.</dd></div><div><dt>Keep simple if</dt><dd>Most errors do not change timing or descriptors.</dd></div></dl>
+              </div>
+            </article>
+            <article>
+              <div class="priority-index"><span>Gate 04</span><strong>Generalization</strong></div>
+              <div>
+                <h3>Does the effect survive a new cohort partition and reader?</h3>
+                <p>Repeat the core conditions across multiple patient-grouped splits. Then separate reader transfer from patient transfer with leave-one-reader-out evaluation where data support it.</p>
+                <dl><div><dt>Advance if</dt><dd>Effect direction and control collapse remain stable across splits.</dd></div><div><dt>Adapt if</dt><dd>Reader-specific lag or scan style dominates.</dd></div></dl>
+              </div>
+            </article>
+            <article>
+              <div class="priority-index"><span>Gate 05</span><strong>Construct</strong></div>
+              <div>
+                <h3>Can diagnostic and verification gaze be distinguished?</h3>
+                <p>Annotate a small, blinded sample around finding mentions for first detection, verification, routine scan, and rejected distractor. Measure inter-rater agreement before training a phase-aware model.</p>
+                <dl><div><dt>Advance if</dt><dd>The roles are annotatable and generalize across readers.</dd></div><div><dt>Remain latent if</dt><dd>Role labels cannot be defined reliably from the record.</dd></div></dl>
+              </div>
+            </article>
+            <article>
+              <div class="priority-index"><span>Gate 06</span><strong>Complementarity</strong></div>
+              <div>
+                <h3>Do image and behavior fail on different cases?</h3>
+                <p>Join per-instance RadZero and Final outputs. Measure error correlation and the oracle ceiling before training fusion. Test calibrated averaging before any joint architecture.</p>
+                <dl><div><dt>Advance if</dt><dd>A simple validation-calibrated fusion beats both inputs across splits.</dd></div><div><dt>Stop if</dt><dd>The oracle ceiling is too small to justify a larger model.</dd></div></dl>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="language">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">03</p>
+            <h2>Develop spatial language as a structured research program.</h2>
+            <p>The current seven binary descriptors are a useful diagnostic probe. The strongest extension is not simply a larger text encoder; it is a representation that connects a finding to anatomy and a relation.</p>
+            <div class="language-program">
+              <article><span>Stage A</span><h3>Audit the current tokens</h3><p>Measure coverage, precision, co-occurrence, left/right consistency, and contribution by descriptor.</p><strong>Question · Which words carry signal now?</strong></article>
+              <article><span>Stage B</span><h3>Add anatomical anchors</h3><p>Extract heart, hilum, pleura, lung zones, mediastinum, and costophrenic angles.</p><strong>Question · Does language identify a region before gaze?</strong></article>
+              <article><span>Stage C</span><h3>Represent relations</h3><p>Encode behind, adjacent to, involving, above, below, and bilateral compositions as frames.</p><strong>Question · Can relations disambiguate competing fixations?</strong></article>
+              <article><span>Stage D</span><h3>Calibrate uncertainty</h3><p>Separate positive, uncertain, negated, and comparative statements rather than dropping them into one mention.</p><strong>Question · When should the model abstain?</strong></article>
+            </div>
+            <div class="article-note">
+              <strong>Recommended first extension</strong>
+              <p>Use an interpretable anatomy-relation frame before an unrestricted sentence encoder. It provides explicit coverage and failure analysis, and can later serve as supervision for a learned text representation.</p>
+            </div>
+            <a class="inline-feature-link" href="notes/spatial-language.html"><span>Research note 001</span><strong>Read the full argument for spatial-language extensions →</strong></a>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section dark" id="fusion">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Conditional expansion</p><h2>Combine modalities only after proving <em>complementarity.</em></h2></div>
+            <p class="section-intro">Image evidence and interpretation behavior answer different questions. Their combination should proceed from analysis to simple calibration, not directly to a joint transformer.</p>
+          </div>
+          <div class="fusion-stages">
+            <article><span>0</span><h3>Error map</h3><p>Correlation, one-model-only successes, oracle maximum.</p></article>
+            <b>→</b>
+            <article><span>1</span><h3>Calibrated average</h3><p>Normalize both maps on validation data, then compare mean, max, and product.</p></article>
+            <b>→</b>
+            <article><span>2</span><h3>Reliability gate</h3><p>Mix by image-map entropy, gaze dispersion, and modality agreement.</p></article>
+            <b>→</b>
+            <article><span>3</span><h3>Joint model</h3><p>Only if repeated evidence shows simple fusion leaves value unexplained.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="decision">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">05</p>
+            <h2>A direction is useful when its possible outcomes change the project.</h2>
+            <div class="decision-checklist">
+              <div><span>Question</span><p>What alternative explanation or open claim does this experiment address?</p></div>
+              <div><span>Minimum comparison</span><p>What is the simplest baseline that could make the new idea unnecessary?</p></div>
+              <div><span>Information control</span><p>What can be shuffled or masked while preserving model capacity?</p></div>
+              <div><span>Decision rule</span><p>What result leads to expansion, narrowing, reframing, or stopping?</p></div>
+              <div><span>Evidence boundary</span><p>Which readers, findings, datasets, and operating conditions remain outside the claim?</p></div>
+            </div>
+            <p>This framework keeps the project coherent even when individual ideas fail. A negative anatomy or causal result would not be hidden; it would redefine which role gaze can plausibly play.</p>
+            <div class="next-chapter">
+              <span>Project notes</span>
+              <h3>Follow shorter arguments and decisions as the research direction develops.</h3>
+              <a href="notes/index.html">Open Research Notes →</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

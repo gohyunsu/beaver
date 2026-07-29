@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="GazeMed results, localization metrics, information-removal controls, external comparison, and evidence boundaries." />
+    <meta name="theme-color" content="#143d35" />
+    <title>Evidence · GazeMed</title>
+    <link rel="stylesheet" href="../../assets/css/site.css" />
+    <script src="../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-evidence">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>Evidence</p>
+            <p class="eyebrow">Chapter 04 · Evidence</p>
+            <h1>Read every number with its <em>comparison.</em></h1>
+            <p class="page-summary">The central result is not a single score. It is a sequence of comparisons that asks whether timing, coordinates, and spatial language each carry usable information.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>In this chapter</span>
+            <a href="#metrics">1. Metrics</a>
+            <a href="#results">2. Result table</a>
+            <a href="#claims">3. Supported claims</a>
+            <a href="#controls">4. Information controls</a>
+            <a href="#external">5. External comparison</a>
+            <a href="#limits">6. Evidence boundary</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="metrics">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">01</p>
+            <h2>IoU and Pointing answer different localization questions.</h2>
+            <div class="metric-explainer">
+              <article>
+                <span>Intersection-over-Union</span>
+                <div class="venn-demo"><i></i><b></b></div>
+                <code>area(prediction ∩ target) / area(prediction ∪ target)</code>
+                <p>Rewards regional overlap. Sensitive to threshold, smoothing bandwidth, target size, and map spread.</p>
+              </article>
+              <article>
+                <span>Pointing game</span>
+                <div class="point-demo"><i></i><b></b></div>
+                <code>1 if argmax(prediction) lies inside target, else 0</code>
+                <p>Asks whether the most confident point hits the ellipse. Ignores the quality of the rest of the map.</p>
+              </article>
+            </div>
+            <p>A change can improve IoU without changing Pointing: the map may overlap the ellipse more accurately while its highest point remains on the same side of the boundary. This matters for the spatial-language control.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="results">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Latest PR #3 specification</p><h2>One split, one instance set, <em>six conditions.</em></h2></div>
+            <p class="section-intro">Phase 3 · patient-level split · 1,093 test instances. Threshold and, where applicable, smoothing bandwidth are selected on validation data and held fixed for test evaluation.</p>
+          </div>
+          <div class="table-wrap">
+            <table class="comparison evidence-results">
+              <thead><tr><th>Condition</th><th>Information available</th><th>IoU</th><th>Pointing</th><th>Question answered</th></tr></thead>
+              <tbody>
+                <tr><td>Fixed 1.5 s rule</td><td>gaze + fixed mention timing</td><td>0.2082</td><td>0.5517</td><td>Simple prior-work heuristic</td></tr>
+                <tr><td>RadZero</td><td>image + phrase</td><td>0.2988</td><td><strong>0.7255</strong></td><td>External image–text reference</td></tr>
+                <tr><td>Temporal-only</td><td>learned gaze timing</td><td>0.2880</td><td>0.6816</td><td>Value of learned alignment</td></tr>
+                <tr class="highlight-row"><td>Final</td><td>timing + x/y + language</td><td><strong>0.3188</strong></td><td>0.7237</td><td>Current model</td></tr>
+                <tr><td>Position-shuffled</td><td>broken feature↔coordinate pairing</td><td>0.2101</td><td>0.4337</td><td>Instance-specific spatial use</td></tr>
+                <tr><td>Spatial words masked</td><td>seven location descriptors removed</td><td>0.2943</td><td>0.7118</td><td>Specific language contribution</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="source-note">Source · <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, <code>TECHNICAL_SPEC.md</code>, head commit <code>38f5d44</code>.</p>
+        </div>
+      </section>
+
+      <section class="article-section" id="claims">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">03</p>
+            <h2>The current evidence supports three claims at different strengths.</h2>
+            <div class="claim-stack">
+              <article class="claim-strong">
+                <span>Claim 1 · strong</span>
+                <h3>Position-aware, language-conditioned attention improves over temporal alignment alone.</h3>
+                <p>Final exceeds Temporal-only on both metrics and across all five training seeds. In the primary seed, the paired median IoU difference is +0.0289 and the Pointing difference is +0.0421.</p>
+              </article>
+              <article class="claim-strong">
+                <span>Claim 2 · strong</span>
+                <h3>The improvement depends on true fixation-to-position correspondence.</h3>
+                <p>Permuting positions within each instance causes a large collapse in both metrics across all five seeds. The coordinate set remains, but its relationship to each fixation’s time and language context is broken.</p>
+              </article>
+              <article class="claim-qualified">
+                <span>Claim 3 · qualified</span>
+                <h3>Spatial words make a smaller contribution, especially to region overlap.</h3>
+                <p>Masking spatial descriptors reduces IoU significantly in all five seeds. Pointing decreases directionally in all five, but reaches significance in only two. The language claim is therefore weaker and metric-dependent.</p>
+              </article>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="controls">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04</p>
+            <h2>Ablation removes a component. A control tests an explanation.</h2>
+            <p>The two PR #3 controls are useful because they preserve most of the trained model while selectively damaging information at evaluation time.</p>
+            <div class="control-reasoning">
+              <article>
+                <span>Position shuffle</span>
+                <h3>Alternative explanation</h3>
+                <p>“The model only needs the overall gaze distribution or extra capacity.”</p>
+                <h3>Manipulation</h3>
+                <p>Permute x/y among fixations inside the same instance.</p>
+                <h3>Expected evidence</h3>
+                <p>A large collapse means the real feature-to-coordinate pairing matters.</p>
+              </article>
+              <article>
+                <span>Spatial-word mask</span>
+                <h3>Alternative explanation</h3>
+                <p>“Report features only repeat the finding label.”</p>
+                <h3>Manipulation</h3>
+                <p>Zero left/right/bilateral/upper/lower/middle/retrocardiac.</p>
+                <h3>Expected evidence</h3>
+                <p>A decrease isolates location-bearing language from label redundancy.</p>
+              </article>
+            </div>
+            <div class="article-note">
+              <strong>One remaining alternative</strong>
+              <p>Position shuffling does not replace a label-conditioned anatomy baseline. The final model receives a finding embedding and may learn where that finding usually occurs. A direct anatomy-prior comparison is still required.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="external">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">05</p>
+            <h2>RadZero is a competitive reference, not a modality verdict.</h2>
+            <p>RadZero localizes a phrase from image patches and text. GazeMed Final localizes from gaze and speech without image pixels. On the matched instances, Final has higher IoU and statistically tied Pointing.</p>
+            <div class="modality-compare">
+              <article><span>RadZero</span><strong>image + phrase</strong><p>Visual evidence is represented directly by the CXR.</p><small>IoU 0.2988 · Pointing 0.7255</small></article>
+              <b>vs</b>
+              <article class="accent"><span>GazeMed Final</span><strong>gaze + speech</strong><p>Visual evidence is mediated through the radiologist’s behavior.</p><small>IoU 0.3188 · Pointing 0.7237</small></article>
+            </div>
+            <p>The input contracts are disjoint. The comparison shows that the behavioral model is competitive on this protocol. It does not show that gaze is better than the image, and it leaves open whether their errors are complementary.</p>
+          </article>
+          <aside class="article-aside">
+            <span>Paired comparison</span>
+            <p>Final vs RadZero: IoU <em>p</em> = 1.6×10⁻⁴; Pointing <em>p</em> = 0.92. The latter is a statistical tie.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="limits">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">06</p>
+            <h2>Keep the evidence boundary visible.</h2>
+            <div class="evidence-columns">
+              <article>
+                <span>Observed</span>
+                <ul>
+                  <li>Results on 1,093 instances from one patient split</li>
+                  <li>Five training-seed checks with a fixed split</li>
+                  <li>Position-shuffle and language-mask controls</li>
+                  <li>Matched RadZero evaluation</li>
+                </ul>
+              </article>
+              <article>
+                <span>Supported</span>
+                <ul>
+                  <li>Learned timing is better than a fixed lag</li>
+                  <li>Real fixation coordinates are used</li>
+                  <li>Spatial words contribute to IoU</li>
+                  <li>Behavior-only localization is competitive here</li>
+                </ul>
+              </article>
+              <article>
+                <span>Open</span>
+                <ul>
+                  <li>Causal, real-time performance</li>
+                  <li>New split and new-reader stability</li>
+                  <li>Value beyond anatomy priors</li>
+                  <li>Clinical mention-link accuracy</li>
+                  <li>Cross-institution and device transfer</li>
+                </ul>
+              </article>
+            </div>
+            <div class="article-note">
+              <strong>Preliminary result discipline</strong>
+              <p>Five initialization seeds measure optimization variability. They do not measure cohort variability because the patient partition is unchanged. Additional grouped splits are needed before a robust generalization claim.</p>
+            </div>
+            <div class="next-chapter">
+              <span>Next chapter</span>
+              <h3>See which parts are already covered by prior work and where GazeMed is genuinely distinct.</h3>
+              <a href="literature.html">Continue to Literature →</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>
