@@ -39,6 +39,7 @@ assets/
   css/site.css                          shared visual system
   js/site.js                            shared global and project navigation
   img/                                  attributed or original visuals
+  video/                                attributed research demonstrations
 docs/                                   internal research context and records
 ```
 

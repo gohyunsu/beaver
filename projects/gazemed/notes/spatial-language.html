@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="A research note on the GazeMed idea, the boundary of its real-time claim, and how spatial speech could develop into anatomy-grounded lesion localization." />
+    <meta name="description" content="A detailed research note on GazeMed: its gaze–speech inputs, model, metrics, causal controls, real-time boundary, and a path toward anatomy-grounded spatial language." />
     <meta name="theme-color" content="#143d35" />
     <title>Beyond directional words · GazeMed Research Note 001</title>
     <link rel="canonical" href="https://gohyunsu.github.io/beaver/projects/gazemed/notes/spatial-language.html" />
@@ -28,7 +28,7 @@
             <div class="note-kicker"><span>Research Note 001</span><time datetime="2026-07-29">29 July 2026</time></div>
             <h1>Beyond directional words: how should spatial language shape GazeMed?</h1>
             <p class="note-standfirst">Inference-time gaze and speech define a credible research direction. Spatial language can make that direction stronger—but only if it becomes a structured, anatomy-aware constraint and is evaluated against simpler explanations.</p>
-            <div class="note-meta"><span>14 min read</span><span>Evidence review</span><span>Project direction</span></div>
+            <div class="note-meta"><span>24 min read</span><span>Evidence review</span><span>Project direction</span></div>
           </div>
         </header>
 
@@ -51,6 +51,25 @@
               <h2>The short answer</h2>
               <p><strong>The central idea is worth pursuing.</strong> Most closely related work uses gaze to construct supervision or improve an image model during training. GazeMed instead keeps a new radiologist’s gaze and speech in the inference contract. That is a meaningful distinction.</p>
               <p>The spatial-language pathway is also promising, but the current result should be treated as a <strong>positive probe</strong>, not a finished language contribution. Seven binary location features improve regional overlap reliably; their effect on the binary Pointing metric is smaller and less stable. The next step should therefore deepen the representation and its controls, not enlarge the overall architecture indiscriminately.</p>
+              <h3>A five-step mental model</h3>
+              <p>Before considering architecture details, it helps to see GazeMed as a sequence of five decisions. Each decision turns a continuous clinical interaction into a testable localization problem.</p>
+              <div class="note-concept-sequence">
+                <article><span>01</span><strong>Observe</strong><p>Record where the radiologist’s gaze stabilizes while a chest X-ray is being interpreted.</p></article>
+                <article><span>02</span><strong>Listen</strong><p>Timestamp the spoken report and identify the phrase that mentions one finding.</p></article>
+                <article><span>03</span><strong>Align</strong><p>Estimate which fixations are relevant to that mention from timing, position, and language.</p></article>
+                <article><span>04</span><strong>Localize</strong><p>Place the learned attention weights back at the radiologist’s real fixation coordinates.</p></article>
+                <article><span>05</span><strong>Test</strong><p>Compare the resulting heatmap with the radiologist-drawn ellipse for that finding.</p></article>
+              </div>
+              <figure class="note-figure note-source-figure">
+                <img src="../../../assets/img/reflacx-dataset-overview.png" alt="REFLACX dataset workflow from radiologist eye tracking and dictation through synchronized data and manual finding localization" loading="lazy" />
+                <figcaption><strong>Where the signals come from.</strong> Figure 1 from <a href="https://www.nature.com/articles/s41597-022-01441-z">Bigolin Lanfredi et al. (2022)</a> shows the REFLACX collection and post-processing workflow. Reproduced without content changes under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</figcaption>
+              </figure>
+              <div class="signal-glossary">
+                <article><span>Fixation</span><p>A short interval in which gaze is sufficiently stable to be treated as one observed location. It is not the same as every raw eye-tracker sample.</p></article>
+                <article><span>Mention</span><p>The timestamped phrase associated with one finding label—for example, a phrase describing pleural effusion.</p></article>
+                <article><span>Ellipse</span><p>A coarse region drawn after interpretation to indicate the finding’s location. It is evaluation ground truth, not an input at inference.</p></article>
+                <article><span>Instance</span><p>One reading–finding pair with a present label, at least one ellipse, the full fixation sequence, and a matched report mention.</p></article>
+              </div>
               <div class="note-thesis">
                 <span>Recommended direction</span>
                 <strong>Preserve the simple gaze–speech attention mechanism. Replace flat location keywords with anatomy-grounded spatial frames, evaluate them causally, and first prove value beyond a finding-specific anatomy prior.</strong>
@@ -60,7 +79,7 @@
             <section id="established">
               <p class="section-mark">02 · Current evidence</p>
               <h2>What PR #3 actually establishes</h2>
-              <p>The current study compares increasingly informative mechanisms on the same 1,093 finding-level test instances from REFLACX Phase 3.</p>
+              <p>The current study compares six conditions on the same 1,093 finding-level test instances from REFLACX Phase 3. The first three below show the central progression: replace a hand-chosen time window with learned temporal alignment, then let position and language participate in that alignment.</p>
               <div class="note-result-flow">
                 <article><span>Fixed rule</span><strong>0.2082</strong><small>IoU · Pointing 0.5517</small><p>Select gaze using a fixed pre-mention window.</p></article>
                 <b>→</b>
@@ -68,19 +87,61 @@
                 <b>→</b>
                 <article class="accent"><span>Final</span><strong>0.3188</strong><small>IoU · Pointing 0.7237</small><p>Add x/y and report descriptors to attention.</p></article>
               </div>
+              <p class="source-note">The values above are the frozen split, training seed 0. They are useful for paired comparisons because every condition sees exactly the same test instances, but they are not the multi-seed averages.</p>
+
+              <h3>How the two metrics read the same heatmap differently</h3>
+              <div class="note-metric-primer">
+                <article>
+                  <span>Region overlap</span>
+                  <h3>Intersection over Union · IoU</h3>
+                  <code>area(prediction ∩ ellipse) / area(prediction ∪ ellipse)</code>
+                  <p>The heatmap is thresholded into a region. IoU rewards a region that overlaps the ellipse without spreading too far outside it. The threshold and smoothing bandwidth are selected on validation data, then frozen for test.</p>
+                </article>
+                <article>
+                  <span>Peak hit</span>
+                  <h3>Pointing game</h3>
+                  <code>1 if argmax(heatmap) lies inside ellipse; otherwise 0</code>
+                  <p>Pointing asks only whether the single hottest location hits the target. It is threshold-free, but binary: a useful reshaping of the rest of the heatmap is invisible if the peak remains on the same side of the ellipse boundary.</p>
+                </article>
+              </div>
+              <p>Consequently, <strong>IoU 0.3188 does not mean that 31.88% of cases were “correct.”</strong> It is the mean degree of regional overlap. Pointing 0.7237 is a proportion: the peak landed inside the target on 72.37% of the seed-0 test instances.</p>
+
+              <h3>Six conditions answer six different questions</h3>
+              <div class="table-wrap note-table-wrap">
+                <table class="comparison">
+                  <thead><tr><th>Condition</th><th>May use</th><th>IoU</th><th>Pointing</th><th>Question</th></tr></thead>
+                  <tbody>
+                    <tr><td>B1 · fixed 1.5 s</td><td>gaze + fixed timing</td><td>0.2082</td><td>0.5517</td><td>How far does the prior-work heuristic go?</td></tr>
+                    <tr><td>RadZero</td><td>image + phrase</td><td>0.2988</td><td><strong>0.7255</strong></td><td>Is the method competitive with image–text grounding?</td></tr>
+                    <tr><td>Temporal-only</td><td>gaze + learned timing</td><td>0.2880</td><td>0.6816</td><td>What does learned temporal alignment add?</td></tr>
+                    <tr class="highlight-row"><td>Final</td><td>timing + x/y + descriptors</td><td><strong>0.3188</strong></td><td>0.7237</td><td>What do position and language add together?</td></tr>
+                    <tr><td>Position-shuffled</td><td>mismatched fixation↔x/y</td><td>0.2101</td><td>0.4337</td><td>Does the genuine per-instance correspondence matter?</td></tr>
+                    <tr><td>Spatial words masked</td><td>all but 7 location features</td><td>0.2943</td><td>0.7118</td><td>Does explicitly spatial language matter?</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>The RadZero row is a reference point, not a modality contest. RadZero sees image pixels and a phrase; GazeMed sees gaze and speech but not image pixels. On the frozen split, Final has higher IoU (<em>p</em> = 1.6×10<sup>−4</sup>) and is not detectably different on Pointing (<em>p</em> = 0.92), where RadZero’s point estimate is slightly higher. The defensible conclusion is <strong>competitive localization from a different input contract</strong>, not superiority over image-based grounding.</p>
               <div class="note-correction">
                 <strong>Result version note</strong>
                 <p>An earlier project summary quoted <strong>0.233</strong> for the fixed REFLACX baseline. The latest PR technical specification reports <strong>0.2082</strong> after the conditions were aligned on the current 1,093-instance protocol. Results should be cited from one frozen specification rather than mixing stages of the experiment.</p>
               </div>
-              <p>The important result is not only that Final scores higher. Two information-removal controls explain part of the gain:</p>
+              <h3>The controls ask why Final improves</h3>
+              <p>The important result is not only that Final scores higher. Two information-removal controls damage a specific correspondence while leaving most of the trained system unchanged:</p>
               <ul>
-                <li><strong>Position shuffle:</strong> permuting x/y among fixations within each instance reduces IoU to 0.2101 and Pointing to 0.4337. The model needs the true relationship between a fixation’s context and its coordinate.</li>
-                <li><strong>Spatial-word mask:</strong> removing the seven location descriptors reduces IoU to 0.2943 and Pointing to 0.7118. IoU decreases significantly in all five seeds; Pointing reaches significance in only two.</li>
+                <li><strong>Position shuffle:</strong> permuting x/y among fixations within each instance reduces IoU to 0.2101 and Pointing to 0.4337. The coordinate set is still present, but each location is attached to the wrong temporal and linguistic context. The collapse shows that the true correspondence is essential.</li>
+                <li><strong>Spatial-word mask:</strong> removing the seven location descriptors reduces IoU to 0.2943 and Pointing to 0.7118. Across five training seeds and five patient splits, the IoU effect is positive and significant in 10/10 runs. Pointing moves in the same direction in 10/10 but reaches significance in 5/10.</li>
               </ul>
-              <p>This supports a strong position-correspondence claim and a more qualified spatial-language claim. Treating the two as equally established would obscure the most interesting next question.</p>
+              <p>This supports a strong position-correspondence claim and a smaller, metric-dependent spatial-language claim. Masking may reshape the region enough to change IoU without moving the single hottest point across the ellipse boundary. Treating the two controls as equally strong would obscure the most interesting next question.</p>
+
+              <h3>One run is not the headline</h3>
+              <div class="evidence-stability">
+                <article><span>Training-seed stability</span><strong>0.3186 IoU · 0.7188 Pointing</strong><p>Final mean across five seeds. Ranges: 0.3177–0.3195 IoU and 0.7109–0.7237 Pointing.</p></article>
+                <article><span>Patient-split stability</span><strong>0.3170 IoU · 0.7180 Pointing</strong><p>Final mean across five patient splits. Final &gt; Temporal-only &gt; B1 on both metrics in every split.</p></article>
+              </div>
+              <p>The often-quoted Pointing value 0.7237 is the <strong>maximum</strong> of the five training seeds, not the typical result. A project summary should use the mean with its range; the seed-0 table should remain available for paired statistical comparisons.</p>
               <figure class="note-figure">
                 <img src="../../../assets/img/gazemed-pr3-pipeline.png" alt="GazeMed pipeline in which report and finding features query a sequence of positioned fixations, producing a weighted spatial map" loading="lazy" />
-                <figcaption>Current GazeMed architecture from <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">PR #3</a>. Copied without visual modification. The source diagram labels its heatmap as an explanatory example.</figcaption>
+                <figcaption><strong>How the model produces a location.</strong> The language-and-label query scores fixation keys built from time, motion, label, and x/y. Attention weights are then splatted at the real gaze coordinates. Current architecture from <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, copied without visual modification. The source diagram labels its heatmap as an explanatory example, not a qualitative prediction.</figcaption>
               </figure>
             </section>
 
@@ -88,7 +149,30 @@
               <p class="section-mark">03 · Claim boundary</p>
               <h2>Test-time gaze is novel here. “Real-time” still needs a causal test.</h2>
               <p>The project’s clean distinction is that it uses gaze and speech for a new case at inference. That should remain central. It is more precise than saying previous work “does not use gaze at inference,” because the literature contains several interactive and broader gaze-conditioned systems; the direct comparison should be limited to the closest CXR localization setting.</p>
+              <h3>What a synchronized reading looks like</h3>
+              <p>REFLACX records several clocks at once. Eye-tracker samples are parsed into stable fixations; dictated words receive timestamps; zoom, pan, and window state are recorded; and the finding ellipse is drawn only after dictation for validation. GazeMed joins these streams at the level of one finding mention.</p>
+              <figure class="note-video-figure">
+                <video controls playsinline preload="metadata" poster="../../../assets/img/reflacx-collection-interface.png" aria-describedby="reflacx-video-caption">
+                  <source src="../../../assets/video/reflacx-collection-demo.mp4" type="video/mp4" />
+                  <p>Your browser cannot play this video. <a href="https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41597-022-01441-z/MediaObjects/41597_2022_1441_MOESM1_ESM.avi">Open the original supplementary AVI</a>.</p>
+                </video>
+                <figcaption id="reflacx-video-caption"><strong>REFLACX collection in motion · 1:54.</strong> The red ellipse indicates stabilized gaze (a fixation); the blue ellipse indicates the instantaneous gaze sample. The voice is synthesized from the timestamped transcript, not the radiologist’s original audio. Supplementary Video 2 from <a href="https://www.nature.com/articles/s41597-022-01441-z">Bigolin Lanfredi et al. (2022)</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The publisher’s AVI was remuxed to MP4 for browser playback; the audio and video streams were not re-encoded.</figcaption>
+              </figure>
+              <div class="signal-glossary compact">
+                <article><span>Available to the model</span><p>Full fixation sequence, word timing, matched finding text, and finding identity.</p></article>
+                <article><span>Used only for evaluation</span><p>The hand-drawn finding ellipse. The model must not see this target when producing a test prediction.</p></article>
+                <article><span>Not used by current GazeMed</span><p>Chest X-ray pixels. This is why RadZero is a competitiveness reference, not an input-matched baseline.</p></article>
+              </div>
               <p>However, the current implementation receives the <strong>full fixation sequence</strong> and includes a signed time difference between each fixation and the mention. A fixation after the spoken phrase can therefore participate in attention. This does not invalidate the localization result, but it changes the operational claim.</p>
+              <div class="causal-strip" aria-label="Difference between full-sequence and causal-prefix evaluation">
+                <div><span>Image appears</span><strong>fixations begin</strong></div>
+                <b>→</b>
+                <div><span>Phrase unfolds</span><strong>“right basilar opacity”</strong></div>
+                <b>→</b>
+                <div class="output"><span>Output clock</span><strong>prediction now</strong></div>
+                <b class="future">→</b>
+                <div class="future"><span>Unavailable future</span><strong>later verification gaze</strong></div>
+              </div>
               <div class="claim-correction">
                 <div><span>Supported wording</span><strong>test-time gaze + speech localization during a recorded interpretation</strong></div>
                 <b>before</b>
@@ -101,6 +185,7 @@
                 <li>latency from phrase completion to prediction, and</li>
                 <li>the gap between causal-prefix and full-sequence results.</li>
               </ol>
+              <p>The critical comparison is not merely “with future gaze” versus “without future gaze.” It should also show <em>when</em> a correct region first becomes stable as the phrase unfolds. That connects localization quality to operational latency.</p>
               <p>This experiment may reveal that post-mention gaze is valuable verification rather than leakage. If so, the project should distinguish an online discovery mode from an offline or delayed verification mode instead of forcing both into one real-time claim.</p>
             </section>
 
@@ -112,10 +197,21 @@
                 <div><span>Spatial · 7</span><strong>left · right · bilateral · upper · lower · middle · retrocardiac</strong></div>
                 <div><span>Extent · 3</span><strong>small-type · large-type · diffuse-type</strong></div>
               </div>
-              <p>The resulting vector is concatenated with the finding embedding to form the query. Each fixation key receives time, motion, raw x/y, and the same finding embedding.</p>
+              <h3>From a report sentence to an attention score</h3>
+              <div class="note-feature-roles">
+                <article><span>1 · Mention matching</span><strong>Which sentence refers to this finding?</strong><p>Keyword regular expressions associate a finding label with timestamped report sentence(s). A negation guard removes straightforward absence statements.</p></article>
+                <article><span>2 · Query</span><strong>What should the model look for?</strong><p>The 10 descriptor bits are concatenated with an 8-dimensional learned finding embedding and projected into one query vector.</p></article>
+                <article><span>3 · Fixation keys</span><strong>What does each candidate gaze point carry?</strong><p>Each fixation contributes six temporal/kinematic features, raw x/y, and the same finding embedding.</p></article>
+                <article><span>4 · Cross-attention</span><strong>Which fixation best matches the request?</strong><p>A single scaled dot-product attention layer produces a probability distribution over the fixation sequence.</p></article>
+              </div>
+              <p>The six temporal/kinematic features are signed time to the nearest mention, absolute time difference, a before-mention flag, a legacy 1.5-second-window flag, fixation duration, and instantaneous velocity. The model can therefore learn a soft alternative to the fixed gate without discarding the physical meaning of its inputs.</p>
               <div class="note-correction">
                 <strong>Implementation detail</strong>
                 <p>The circulated example included “top” and “below.” The current code operationalizes the related concepts as <strong>upper</strong> and <strong>lower</strong>; it does not contain a separate <strong>below</strong> descriptor. This matters because “lower” is a vertical zone, while “below” is a relation between two entities.</p>
+              </div>
+              <div class="note-warning">
+                <strong>Mention matching is part of the measurement</strong>
+                <p>If a regex attaches the wrong sentence—or misses a paraphrase—both the timing features and the descriptor vector become noisy at once. A manual mention-link audit is therefore not merely data cleaning; it is a validity check for the language claim.</p>
               </div>
               <p>This design is excellent as a mechanism probe: it is inspectable, easy to mask, and difficult to confuse with a large pretrained language model. It is less suitable as the final representation of radiological space.</p>
             </section>
@@ -127,8 +223,21 @@
               <p>A complete reading contains many fixations unrelated to the current finding. If a radiologist has inspected both lung bases, the word “right” can select a subset. If several findings share a region, the finding identity and timing can further disambiguate them.</p>
               <h3>2. Language can express a coordinate system.</h3>
               <p>Raw x/y tells the model where a point lies in the image. Language tells it how the clinician organizes that location: left versus right, apical versus basilar, hilar versus peripheral, or behind the heart. These concepts can remain stable across image dimensions and modest viewing transformations.</p>
+              <div class="spatial-taxonomy">
+                <article><span>Laterality</span><strong>left · right · bilateral</strong><p>Select a side or both sides.</p></article>
+                <article><span>Vertical zone</span><strong>upper · middle · lower</strong><p>Partition the thorax along a superior–inferior axis.</p></article>
+                <article><span>Anatomy anchor</span><strong>heart · hilum · pleura · diaphragm</strong><p>Name the structure that defines the local coordinate system.</p></article>
+                <article><span>Relation</span><strong>behind · adjacent to · above · below · within</strong><p>Place the finding relative to that anchor.</p></article>
+                <article><span>Extent</span><strong>small · focal · diffuse · extensive</strong><p>Constrain how much of the region should be occupied.</p></article>
+                <article><span>Discourse state</span><strong>negated · uncertain · comparative · follow-up</strong><p>Determine whether localization should be asserted, softened, or withheld.</p></article>
+              </div>
               <h3>3. Relations are more informative than isolated directions.</h3>
               <p>Radiology frequently describes a finding relative to anatomy. <a href="https://aclanthology.org/2020.lrec-1.274/">Rad-SpatialNet</a> models spatial language with frames containing a trigger and related elements. This offers a natural bridge from a sentence to a constraint over the chest.</p>
+              <figure class="note-figure note-source-figure">
+                <img src="../../../assets/img/rad-spatialnet-spatial-vignettes.png" alt="Rad-SpatialNet diagram mapping the same spatial lexical units to different radiology-specific spatial meanings depending on the figure and anatomical ground" loading="lazy" />
+                <figcaption><strong>Why a preposition is not a label by itself.</strong> Rad-SpatialNet maps the same lexical unit to different spatial meanings depending on the type of finding and anatomical ground. Cropped from Figure 2 of <a href="https://aclanthology.org/2020.lrec-1.274/">Datta et al. (2020)</a>; the diagram itself is unchanged. Reproduced under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</figcaption>
+              </figure>
+              <p>The diagram makes the limitation of a flat keyword vector concrete. “Extends into” can describe where a device terminates or how a disorder spreads; “projects over” can indicate depth or termination level depending on the entities involved. The model must represent <em>who is located relative to what</em>, not only whether a trigger word occurred.</p>
               <h3>4. Language may identify when gaze should be ignored.</h3>
               <p>Negated, uncertain, comparative, and follow-up statements do not have the same localization meaning as a new positive finding. A structured language pathway can learn or enforce abstention rather than merely shifting a heatmap.</p>
               <div class="note-warning">
@@ -152,11 +261,23 @@
                   <div><span>certainty</span><strong>asserted</strong></div>
                 </div>
               </div>
+              <h3>A practical representation pipeline</h3>
+              <div class="note-representation-steps">
+                <article><span>01 · Detect</span><div><strong>Find the finding mention and its time span.</strong><p>Retain the word-level timestamps instead of reducing the entire sentence to one time point.</p></div></article>
+                <article><span>02 · Parse</span><div><strong>Build a typed spatial frame.</strong><p>Extract the finding, anatomical anchor, relation, extent, polarity, and certainty. Preserve unresolved slots rather than guessing.</p></div></article>
+                <article><span>03 · Ground</span><div><strong>Convert the frame into an anatomy-aware prior.</strong><p>Map “behind the heart” to a retrocardiac region using an anatomical atlas or separately validated anatomy model—not the test ellipse.</p></div></article>
+                <article><span>04 · Refine</span><div><strong>Use temporally eligible gaze to personalize the prior.</strong><p>Score only the fixations available by the output clock and let their real coordinates sharpen or contradict the language prior.</p></div></article>
+                <article><span>05 · Decide</span><div><strong>Produce a region, confidence, or abstention.</strong><p>Negated, uncertain, unmatched, or poorly supported frames should be allowed to return “insufficient evidence.”</p></div></article>
+              </div>
               <p>The model can convert the anchor and relation into an interpretable spatial prior, then ask whether temporally relevant gaze refines it. This yields a clear decomposition:</p>
               <div class="decomposition">
                 <span>finding prior</span><b>→</b><span>anatomy + relation prior</span><b>→</b><span>patient-specific gaze refinement</span>
               </div>
               <p>Each arrow becomes a measurable increment. If language alone already localizes the case, gaze should not receive credit. If gaze only helps after the relation is known, the interaction itself becomes the contribution.</p>
+              <div class="note-correction">
+                <strong>Keep the anatomy prior honest</strong>
+                <p>An anatomy mask used at inference must come from a fixed atlas, a separately trained anatomy model, or image annotations available under the declared input contract. Building it from test finding ellipses would leak the answer into the baseline.</p>
+              </div>
               <h3>Why not begin with a general sentence encoder?</h3>
               <p>A pretrained encoder may improve scores while hiding whether it learned anatomy, severity, finding identity, or report style. A structured frame supplies coverage statistics, explicit failure modes, controllable ablations, and a clean target for later representation learning.</p>
             </section>
@@ -203,19 +324,33 @@
                 </article>
               </div>
               <p>These tests are more informative than comparing several large encoders on one split. They reveal whether language supplies a reusable spatial abstraction and whether gaze provides patient-specific residual information.</p>
+              <h3>Run them as evidence gates, not a feature backlog</h3>
+              <div class="decision-gates">
+                <article><span>Gate A · Measurement</span><strong>Can the current language signal be trusted?</strong><p>Complete the mention-link and descriptor audit first. If coverage or precision is poor, improve the measurement before comparing new encoders.</p></article>
+                <article><span>Gate B · Added information</span><strong>Does gaze beat an anatomy prior?</strong><p>If label+frame performs as well as label+frame+gaze, the contribution is language-derived localization rather than patient-specific gaze grounding.</p></article>
+                <article><span>Gate C · Causal availability</span><strong>Does the effect survive prefix replay?</strong><p>If performance depends heavily on post-mention fixations, position the system as delayed verification and stop making a live-output claim.</p></article>
+                <article><span>Gate D · Representation</span><strong>Do structured frames generalize?</strong><p>If held-out relation combinations fail, retain an auditable rule/frame system and gather targeted annotations before adding a general sentence encoder.</p></article>
+              </div>
+              <p>A result should be allowed to stop an extension. That is the practical value of these gates: they determine whether the next unit of effort belongs in data validation, causal evaluation, spatial semantics, or multimodal fusion.</p>
             </section>
 
             <section id="recommendation">
               <p class="section-mark">08 · Recommendation</p>
               <h2>A coherent direction for the project</h2>
+              <div class="claim-ledger">
+                <article class="strong"><span>Established strongly</span><strong>Position + language improves over timing alone.</strong><p>The ordering Final &gt; Temporal-only &gt; B1 holds on both metrics across five training seeds and five patient splits. Position shuffle fails decisively.</p></article>
+                <article class="qualified"><span>Established with qualification</span><strong>Spatial words add a small regional signal.</strong><p>The masking effect is consistent and significant for IoU, but the binary Pointing metric detects it only about half the time across the combined runs.</p></article>
+                <article class="open"><span>Still open</span><strong>Real-time causality and value beyond anatomy.</strong><p>Full-sequence evaluation does not prove causal online availability, and a label/frame-conditioned anatomy prior has not yet been isolated.</p></article>
+              </div>
               <div class="recommendation-stack">
                 <article><span>Keep</span><p>The small finding-conditioned cross-attention, real fixation splatting, and information-removal controls.</p></article>
                 <article><span>Clarify</span><p>Describe the current system as test-time gaze + speech localization until causal prefix replay is complete.</p></article>
-                <article><span>Strengthen first</span><p>Add a label-conditioned anatomy prior, mention-link audit, and grouped split sensitivity.</p></article>
+                <article><span>Strengthen first</span><p>Add a label-conditioned anatomy prior, a manual mention-link audit, and causal prefix replay. Training-seed and patient-split sensitivity are already measured.</p></article>
                 <article><span>Extend next</span><p>Replace binary spatial descriptors with anatomy-grounded frames and evaluate them incrementally.</p></article>
                 <article><span>Expand only if supported</span><p>Explore image–behavior fusion after per-instance errors show meaningful complementarity.</p></article>
               </div>
               <p>The most defensible contribution is therefore not “a model that adds gaze to a large medical vision system.” It is a controlled account of <strong>how a radiologist’s gaze, timing, and spatial language jointly ground a spoken finding</strong>, with explicit tests for the simpler explanations that could produce the same result.</p>
+              <p>RadZero adds one useful boundary: GazeMed is stronger on IoU and not detectably different on Pointing under the frozen split, despite using a different input modality. That makes future image–behavior fusion plausible, but it does not show that gaze is better than image evidence. Fusion becomes justified only when case-level errors are complementary rather than merely different on average.</p>
               <div class="note-conclusion">
                 <span>Working research question</span>
                 <strong>When a radiologist describes a finding, how much patient-specific localization information is provided by the timing and position of their gaze beyond the finding’s anatomical prior, and can structured spatial language select that information causally?</strong>
@@ -225,8 +360,9 @@
             <section class="note-sources">
               <h2>Sources</h2>
               <ol>
-                <li><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a> — current architecture, technical specification, controls, results, and reproduction code.</li>
+                <li><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a> — current architecture, technical specification, controls, multi-seed and patient-split results, RadZero comparison, and reproduction code. Reviewed at head commit <code>1e551d3</code>.</li>
                 <li><a href="https://www.nature.com/articles/s41597-022-01441-z">Lanfredi et al. (2022), REFLACX</a> — dataset design and synchronized gaze–dictation collection.</li>
+                <li><a href="https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41597-022-01441-z/MediaObjects/41597_2022_1441_MOESM1_ESM.avi">REFLACX Supplementary Video 2</a> — official demonstration of the collection interface and synchronized gaze display.</li>
                 <li><a href="https://doi.org/10.3389/fradi.2023.1088068">Lanfredi et al. (2023)</a> — label-specific eye-tracking supervision using a fixed pre-mention window.</li>
                 <li><a href="https://aclanthology.org/2020.lrec-1.274/">Datta et al. (2020), Rad-SpatialNet</a> — frame-based spatial relations in radiology reports.</li>
                 <li><a href="https://papers.miccai.org/miccai-2025/0305-Paper1072.html">GradTrack (MICCAI 2025)</a> — gaze position, duration, and temporal order for weakly supervised segmentation.</li>
