@@ -78,9 +78,9 @@
 
 **결정:** GazeMed PR #3의 test-time gaze–speech lesion grounding을 현재 primary path로 채택.
 
-**근거:** 2026-07-29 최신 technical spec 기준 Final은 1,093개 test instance에서 IoU 0.3188 / Pointing 0.7237이고 Temporal-only는 0.2880 / 0.6816이다. Final은 5/5 training seed에서 Temporal-only보다 높고, position shuffle은 5/5에서 크게 하락한다.
+**근거:** 2026-07-31 최신 technical spec 기준 Final의 5-seed 평균은 1,093개 test instance에서 IoU 0.3394 / Pointing 0.8029이고 Temporal-only는 0.2907 / 0.6789이다. Final은 5개 training seed와 5개 patient split에서 Temporal-only보다 높고, position shuffle은 중복된 primary run을 제외한 9/9 실행에서 두 지표 모두 유의하게 하락한다.
 
-**해석:** 좌표 의존성과 공간 언어의 IoU 기여는 지지된다. 다만 spatial-word mask의 Pointing 효과는 약하고, 환자 split은 하나이며, full fixation sequence와 signed Δt를 사용해 causal online 성질은 아직 입증되지 않았다.
+**해석:** 좌표 의존성과 공간 언어의 기여는 두 지표에서 지지된다. 다만 모든 patient split은 같은 REFLACX pool에서 나왔고, full fixation sequence와 signed Δt를 사용해 causal online 성질은 아직 입증되지 않았다.
 
 **구현 방향:** label-conditioned anatomy prior → causal prefix replay → split·reader sensitivity → RadZero와 instance-level 오류 상보성 → calibrated late fusion. 결과가 지지할 때만 streaming cache 또는 joint image×behavior model로 확장한다.
 

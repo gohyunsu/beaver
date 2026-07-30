@@ -59,23 +59,26 @@
       <section class="article-section alt" id="results">
         <div class="shell">
           <div class="section-head">
-            <div><p class="eyebrow">Latest PR #3 specification</p><h2>One split, one instance set, <em>six conditions.</em></h2></div>
-            <p class="section-intro">Phase 3 · patient-level split · 1,093 test instances. Threshold and, where applicable, smoothing bandwidth are selected on validation data and held fixed for test evaluation.</p>
+            <div><p class="eyebrow">Latest PR #3 specification</p><h2>One primary split, one instance set, <em>five matched conditions.</em></h2></div>
+            <p class="section-intro">REFLACX Phase 3 · patient-level split · 1,093 test instances · means across five training seeds. Threshold and, where applicable, smoothing bandwidth are selected on validation data and held fixed for test evaluation.</p>
           </div>
           <div class="table-wrap">
             <table class="comparison evidence-results">
               <thead><tr><th>Condition</th><th>Information available</th><th>IoU</th><th>Pointing</th><th>Question answered</th></tr></thead>
               <tbody>
-                <tr><td>Fixed 1.5 s rule</td><td>gaze + fixed mention timing</td><td>0.2082</td><td>0.5517</td><td>Simple prior-work heuristic</td></tr>
-                <tr><td>RadZero</td><td>image + phrase</td><td>0.2988</td><td><strong>0.7255</strong></td><td>External image–text reference</td></tr>
-                <tr><td>Temporal-only</td><td>learned gaze timing</td><td>0.2880</td><td>0.6816</td><td>Value of learned alignment</td></tr>
-                <tr class="highlight-row"><td>Final</td><td>timing + x/y + language</td><td><strong>0.3188</strong></td><td>0.7237</td><td>Current model</td></tr>
-                <tr><td>Position-shuffled</td><td>broken feature↔coordinate pairing</td><td>0.2101</td><td>0.4337</td><td>Instance-specific spatial use</td></tr>
-                <tr><td>Spatial words masked</td><td>seven location descriptors removed</td><td>0.2943</td><td>0.7118</td><td>Specific language contribution</td></tr>
+                <tr><td>Fixed 1.5 s rule</td><td>gaze + fixed mention timing</td><td>0.2652</td><td>0.5837</td><td>Simple prior-work heuristic</td></tr>
+                <tr><td>Temporal-only</td><td>learned gaze timing</td><td>0.2907</td><td>0.6789</td><td>Value of learned alignment</td></tr>
+                <tr class="highlight-row"><td>Final</td><td>timing + Fourier x/y + language</td><td><strong>0.3394</strong></td><td><strong>0.8029</strong></td><td>Current model</td></tr>
+                <tr><td>Position-shuffled</td><td>broken feature↔coordinate pairing</td><td>0.2908</td><td>0.6653</td><td>Instance-specific spatial use</td></tr>
+                <tr><td>Spatial words masked</td><td>seven location descriptors removed</td><td>0.3077</td><td>0.7462</td><td>Specific language contribution</td></tr>
               </tbody>
             </table>
           </div>
-          <p class="source-note">Source · <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, <code>TECHNICAL_SPEC.md</code>, head commit <code>38f5d44</code>.</p>
+          <p class="source-note">Source · <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, <code>TECHNICAL_SPEC.md</code>, head commit <code>0639081</code>. RadZero is separated below because its best IoU and Pointing values come from different operating points and one run.</p>
+          <div class="evidence-stability">
+            <article><span>5 training seeds · fixed split</span><strong>Final 0.3394 IoU [0.3374, 0.3414]</strong><p>Pointing 0.8029 [0.7924, 0.8134]. This varies optimization while holding the patients fixed.</p></article>
+            <article><span>5 patient splits</span><strong>Final 0.3460 IoU [0.3348, 0.3571]</strong><p>Pointing 0.8044 [0.7935, 0.8153]. Split-to-split IoU variance is 5.6× seed variance.</p></article>
+          </div>
         </div>
       </section>
 
@@ -88,17 +91,17 @@
               <article class="claim-strong">
                 <span>Claim 1 · strong</span>
                 <h3>Position-aware, language-conditioned attention improves over temporal alignment alone.</h3>
-                <p>Final exceeds Temporal-only on both metrics and across all five training seeds. In the primary seed, the paired median IoU difference is +0.0289 and the Pointing difference is +0.0421.</p>
+                <p>Final exceeds Temporal-only on both metrics in all five training seeds and all five patient splits. Across seeds, the mean gains are +0.0303 IoU and +0.1241 Pointing.</p>
               </article>
               <article class="claim-strong">
                 <span>Claim 2 · strong</span>
                 <h3>The improvement depends on true fixation-to-position correspondence.</h3>
-                <p>Permuting positions within each instance causes a large collapse in both metrics across all five seeds. The coordinate set remains, but its relationship to each fixation’s time and language context is broken.</p>
+                <p>Permuting positions within each instance causes a significant collapse in both metrics across all nine distinct seed and split runs. The coordinate set remains, but its relationship to each fixation’s time and language context is broken.</p>
               </article>
-              <article class="claim-qualified">
-                <span>Claim 3 · qualified</span>
-                <h3>Spatial words make a smaller contribution, especially to region overlap.</h3>
-                <p>Masking spatial descriptors reduces IoU significantly in all five seeds. Pointing decreases directionally in all five, but reaches significance in only two. The language claim is therefore weaker and metric-dependent.</p>
+              <article class="claim-strong">
+                <span>Claim 3 · strong within this protocol</span>
+                <h3>Spatial words add information beyond timing, position, and finding identity.</h3>
+                <p>Masking the seven spatial descriptors significantly lowers both metrics in every distinct run: 9/9 across the seed and split sweeps. Across seeds, the mean drops are 0.0317 IoU and 0.0567 Pointing.</p>
               </article>
             </div>
           </article>
@@ -144,17 +147,17 @@
           <article class="article-body">
             <p class="chapter-number">05</p>
             <h2>RadZero is a competitive reference, not a modality verdict.</h2>
-            <p>RadZero localizes a phrase from image patches and text. GazeMed Final localizes from gaze and speech without image pixels. On the matched instances, Final has higher IoU and statistically tied Pointing.</p>
+            <p>RadZero localizes a phrase from image patches and text. GazeMed Final localizes from gaze and speech without image pixels. On the same 1,093 instances, Final is higher on both metrics even when RadZero is granted its own best configuration for each metric.</p>
             <div class="modality-compare">
-              <article><span>RadZero</span><strong>image + phrase</strong><p>Visual evidence is represented directly by the CXR.</p><small>IoU 0.2988 · Pointing 0.7255</small></article>
+              <article><span>RadZero</span><strong>image + phrase</strong><p>Visual evidence is represented directly by the CXR.</p><small>Best IoU 0.3165 · best Pointing 0.7255</small></article>
               <b>vs</b>
-              <article class="accent"><span>GazeMed Final</span><strong>gaze + speech</strong><p>Visual evidence is mediated through the radiologist’s behavior.</p><small>IoU 0.3188 · Pointing 0.7237</small></article>
+              <article class="accent"><span>GazeMed Final</span><strong>gaze + speech</strong><p>Visual evidence is mediated through the radiologist’s behavior.</p><small>IoU 0.3399 · Pointing 0.7941</small></article>
             </div>
-            <p>The input contracts are disjoint. The comparison shows that the behavioral model is competitive on this protocol. It does not show that gaze is better than the image, and it leaves open whether their errors are complementary.</p>
+            <p>The input contracts are disjoint. The comparison shows that the behavioral model is competitive on this protocol; it does not show that gaze is a better information source than the image. The external baseline has only been scored on this one patient split, and whether the two models’ errors are complementary remains open.</p>
           </article>
           <aside class="article-aside">
             <span>Paired comparison</span>
-            <p>Final vs RadZero: IoU <em>p</em> = 1.6×10⁻⁴; Pointing <em>p</em> = 0.92. The latter is a statistical tie.</p>
+            <p>Final vs RadZero: IoU Δ +0.0234, <em>p</em> = 4.4×10⁻⁸; Pointing Δ +0.0686, <em>p</em> = 4.9×10⁻⁵. RadZero’s two reported optima are different operating points.</p>
           </aside>
         </div>
       </section>
@@ -168,10 +171,10 @@
               <article>
                 <span>Observed</span>
                 <ul>
-                  <li>Results on 1,093 instances from one patient split</li>
-                  <li>Five training-seed checks with a fixed split</li>
-                  <li>Position-shuffle and language-mask controls</li>
-                  <li>Matched RadZero evaluation</li>
+                  <li>Results on 1,093 instances in the primary patient split</li>
+                  <li>Five training seeds and five patient-level splits</li>
+                  <li>Position-shuffle and language-mask controls in 9/9 runs</li>
+                  <li>Matched RadZero evaluation on the primary split</li>
                 </ul>
               </article>
               <article>
@@ -179,7 +182,7 @@
                 <ul>
                   <li>Learned timing is better than a fixed lag</li>
                   <li>Real fixation coordinates are used</li>
-                  <li>Spatial words contribute to IoU</li>
+                  <li>Spatial words contribute to both metrics</li>
                   <li>Behavior-only localization is competitive here</li>
                 </ul>
               </article>
@@ -187,7 +190,7 @@
                 <span>Open</span>
                 <ul>
                   <li>Causal, real-time performance</li>
-                  <li>New split and new-reader stability</li>
+                  <li>New-reader, device, and institution transfer</li>
                   <li>Value beyond anatomy priors</li>
                   <li>Clinical mention-link accuracy</li>
                   <li>Cross-institution and device transfer</li>
@@ -196,7 +199,7 @@
             </div>
             <div class="article-note">
               <strong>Preliminary result discipline</strong>
-              <p>Five initialization seeds measure optimization variability. They do not measure cohort variability because the patient partition is unchanged. Additional grouped splits are needed before a robust generalization claim.</p>
+              <p>Five patient partitions now measure sample sensitivity as well as five seeds measure optimization sensitivity. The former produces 5.6× more IoU variance. Both remain draws from the same REFLACX pool, so they do not establish transfer to another reader population, institution, scanner mix, or eye-tracking setup.</p>
             </div>
             <div class="next-chapter">
               <span>Next chapter</span>

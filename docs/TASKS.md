@@ -1,6 +1,6 @@
 # Tasks
 
-> Snapshot: 2026-07-29<br>
+> Snapshot: 2026-07-31<br>
 > Owner는 GitHub issue에서 지정한다. 날짜는 공식 deadline을 재확인한 뒤 issue에 둔다.
 
 ## P0 — GazeMed
@@ -8,8 +8,8 @@
 ### GM-01 PR #3 evidence freeze
 
 - **상태:** 완료
-- **산출물:** B1, RadZero, Temporal-only, Final, position shuffle, spatial-word mask의 같은 1,093-instance 결과표와 5-seed 비교
-- **핵심 결과:** Final IoU 0.3188 / Pointing 0.7237, Temporal-only 대비 5/5 seed 개선
+- **산출물:** B1, RadZero, Temporal-only, Final, position shuffle, spatial-word mask의 같은 1,093-instance 결과표, 5-seed·5-split 비교, complete 2×2 architecture ablation
+- **핵심 결과:** Final 5-seed 평균 IoU 0.3394 / Pointing 0.8029, Temporal-only 및 정보 제거 control 대비 9/9 distinct seed/split run에서 양의 방향
 
 ### GM-02 Anatomy prior and value map
 

@@ -73,7 +73,7 @@
             <b aria-hidden="true">×</b>
             <div>
               <span>Fixation keys</span>
-              <strong>timing + motion + x/y + finding</strong>
+              <strong>timing + duration + Fourier x/y</strong>
               <small>Which visual event is relevant?</small>
             </div>
             <b aria-hidden="true">→</b>
@@ -85,7 +85,7 @@
           </div>
           <figure class="model-source-figure reveal">
             <img src="../../assets/img/gazemed-pr3-pipeline.png" alt="GazeMed pipeline from live gaze and dictation through fixation attention to a lesion probability map" loading="lazy" />
-            <figcaption><strong>Architecture in GazeMed PR #3.</strong> The diagram is reproduced from the project repository. Its heatmap is explanatory, not a qualitative model result. <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">Source and implementation</a>.</figcaption>
+            <figcaption><strong>Architecture in GazeMed PR #3.</strong> The diagram is reproduced from the project repository. Two reading cautions: the implemented finding embedding is active on the query side, and the heatmap is explanatory rather than a qualitative model result. <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">Source and implementation</a>.</figcaption>
           </figure>
         </div>
       </section>
@@ -94,16 +94,16 @@
         <div class="shell">
           <div class="section-head">
             <div><p class="eyebrow">Evidence snapshot</p><h2>What the current experiments <em>do—and do not—show.</em></h2></div>
-            <p class="section-intro">These are the latest values in the PR #3 technical specification, evaluated on the same 1,093 finding-level instances from one patient-level split.</p>
+            <p class="section-intro">These are five-training-seed means from the latest PR #3 technical specification, evaluated on the same 1,093 finding-level instances from the primary patient-level split.</p>
           </div>
           <div class="result-triptych">
-            <article><span>Fixed 1.5 s rule</span><strong>0.208</strong><small>IoU · Pointing 0.552</small></article>
-            <article><span>Learned timing</span><strong>0.288</strong><small>IoU · Pointing 0.682</small></article>
-            <article class="selected"><span>Timing + position + language</span><strong>0.319</strong><small>IoU · Pointing 0.724</small></article>
+            <article><span>Fixed 1.5 s rule</span><strong>0.265</strong><small>IoU · Pointing 0.584</small></article>
+            <article><span>Learned timing</span><strong>0.291</strong><small>IoU · Pointing 0.679</small></article>
+            <article class="selected"><span>Timing + position + language</span><strong>0.339</strong><small>IoU · Pointing 0.803</small></article>
           </div>
           <div class="evidence-boundary-compact">
-            <div><span>Supported</span><p>Learned timing outperforms a fixed lag. Actual fixation positions are necessary. Spatial language adds a smaller, metric-dependent contribution.</p></div>
-            <div><span>Not yet supported</span><p>Causal real-time operation, robustness to a new split or reader, and value beyond a label-conditioned anatomy prior.</p></div>
+            <div><span>Supported</span><p>Learned timing beats a fixed lag. True fixation positions matter. Masking spatial words reduces both metrics across all nine distinct seed and split runs.</p></div>
+            <div><span>Not yet supported</span><p>Causal real-time operation, transfer to a new reader or site, validated mention linking, and value beyond a label-conditioned anatomy prior.</p></div>
           </div>
           <a class="button light" href="evidence.html">Inspect results and controls →</a>
         </div>
@@ -130,8 +130,8 @@
         <div class="shell latest-note">
           <div>
             <p class="eyebrow">Research notes · 001</p>
-            <h2>How far can spatial language take GazeMed?</h2>
-            <p>The first project note revisits the idea behind PR #3, corrects the boundary of the real-time claim, and develops spatial expressions from a short list of words into anatomy-grounded relations and testable experiments.</p>
+            <h2>GazeMed from first principles: evidence, gaps, and the next model</h2>
+            <p>The first project note builds the problem from gaze and speech fundamentals, audits the latest PR #3 evidence, maps cross-domain related work, and develops anatomy-grounded language, causal streaming, boundary recovery, and uncertainty into testable model directions.</p>
           </div>
           <a class="button" href="notes/spatial-language.html">Read the note →</a>
         </div>

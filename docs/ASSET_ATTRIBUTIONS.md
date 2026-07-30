@@ -32,10 +32,36 @@
   - License: Creative Commons Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/
   - Changes: cropped from the paper page to the diagram area and rasterized at 3× scale; diagram content unchanged.
 
+## Related-work figures
+
+- `assets/img/papers/lanfredi-fixed-window.png`
+  - Source: Figure 2, Ricardo Bigolin Lanfredi et al., “Localization supervision of chest X-ray classifiers using label-specific eye-tracking annotation,” *Frontiers in Radiology* 3 (2023).
+  - Source URL: https://www.frontiersin.org/journals/radiology/articles/10.3389/fradi.2023.1088068/full
+  - License: Creative Commons Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/
+  - Changes: cropped to the figure area and rasterized at 3× scale; figure content unchanged.
+
+- `assets/img/papers/mult-crossmodal.png`
+  - Source: Figure 2, Yao-Hung Hubert Tsai et al., “Multimodal Transformer for Unaligned Multimodal Language Sequences,” *Proceedings of ACL 2019*, pages 6558–6569.
+  - Source URL: https://aclanthology.org/P19-1656/
+  - License: Creative Commons Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/
+  - Changes: cropped to the figure area and rasterized at 3× scale; figure content unchanged.
+
+- `assets/img/papers/reclip-grounding.png`
+  - Source: Figure 2, Sanjay Subramanian et al., “ReCLIP: A Strong Zero-Shot Baseline for Referring Expression Comprehension,” *Proceedings of ACL 2022*, pages 5198–5215.
+  - Source URL: https://aclanthology.org/2022.acl-long.357/
+  - License: Creative Commons Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/
+  - Changes: cropped to the figure area and rasterized at 3× scale; figure content unchanged.
+
+- `assets/img/papers/takmaz-gaze-speech.png`
+  - Source: Figure 1, Ece Takmaz et al., “Generating Image Descriptions via Sequential Cross-Modal Alignment Guided by Human Gaze,” *Proceedings of EMNLP 2020*, pages 4664–4677.
+  - Source URL: https://aclanthology.org/2020.emnlp-main.377/
+  - License: Creative Commons Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/
+  - Changes: cropped to the figure area and rasterized at 3× scale; figure content unchanged.
+
 ## GazeMed architecture
 
 - `assets/img/gazemed-pr3-pipeline.png`
-  - Source: `preliminary-0718/pipeline.png` in TeamBeaverSudal/GazeMed PR #3, commit `38f5d44`.
+  - Source: `preliminary-0718/pipeline.png` in TeamBeaverSudal/GazeMed PR #3, reviewed at commit `0639081`.
   - Source URL: https://github.com/TeamBeaverSudal/GazeMed/pull/3
   - Creator: Team BEAVER / GazeMed.
   - Changes: copied without visual modification.

@@ -82,7 +82,7 @@
           <article class="article-body wide">
             <p class="chapter-number">03</p>
             <h2>Final: let language ask which positioned fixation is relevant.</h2>
-            <p>The final model adds spatial position to each fixation key and compact language content to a single query. A one-layer scaled dot-product cross-attention connects them.</p>
+            <p>The final model adds Fourier-encoded spatial position to each fixation key and compact language content to a single query. A one-layer scaled dot-product cross-attention connects them.</p>
             <div class="architecture-ledger">
               <article>
                 <span>Query · 18 dimensions before projection</span>
@@ -99,8 +99,8 @@
                 <h3>Which visual event fits?</h3>
                 <ul>
                   <li>6 temporal and kinematic features</li>
-                  <li>2 raw coordinates: normalized x and y</li>
-                  <li>8-dimensional learned finding embedding</li>
+                  <li>16 Fourier position features from normalized x and y</li>
+                  <li>one linear projection to the attention key space</li>
                 </ul>
               </article>
             </div>
@@ -116,6 +116,12 @@
               <div><span>Attention</span><strong>0.10 · 0.71 · 0.19</strong></div>
             </div>
             <p>The language representation is deliberately interpretable, but coarse. It does not parse anatomical relations, compositional phrases, negation scope, or uncertainty. Those limits define the next language experiments.</p>
+            <div class="article-note">
+              <strong>A subtle implementation result</strong>
+              <p>The source still concatenates the finding embedding to every key, but that identical term adds the same constant to every attention score and cancels under softmax. Gradient inspection confirms it is inert. Finding identity conditions the model through the query; the next implementation and architecture diagram should make that role explicit.</p>
+            </div>
+            <h3>Why Fourier position is part of the mechanism</h3>
+            <p>A single linear key projection can only form a linear function of raw x/y. Sinusoidal bands lift each coordinate into a richer basis that language-conditioned attention can select. In the complete 2×2 comparison, cross-attention + Fourier reaches 0.3391 IoU / 0.7993 Pointing, compared with 0.3198 / 0.7204 for cross-attention + raw coordinates. The interaction matters: a nonlinear concatenation MLP does not show the same Fourier advantage.</p>
           </article>
         </div>
       </section>
@@ -136,7 +142,7 @@
             <p>This restriction makes the output easy to interpret and makes position-shuffling a meaningful test: if the correspondence between a fixation’s features and its coordinate is broken, performance should fall.</p>
             <figure class="model-source-figure">
               <img src="../../assets/img/gazemed-pr3-pipeline.png" alt="GazeMed fixation encoder, report query, cross-attention, and heatmap pipeline" loading="lazy" />
-              <figcaption>Pipeline from <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, copied without visual modification. The example heatmap in the source diagram is illustrative.</figcaption>
+              <figcaption>Pipeline from <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, copied without visual modification. Read it with two corrections from the current technical specification: finding identity is active through the query, and the example heatmap is illustrative.</figcaption>
             </figure>
           </article>
         </div>
@@ -159,7 +165,7 @@
           </article>
           <aside class="article-aside">
             <span>Reproducibility</span>
-            <p>Both weight initialization and example order must be seeded. Small order changes are large enough to alter the significance of the weaker language control.</p>
+              <p>Both weight initialization and example order must be seeded. The current evidence reports five training seeds and five patient splits separately because the latter contributes substantially more IoU variance.</p>
           </aside>
         </div>
       </section>

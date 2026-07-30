@@ -1,6 +1,6 @@
 # BEAVER 연구 맥락
 
-> 기준일: 2026-07-29<br>
+> 기준일: 2026-07-31<br>
 > 주요 근거: `KakaoTalk_20260721_1823_50_609_group.txt` 전체 대화, 팀이 공유한 공개 논문·데이터셋 페이지<br>
 > 목적: 새로운 팀원·연구 보조자·AI agent가 이 문서를 먼저 읽고 연구의 현재 상태와 판단 근거를 복구할 수 있게 한다.<br>
 > 개인정보: 원본 대화의 연락처, 학번, 이메일, 서명, 행정 첨부물은 의도적으로 배제했다.
@@ -28,18 +28,18 @@ BEAVER는 **사람의 시선이 담는 공간·시간·맥락 정보가 기존 �
 
 **초기 실험이 남긴 경계:** raw trajectory와 fixation heatmap의 차이는 Gaussian blur bandwidth를 맞추면 사라졌고, velocity·saccade·pupil 특징도 독립적인 이득을 보이지 않았다. 별도의 초기 probe에서는 finding별 해부학적 위치 prior가 gaze-only보다 강했다. 이 결과는 현재 Final의 효과를 부정하지 않지만, 같은 split·instance·label에서 anatomy-only와 직접 비교해 gaze가 흔한 위치를 재현하는 것 이상인지 확인해야 함을 뜻한다.
 
-**현재 모델:** 하나의 instance는 finding label과 ellipse가 있는 판독 구간이다. 추론 때 CXR pixel은 사용하지 않고, 전체 fixation sequence와 timestamped speech에서 만든 특징만 사용한다. 10개 binary text descriptor와 8차원 finding embedding이 query가 되고, 시간·운동학 6개 특징, raw x/y, 같은 finding embedding이 fixation key가 된다. 단일 cross-attention의 weight를 실제 fixation 좌표에 splat하고 Gaussian smoothing해 위치 분포를 만든다.
+**현재 모델:** 하나의 instance는 finding label과 ellipse가 있는 판독 구간이다. 추론 때 CXR pixel은 사용하지 않고, 전체 fixation sequence와 timestamped speech에서 만든 특징만 사용한다. 10개 binary text descriptor와 8차원 finding embedding이 query가 되고, 시간·운동학 6개 특징과 16차원 Fourier x/y가 fixation key가 된다. 구현에는 같은 finding embedding이 key에도 남아 있지만 모든 key에 동일한 상수로 들어가 softmax에서 상쇄되므로 실제 조건화는 query에서 일어난다. 단일 cross-attention의 weight를 실제 fixation 좌표에 splat하고 Gaussian smoothing해 위치 분포를 만든다.
 
 **PR #3 최신 결과:** Phase 3 patient-level split의 같은 1,093개 test instance에서 평가했다.
 
-- B1, 발화 1.5초 전 gaze 고정 규칙: IoU 0.2082 / Pointing 0.5517
-- RadZero, 외부 image+phrase 모델: IoU 0.2988 / Pointing 0.7255
-- Temporal-only: IoU 0.2880 / Pointing 0.6816
-- Final, 시간+좌표+공간 언어: IoU 0.3188 / Pointing 0.7237
-- Final position-shuffled: IoU 0.2101 / Pointing 0.4337
-- Final spatial-word-masked: IoU 0.2943 / Pointing 0.7118
+- B1, 발화 1.5초 전 gaze 고정 규칙: IoU 0.2652 / Pointing 0.5837
+- Temporal-only: IoU 0.2907 / Pointing 0.6789
+- Final, 시간+Fourier 좌표+공간 언어: IoU 0.3394 / Pointing 0.8029
+- Final position-shuffled: IoU 0.2908 / Pointing 0.6653
+- Final spatial-word-masked: IoU 0.3077 / Pointing 0.7462
+- RadZero, 외부 image+phrase 모델의 metric별 최선: IoU 0.3165 / Pointing 0.7255. 서로 다른 operating point다.
 
-Final은 Temporal-only보다 5/5 training seed에서 높았고, position shuffle도 5/5에서 큰 하락을 보였다. spatial-word masking은 IoU에서는 5/5 유의했지만 Pointing은 2/5만 유의해, 공간 언어의 효과는 지표별로 비대칭이다. Final은 RadZero보다 IoU가 높고 Pointing은 동률 수준이다. 두 모델의 입력이 다르므로 이는 경쟁력의 근거이지 modality 우월성의 근거가 아니다.
+Final은 Temporal-only보다 5개 training seed와 5개 patient split에서 높았다. position shuffle과 spatial-word masking도 중복된 primary run을 제외한 9/9 실행에서 두 지표 모두 유의하게 하락했다. patient split의 IoU 변동은 seed 변동의 5.6배다. 한 primary split의 paired 비교에서 Final은 RadZero의 metric별 최선보다 두 지표 모두 높지만, 두 모델의 입력이 다르므로 이는 경쟁력의 근거이지 modality 우월성의 근거가 아니다.
 
 **최신 문헌이 주는 제약:**
 
@@ -76,7 +76,7 @@ Final은 Temporal-only보다 5/5 training seed에서 높았고, position shuffle
 - 하나의 patient split 외 추가 split과 가능한 reader-held-out sensitivity
 - 발화 뒤의 미래 fixation을 볼 수 없는 causal mask, timestamp assertion, streaming latency
 
-**현재 증거의 경계:** 이 모델은 test-time gaze+speech 모델이지만, full fixation sequence와 signed Δt를 사용하므로 causal online model은 아직 아니다. 하나의 patient split, regex mention linker, coarse ellipse, single institution/device도 일반화 주장에 제약을 준다.
+**현재 증거의 경계:** 이 모델은 test-time gaze+speech 모델이지만, full fixation sequence와 signed Δt를 사용하므로 causal online model은 아직 아니다. 다섯 patient split은 같은 REFLACX pool 안의 표본 변동만 다루며, regex mention linker, coarse ellipse, single institution/device도 일반화 주장에 제약을 준다.
 
 **즉시 필요한 산출물:** 같은 프로토콜의 label-conditioned anatomy prior와 subgroup value map → causal prefix replay → 추가 patient split과 reader sensitivity → RadZero·Final 오류 상보성 분석 → calibrated image×behavior late fusion gate.
 
