@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="GazeMed를 이해하기 위한 gaze, dictation, chest X-ray localization, weak supervision의 기초 개념을 단계적으로 설명합니다." />
+    <meta name="theme-color" content="#143d35" />
+    <title>기초 · GazeMed</title>
+    <link rel="stylesheet" href="../../../assets/css/site.css" />
+    <script src="../../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../../" data-project="gazemed" data-project-root="../" data-page="gazemed-foundations" data-lang="ko" data-alt-lang="../foundations.html">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>기초</p>
+            <p class="eyebrow">Chapter 01 · Foundations</p>
+            <h1>눈의 움직임에서 <em>검증 가능한 근거까지.</em></h1>
+            <p class="page-summary">GazeMed는 의료 영상, eye tracking, machine learning이라는 세 분야를 연결합니다. 비슷한 단어가 분야마다 다른 뜻으로 사용되므로 먼저 공통 어휘와 좌표계를 세웁니다.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>이 장의 순서</span>
+            <a href="#task">1. 국소화 과제</a>
+            <a href="#cxr">2. 흉부 X선 좌표</a>
+            <a href="#gaze">3. Gaze 표현</a>
+            <a href="#time">4. 발화와 시간 정렬</a>
+            <a href="#meaning">5. Fixation의 의미</a>
+            <a href="#supervision">6. Weak supervision</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="task">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">01 · 과제 정의</p>
+            <h2>먼저 classification, localization, segmentation을 구분합니다.</h2>
+            <p>같은 흉부 X선에 대해 모델은 서로 다른 질문에 답할 수 있습니다. 출력 계약이 다르면 정답의 의미와 평가 지표도 달라집니다.</p>
+            <div class="concept-stair">
+              <div><span>Classification</span><strong>흉수가 있는가?</strong><p>영상 전체에 하나의 존재 점수를 냅니다. 위치는 요구하지 않습니다.</p></div>
+              <div><span>Localization</span><strong>언급한 흉수는 어디에 있는가?</strong><p>point, box, ellipse, probability map으로 영역을 표시합니다.</p></div>
+              <div><span>Segmentation</span><strong>정확히 어느 픽셀이 흉수인가?</strong><p>pixel-level boundary를 요구합니다.</p></div>
+            </div>
+            <div class="article-note"><strong>GazeMed는 localization 연구입니다.</strong><p>REFLACX ellipse는 전문의가 그린 거친 reference region입니다. 정밀한 lesion mask가 아니므로 segmentation이라고 부르면 target을 과장합니다.</p></div>
+            <h3>예측 단위는 image가 아니라 reading × finding입니다</h3>
+            <p>같은 영상도 여러 전문의가 읽으면 gaze path와 report가 달라집니다. GazeMed instance는 특정 독자가 특정 영상을 읽은 기록 안에서 하나의 소견 mention과 reference region을 연결한 단위입니다.</p>
+            <div class="equation-line"><span>한 번의 판독</span><b>+</b><span>하나의 소견 언급</span><b>+</b><span>그 소견의 reference region</span><b>=</b><strong>하나의 localization instance</strong></div>
+          </article>
+          <aside class="article-aside"><span>확인</span><p>두 전문의가 같은 영상을 읽으면 image는 하나지만 reading은 둘입니다. patient, image, reader, reading을 같은 ID로 취급하면 data leakage가 생깁니다.</p></aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="cxr">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">02 · 공간</p>
+            <h2>공간 표현은 좌표계를 정해야 비로소 의미를 갖습니다.</h2>
+            <p>정면 흉부 X선은 관찰자가 환자를 마주 보는 방향으로 표시됩니다. 따라서 환자의 오른쪽은 화면을 보는 사람의 왼쪽에 나타납니다. 반면 pixel x/y는 일반적으로 화면의 왼쪽 위에서 시작해 오른쪽과 아래쪽으로 증가합니다.</p>
+            <div class="coordinate-primer">
+              <div class="cxr-frame" aria-label="단순화한 흉부 X선 좌표">
+                <span class="axis-x">x →</span><span class="axis-y">y ↓</span>
+                <div class="lung left-lung">환자<br /><strong>오른쪽</strong></div>
+                <div class="lung right-lung">환자<br /><strong>왼쪽</strong></div>
+                <span class="zone upper">상부</span><span class="zone middle">중부</span><span class="zone lower">하부</span>
+              </div>
+              <div>
+                <h3>세 좌표계가 동시에 존재합니다</h3>
+                <dl class="definition-list">
+                  <div><dt>Image frame</dt><dd>왼쪽 위를 원점으로 측정한 pixel x/y입니다.</dd></div>
+                  <div><dt>Patient frame</dt><dd>임상에서 사용하는 환자의 left/right, superior/inferior입니다.</dd></div>
+                  <div><dt>Anatomical frame</dt><dd>retrocardiac, hilar, basilar, pleural-adjacent 같은 구조적 관계입니다.</dd></div>
+                </dl>
+              </div>
+            </div>
+            <p>left/right 같은 단순 방향어는 유용하지만 충분하지 않습니다. “retrocardiac opacity”는 단순히 왼쪽 또는 아래쪽이 아니라 심장 뒤라는 관계를 표현합니다. “bibasilar”는 양쪽과 하부를 합성합니다. 다음 언어 모델은 단어의 존재보다 <strong>anatomical entity와 relation의 조합</strong>을 표현해야 합니다.</p>
+          </article>
+          <aside class="article-aside"><span>흔한 오류</span><p>image frame과 patient frame을 섞으면 feature가 내부적으로 일관되어 보여도 임상 left/right는 반대로 학습됩니다.</p></aside>
+        </div>
+      </section>
+
+      <section class="article-section" id="gaze">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">03 · Eye tracking</p>
+            <h2>Raw gaze, fixation, scanpath, heatmap은 서로 바꿔 쓸 수 있는 표현이 아닙니다.</h2>
+            <p>eye tracker는 매우 빠른 sample stream을 만듭니다. 모델링은 보통 이를 event 또는 공간 요약으로 압축하면서 시작합니다. 압축할수록 강건해질 수 있지만 시간 순서와 미세 운동을 잃습니다.</p>
+            <div class="representation-stack">
+              <article><span>Raw sample</span><strong>(x, y, t, pupil)</strong><p>tracker의 한 번 측정입니다. 높은 시간 해상도와 함께 noise, blink, 중복점을 포함합니다.</p></article>
+              <article><span>Fixation</span><strong>일정 구간의 안정된 gaze</strong><p>평균 위치, 시작·종료 시점, duration으로 요약한 기본 event입니다.</p></article>
+              <article><span>Saccade</span><strong>fixation 사이의 빠른 이동</strong><p>방향과 속도는 탐색을 반영할 수 있지만 의식적 intent로 단정하기 어렵습니다.</p></article>
+              <article><span>Scanpath</span><strong>순서 있는 fixation sequence</strong><p>어디를 어떤 순서로 보았는지 보존해 revisit와 비교를 나타냅니다.</p></article>
+              <article><span>Heatmap</span><strong>공간 density</strong><p>시간 동안의 gaze를 공간에 합칩니다. 사용하기 쉽지만 event order를 잃습니다.</p></article>
+            </div>
+            <h3>Gaussian bandwidth가 결과에 영향을 주는 이유</h3>
+            <p>점 형태의 fixation을 heatmap으로 만들 때 주변에 질량을 퍼뜨립니다. kernel이 넓으면 coarse ellipse와 겹치는 영역이 커져 gaze 자체가 좋아지지 않아도 IoU가 올라갈 수 있습니다. 모델 비교마다 smoothing을 동일하게 강제하거나 validation에서 공정하게 조정해야 합니다.</p>
+            <div class="formula-card"><code>H(p) = Σᵢ wᵢ · exp(−‖p − gᵢ‖² / 2σ²)</code><p><strong>gᵢ</strong>는 fixation 좌표, <strong>wᵢ</strong>는 relevance weight, <strong>σ</strong>는 smoothing 폭입니다.</p></div>
+          </article>
+          <aside class="article-aside"><span>현재 선택</span><p>GazeMed는 fixation event를 사용합니다. 초기 raw trajectory 비교에서는 spatial smoothing 조건을 맞추자 독립적인 이득이 남지 않았습니다.</p></aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="time">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04 · 시간</p>
+            <h2>보는 것과 말하는 것은 동기화되어 있지만 동시에 일어나지는 않습니다.</h2>
+            <p>전문의는 보통 시각적 근거를 관찰한 뒤 구술합니다. delay는 소견, 독자, 문장 구조, 최초 발견인지 재확인인지에 따라 달라집니다. 따라서 하나의 고정 lag가 모든 사례에 맞는다고 기대하기 어렵습니다.</p>
+            <div class="temporal-example">
+              <div class="temporal-axis"><span>이전</span><i></i><span>mention time</span><i></i><span>이후</span></div>
+              <div><strong>Fixations</strong><span class="fix f1"></span><span class="fix f2"></span><span class="fix f3"></span><span class="fix f4"></span></div>
+              <div><strong>Dictation</strong><span class="utterance">“small right pleural effusion”</span></div>
+            </div>
+            <h3>Fixed lag와 learned alignment</h3>
+            <div class="compare-two">
+              <article><span>Fixed window</span><h3>모든 사례에 같은 시간 규칙</h3><p>단순하고 재현하기 쉽지만 독자와 소견의 말하기 습관 변화에 약합니다.</p></article>
+              <article><span>Learned alignment</span><h3>fixation 위의 relevance distribution</h3><p>가변 delay를 표현하지만 timestamp shuffle과 future-gaze leakage를 반드시 검사해야 합니다.</p></article>
+            </div>
+          </article>
+          <aside class="article-aside"><span>Causal boundary</span><p>추론 시 gaze를 사용한다고 해서 real-time인 것은 아닙니다. 출력 시점 이후 fixation이 구조적으로 차단되어야 causal online claim이 가능합니다.</p></aside>
+        </div>
+      </section>
+
+      <section class="article-section" id="meaning">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">05 · 의미</p>
+            <h2>Fixation은 시각적 방향을 기록할 뿐 의도를 직접 기록하지 않습니다.</h2>
+            <p>같은 위치를 서로 다른 이유로 볼 수 있습니다. 좌표가 정확하더라도 병변 근처의 모든 fixation을 positive evidence로 처리하면 의미 수준의 label noise가 생깁니다.</p>
+            <div class="role-grid">
+              <article><span>Detect</span><h3>이상 소견이 처음 눈에 들어옴</h3><p>발견 중심 localization에 유용할 수 있습니다.</p></article>
+              <article><span>Verify</span><h3>의심한 소견을 다시 확인함</h3><p>발화와 가깝게 나타나 정렬하기 쉬울 수 있습니다.</p></article>
+              <article><span>Routine</span><h3>해부 구조를 체계적으로 검사함</h3><p>이상 소견 없이도 흔한 scan pattern을 재현합니다.</p></article>
+              <article><span>Distract</span><h3>시각적으로 두드러진 후보를 기각함</h3><p>attention은 있지만 positive supervision으로 쓰면 틀립니다.</p></article>
+            </div>
+            <p>REFLACX는 gaze role label을 제공하지 않습니다. 따라서 GazeMed는 relevance를 latent하게 학습합니다. revisit, speech timing, negation, 작은 전문가 annotation이 role identifiability를 검증하는 다음 단서가 될 수 있습니다.</p>
+          </article>
+          <aside class="article-aside"><span>해석 원칙</span><p>“보았다”를 추가 근거 없이 “진단했다”로 번역하지 않습니다.</p></aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="supervision">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">06 · 감독 신호</p>
+            <h2>Gaze는 유용하지만 불완전하므로 weak supervision입니다.</h2>
+            <p>strong supervision은 목표를 직접 표시합니다. 예를 들어 전문의가 lesion boundary를 정밀하게 trace한 mask입니다. weak supervision은 자연스럽게 생성되거나 비용이 낮은 관련 신호지만 target과의 대응이 noisy합니다.</p>
+            <div class="supervision-spectrum">
+              <div><span>약함</span><strong>gaze density</strong><small>저비용 · 간접적 · 시간 정보</small></div><i></i>
+              <div><strong>rough box / ellipse</strong><small>국소적 · 거친 경계</small></div><i></i>
+              <div><span>강함</span><strong>pixel mask</strong><small>정밀 · 고비용 · 경우에 따라 모호</small></div>
+            </div>
+            <h3>GazeMed가 실제로 학습하는 것</h3>
+            <p>target ellipse는 이상 소견이 표시된 위치를 평가합니다. gaze와 speech는 추론 입력입니다. 모델은 모든 fixation을 복제하는 것이 아니라 reference region을 가장 잘 설명하는 일부 fixation을 선택합니다.</p>
+            <div class="next-chapter"><span>다음 장</span><h3>REFLACX가 이 학습 문제의 각 부분을 어떻게 저장하는지 확인합니다.</h3><a href="data.html">데이터 장으로 계속 →</a></div>
+            <h3>주요 원문</h3>
+            <ul class="source-list">
+              <li><a href="https://www.nature.com/articles/s41597-022-01441-z">Bigolin Lanfredi et al. (2022), REFLACX dataset paper</a></li>
+              <li><a href="https://physionet.org/content/reflacx-xray-localization/1.0.0/">REFLACX v1.0.0 PhysioNet documentation</a></li>
+              <li><a href="https://www.frontiersin.org/journals/radiology/articles/10.3389/fradi.2023.1088068/full">Bigolin Lanfredi et al. (2023), label-specific gaze supervision</a></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

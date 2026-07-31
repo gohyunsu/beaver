@@ -3,24 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="BEAVER is a research program studying what human attention, language, and behavior add to intelligent systems." />
+    <meta name="description" content="BEAVER is a research atlas for understanding when gaze, language, and behavior add useful information to intelligent systems." />
     <meta name="theme-color" content="#143d35" />
     <title>BEAVER · Human signals × intelligent systems</title>
+    <link rel="canonical" href="https://gohyunsu.github.io/beaver/" />
+    <link rel="alternate" hreflang="en" href="https://gohyunsu.github.io/beaver/" />
+    <link rel="alternate" hreflang="ko" href="https://gohyunsu.github.io/beaver/ko/" />
     <link rel="stylesheet" href="assets/css/site.css" />
     <script src="assets/js/site.js" defer></script>
   </head>
-  <body data-root="./" data-page="home">
+  <body data-root="./" data-page="home" data-lang="en" data-alt-lang="ko/index.html">
     <div data-site-header></div>
     <main id="main">
       <section class="hub-hero">
         <div class="shell hub-hero-grid">
           <div>
-            <p class="eyebrow">BEAVER Research Program</p>
-            <h1>We study the traces left by <em>human judgment.</em></h1>
-            <p class="hub-lede">Where people look, what they say, and how they act reveal different parts of a decision. BEAVER asks when those traces provide useful information to an intelligent system—and when they are only noise, habit, or distraction.</p>
+            <p class="eyebrow">BEAVER Research Atlas</p>
+            <h1>Understanding the traces left by <em>human judgment.</em></h1>
+            <p class="hub-lede">A person does not leave only a final answer. Their eyes move, words unfold, and actions arrive in sequence. BEAVER studies what those traces reveal, what they fail to reveal, and when an intelligent system can use them responsibly.</p>
             <div class="button-row">
-              <a class="button" href="projects/gazemed/index.html">Enter GazeMed <span aria-hidden="true">→</span></a>
-              <a class="text-link" href="#projects">View all projects</a>
+              <a class="button" href="#program">Begin with the research program <span aria-hidden="true">↓</span></a>
+              <a class="text-link" href="projects/gazemed/index.html">Enter GazeMed</a>
             </div>
           </div>
           <aside class="signal-constellation reveal" aria-label="BEAVER research signals">
@@ -32,52 +35,61 @@
         </div>
       </section>
 
-      <section class="section alt" id="program">
-        <div class="shell">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Research program</p>
-              <h2>One question, examined across <em>three settings.</em></h2>
+      <section class="article-section alt" id="program">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">01 · Research program</p>
+            <h2>Begin with one distinction: a trace is not the mental state itself.</h2>
+            <p>Attention, understanding, dissatisfaction, confidence, and intent are <strong>latent constructs</strong>: they cannot be observed directly. An eye tracker measures coordinates. A microphone records sound. An interface records clicks. These observations may contain evidence about a construct, but the meaning depends on the task and on alternative explanations.</p>
+            <p>A long fixation, for example, can mean difficulty, interest, comparison, verification, or distraction. The measurement is real; the interpretation remains a hypothesis. BEAVER turns that hypothesis into a sequence of testable steps.</p>
+            <div class="learning-route">
+              <article><span>Observe</span><strong>Capture a trace</strong><p>Record gaze, language, or action without assigning it a psychological meaning in advance.</p></article>
+              <article><span>Operationalize</span><strong>Define an observable target</strong><p>Connect the construct to a later region, answer, choice, correction, or other checkable event.</p></article>
+              <article><span>Compare</span><strong>Challenge the simple explanation</strong><p>Test saliency, anatomy, text difficulty, reader identity, and image-only priors first.</p></article>
+              <article><span>Translate</span><strong>Choose a bounded role</strong><p>Use supported signals for supervision, suggestions, explanations, or calibrated abstention.</p></article>
             </div>
-            <p class="section-intro">A signal is useful only when it explains something that a simpler source—an image, the text itself, or visual saliency—cannot already explain.</p>
-          </div>
-          <div class="program-statement reveal">
-            <span>Central question</span>
-            <strong>What does a human signal add beyond the task context that produced it?</strong>
-          </div>
-          <div class="program-lens">
-            <article>
-              <span>Observe</span>
-              <h3>Capture a trace</h3>
-              <p>Measure gaze, language, or action without assuming what it means.</p>
-            </article>
-            <article>
-              <span>Interpret</span>
-              <h3>Name the context</h3>
-              <p>Separate attention from intent, difficulty, verification, and habit.</p>
-            </article>
-            <article>
-              <span>Compare</span>
-              <h3>Test added value</h3>
-              <p>Use strong priors and information-removal controls before adding complexity.</p>
-            </article>
-            <article>
-              <span>Translate</span>
-              <h3>Define a useful role</h3>
-              <p>Turn a supported signal into supervision, assistance, or explanation.</p>
-            </article>
-          </div>
+            <div class="note-thesis">
+              <span>Central question</span>
+              <strong>What does a human signal add beyond the image, text, task structure, and population regularities that produced it?</strong>
+            </div>
+          </article>
         </div>
       </section>
 
-      <section class="section" id="projects">
+      <section class="article-section" id="signals">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">02 · Foundations</p>
+            <h2>Human signals are useful because they are partial.</h2>
+            <p>Each signal exposes a different slice of a decision. Gaze is spatially precise but semantically ambiguous. Language is semantically expressive but delayed and compressed. Action provides a clear behavioral commitment but often arrives after the system could have helped.</p>
+            <div class="concept-ledger">
+              <article><span>Attention trace</span><h3>Gaze answers “where and when?”</h3><p>Raw samples, fixations, dwell, revisits, and scanpaths describe visual orientation. They do not directly label diagnosis, comprehension, or intent.</p></article>
+              <article><span>Semantic trace</span><h3>Language answers “what and in what relation?”</h3><p>A report, phrase, or instruction names objects and relations, but may omit exact location and may follow observation after a variable lag.</p></article>
+              <article><span>Commitment trace</span><h3>Action answers “what did the person choose?”</h3><p>A click, answer, selected region, or accepted edit offers a stronger operational target, but it can reflect interface constraints as well as internal preference.</p></article>
+              <article><span>Task context</span><h3>Context explains why the same trace changes meaning</h3><p>A fixation during free viewing differs from one during diagnosis, information seeking, verification, or correction. Task state is part of the input contract.</p></article>
+            </div>
+            <h3>From measurement to intervention</h3>
+            <div class="table-wrap note-table-wrap">
+              <table class="comparison">
+                <thead><tr><th>Layer</th><th>Example</th><th>Question to ask</th><th>Common error</th></tr></thead>
+                <tbody>
+                  <tr><td>Construct</td><td>understanding, dissatisfaction</td><td>What cannot be observed directly?</td><td>treating a sensor value as the construct</td></tr>
+                  <tr><td>Observation</td><td>fixation, phrase, click</td><td>What did the instrument actually record?</td><td>dropping calibration and timing context</td></tr>
+                  <tr><td>Representation</td><td>heatmap, scanpath, embedding</td><td>Which information was preserved or discarded?</td><td>crediting a model for a preprocessing choice</td></tr>
+                  <tr><td>Prediction</td><td>region, label, risk score</td><td>What output is evaluated?</td><td>confusing classification with localization</td></tr>
+                  <tr><td>Intervention</td><td>suggest, confirm, abstain</td><td>What happens when the prediction is wrong?</td><td>turning uncertain gaze into an automatic command</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section alt" id="projects">
         <div class="shell">
           <div class="section-head">
-            <div>
-              <p class="eyebrow">Projects</p>
-              <h2>Each project is its own <em>research workspace.</em></h2>
-            </div>
-            <p class="section-intro">The hub holds the common direction. Each project site develops its own foundations, evidence, literature, decisions, and research notes.</p>
+            <div><p class="eyebrow">Projects</p><h2>One research discipline, examined in <em>three settings.</em></h2></div>
+            <p class="section-intro">The hub preserves the common reasoning. Each project site develops its own terminology, data, model, evidence, literature, and open decisions.</p>
           </div>
           <div class="project-index">
             <a class="project-entry project-entry-featured reveal" href="projects/gazemed/index.html">
@@ -85,8 +97,8 @@
               <div class="project-entry-copy">
                 <div class="project-card-top"><span class="status">Active</span><span>Medical AI</span></div>
                 <h3>GazeMed</h3>
-                <p>Can a radiologist’s gaze and spoken report localize the finding being described—without relying on the image pixels at inference time?</p>
-                <small>Live behavioral grounding · chest X-ray · REFLACX</small>
+                <p>Can the gaze and speech produced during a chest X-ray reading localize the finding being described, and which parts of that correspondence survive causal controls?</p>
+                <small>Inference-time gaze · speech grounding · chest X-ray · REFLACX</small>
               </div>
               <span class="project-entry-arrow" aria-hidden="true">↗</span>
             </a>
@@ -95,7 +107,7 @@
               <div class="project-entry-copy">
                 <div class="project-card-top"><span class="status waiting">Study design</span><span>Generative HCI</span></div>
                 <h3>GazeImageRefine</h3>
-                <p>Can gaze help identify where a generated image needs revision without confusing attention with the intention to edit?</p>
+                <p>After visual saliency and prompt mismatch are controlled, can pre-action gaze identify the region a user will later choose to revise?</p>
                 <small>Attention vs intent · selective assistance · image editing</small>
               </div>
               <span class="project-entry-arrow" aria-hidden="true">↗</span>
@@ -105,8 +117,8 @@
               <div class="project-entry-copy">
                 <div class="project-card-top"><span class="status parked">Revision study</span><span>Reading</span></div>
                 <h3>leXic</h3>
-                <p>Do inexpensive lexical cues explain the part of reading-comprehension performance that gaze alone misses?</p>
-                <small>Reading gaze · lexical difficulty · generalization</small>
+                <p>Which inexpensive lexical cues explain gaze-based comprehension errors under shifts in reader, text, or both?</p>
+                <small>Reading gaze · lexical difficulty · generalization · calibration</small>
               </div>
               <span class="project-entry-arrow" aria-hidden="true">↗</span>
             </a>
@@ -114,44 +126,62 @@
         </div>
       </section>
 
-      <section class="section dark" id="connections">
-        <div class="shell">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Shared structure</p>
-              <h2>Different tasks, the same <em>discipline of evidence.</em></h2>
+      <section class="article-section" id="connections">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">03 · Shared structure</p>
+            <h2>The projects differ in domain, not in the discipline of evidence.</h2>
+            <div class="table-wrap note-table-wrap">
+              <table class="comparison">
+                <thead><tr><th>Project</th><th>Observed trace</th><th>Target construct</th><th>Operational target</th><th>Strong simple explanation</th></tr></thead>
+                <tbody>
+                  <tr><td>GazeMed</td><td>fixations + dictated report</td><td>finding-linked visual evidence</td><td>radiologist ellipse</td><td>anatomy prior; image–text grounding</td></tr>
+                  <tr><td>GazeImageRefine</td><td>dwell + revisit before action</td><td>dissatisfaction or edit intent</td><td>keep/edit, selected region, accepted revision</td><td>visual saliency; prompt–image mismatch</td></tr>
+                  <tr><td>leXic</td><td>reading scanpath</td><td>processing difficulty and understanding</td><td>comprehension response</td><td>word difficulty; reader/text identity</td></tr>
+                </tbody>
+              </table>
             </div>
-            <p class="section-intro">The projects do not assume that gaze has a single meaning. They share a method for discovering which interpretation survives comparison.</p>
-          </div>
-          <div class="connection-table">
-            <div class="connection-row connection-head"><span>Project</span><span>Observed trace</span><span>Possible meaning</span><span>Necessary comparison</span></div>
-            <div class="connection-row"><strong>GazeMed</strong><span>Fixations + dictation</span><span>Finding-level visual evidence</span><span>Anatomy and image–text priors</span></div>
-            <div class="connection-row"><strong>GazeImageRefine</strong><span>Dwell + revisits + edit action</span><span>Dissatisfaction or edit intent</span><span>Visual saliency and prompt mismatch</span></div>
-            <div class="connection-row"><strong>leXic</strong><span>Reading scanpath</span><span>Processing difficulty</span><span>Word difficulty and reader identity</span></div>
-          </div>
+            <h3>The same signal can play different roles</h3>
+            <p>Gaze can be an <strong>inference input</strong>, as in GazeMed; a candidate cue for an interface suggestion, as in GazeImageRefine; or a behavioral representation whose missing context is supplied by language features, as in leXic. Saying that all three projects “use gaze” hides the actual scientific distinction.</p>
+          </article>
         </div>
       </section>
 
-      <section class="section" id="principles">
+      <section class="article-section alt" id="examples">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">04 · What synchronized data looks like</p>
+            <h2>Two datasets show why process data is richer than a final label.</h2>
+            <p>REFLACX records a medical interpretation as image, gaze, dictation, and later localization. OneStop records reading under controlled goals and text difficulty, followed by comprehension questions. Both preserve the process that precedes an outcome.</p>
+            <div class="source-card-row">
+              <figure>
+                <img src="assets/img/reflacx-dataset-overview.png" alt="REFLACX workflow combining chest X-ray interpretation, eye tracking, dictation, labels, and finding ellipses" loading="lazy" />
+                <figcaption><strong>Medical interpretation as synchronized traces.</strong> Figure 1 from <a href="https://www.nature.com/articles/s41597-022-01441-z">Bigolin Lanfredi et al. (2022)</a>, reproduced under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</figcaption>
+              </figure>
+              <figure>
+                <img src="assets/img/papers/onestop-experiment.png" alt="OneStop experiment structure with information-seeking and ordinary-reading groups, text difficulty, questions, and repeated reading" loading="lazy" />
+                <figcaption><strong>Reading under controlled goals and difficulty.</strong> Figure 1 from <a href="https://www.nature.com/articles/s41597-025-06272-2">Berzak et al. (2025)</a>, reproduced without content changes under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</figcaption>
+              </figure>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section dark" id="principles">
         <div class="shell">
           <div class="section-head">
-            <div>
-              <p class="eyebrow">Principles</p>
-              <h2>How a claim becomes <em>credible.</em></h2>
-            </div>
+            <div><p class="eyebrow">Evidence principles</p><h2>How a human-signal claim becomes <em>credible.</em></h2></div>
+            <p class="section-intro">The objective is not to demonstrate that gaze can be placed inside a model. It is to identify the conditions under which the signal changes a decision for the right reason.</p>
           </div>
           <div class="grid-4 principle-grid">
-            <article class="card reveal"><p class="card-number">01</p><h3>Do not equate observation with intent.</h3><p>A fixation records visual orientation. Its role must be established with timing, task context, and later behavior.</p></article>
-            <article class="card reveal"><p class="card-number">02</p><h3>Compare against the strongest simple explanation.</h3><p>Center bias, anatomy, saliency, text difficulty, and image-only models are part of the question—not optional baselines.</p></article>
-            <article class="card reveal"><p class="card-number">03</p><h3>Remove information, not only modules.</h3><p>Shuffle time, position, order, or language while preserving capacity to test what the model actually uses.</p></article>
-            <article class="card reveal"><p class="card-number">04</p><h3>Keep the boundary of evidence visible.</h3><p>Observed results, supported interpretations, open alternatives, and future ideas should never collapse into one claim.</p></article>
+            <article class="card reveal"><p class="card-number">01</p><h3>Observation is not intent.</h3><p>A fixation records orientation. Its role must be established with task context, timing, and later behavior.</p></article>
+            <article class="card reveal"><p class="card-number">02</p><h3>Use the strongest simple baseline.</h3><p>Center bias, anatomy, saliency, lexical difficulty, and image-only models belong in the main question.</p></article>
+            <article class="card reveal"><p class="card-number">03</p><h3>Remove information, not only modules.</h3><p>Shuffle time, position, order, or meaning while preserving capacity to test what a model actually uses.</p></article>
+            <article class="card reveal"><p class="card-number">04</p><h3>Keep the evidence boundary visible.</h3><p>Separate observations, supported interpretations, open alternatives, and future system ideas.</p></article>
           </div>
           <div class="focus-invitation">
-            <div>
-              <span>Current focus</span>
-              <h2>Follow GazeMed from first principles to the next experiment.</h2>
-            </div>
-            <a class="button" href="projects/gazemed/index.html">Open the project site →</a>
+            <div><span>Current focus</span><h2>Follow GazeMed from first principles to the next experiment.</h2></div>
+            <a class="button" href="projects/gazemed/index.html">Open the GazeMed atlas →</a>
           </div>
         </div>
       </section>

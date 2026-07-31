@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../../assets/css/site.css" />
     <script src="../../assets/js/site.js" defer></script>
   </head>
-  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-literature">
+  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-literature" data-lang="en" data-alt-lang="ko/literature.html">
     <div data-site-header></div>
     <main id="main">
       <header class="chapter-hero">
@@ -66,6 +66,16 @@
               <p>A new reading’s fixation sequence and report content remain part of the inference contract. The image is not consumed by the current model.</p>
               <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">PR #3 ↗</a>
             </article>
+          </div>
+          <div class="source-card-row">
+            <figure>
+              <img src="../../assets/img/papers/lanfredi-fixed-window.png" alt="Prior-work pipeline that forms a finding-specific gaze map from a fixed time window before speech" loading="lazy" />
+              <figcaption><strong>The fixed pre-mention window.</strong> Figure 2 from <a href="https://www.frontiersin.org/journals/radiology/articles/10.3389/fradi.2023.1088068/full">Lanfredi et al. (2023)</a>, CC BY 4.0.</figcaption>
+            </figure>
+            <figure>
+              <img src="../../assets/img/papers/takmaz-gaze-speech.png" alt="Sequential relationship between gaze and spoken image descriptions" loading="lazy" />
+              <figcaption><strong>Sequential gaze–language coordination.</strong> Figure 1 from <a href="https://aclanthology.org/2020.emnlp-main.377/">Takmaz et al., EMNLP 2020</a>, CC BY 4.0.</figcaption>
+            </figure>
           </div>
         </div>
       </section>
@@ -145,6 +155,10 @@
               <article><span>Level 4</span><strong>Composed frames</strong><p>finding + anatomical anchor + relation + uncertainty</p></article>
             </div>
             <p><a href="https://aclanthology.org/2020.lrec-1.274/">Rad-SpatialNet</a> represents spatial language as frames containing a trigger and related entities. This suggests a principled extension: make speech produce an anatomy-anchored constraint rather than a flat bag of location bits.</p>
+            <figure class="source-figure">
+              <img src="../../assets/img/rad-spatialnet-spatial-vignettes.png" alt="Rad-SpatialNet examples representing radiology figure, ground, and spatial relations as semantic frames" loading="lazy" />
+              <figcaption><strong>Frame representation of radiology spatial relations.</strong> Cropped diagram from Figure 2 in Datta et al., <a href="https://aclanthology.org/2020.lrec-1.274/">LREC 2020</a>, CC BY 4.0.</figcaption>
+            </figure>
             <div class="article-note">
               <strong>Example</strong>
               <p>“Small opacity behind the heart” can be represented as finding = opacity, anchor = heart, relation = behind, extent = small. The model can then compare the gaze path with the anchor region and relation—not only with a generic “lower” token.</p>
@@ -167,7 +181,7 @@
               <li><strong>“The first use of temporal gaze.”</strong><span>Fixation order and gaze–language alignment already appear in prior work.</span></li>
               <li><strong>“Gaze is better than the image.”</strong><span>The current models use different inputs; their comparison does not isolate modality superiority.</span></li>
               <li><strong>“Real-time localization.”</strong><span>The full-sequence model has not yet passed causal replay.</span></li>
-              <li><strong>“Spatial language solves grounding.”</strong><span>The current language effect is smaller and weaker on Pointing.</span></li>
+              <li><strong>“Spatial language solves grounding.”</strong><span>The seven descriptors contribute significantly in the current protocol, but they cover only a small part of clinical spatial language and have not been tested out of distribution.</span></li>
             </ul>
             <h3>What remains genuinely interesting</h3>
             <p>The project can contribute a clean test-time behavioral grounding task, a minimal interpretable mechanism, and controls that separate timing, coordinate correspondence, and language content. Its next novelty should come from stronger evidence—not a larger architecture by default.</p>

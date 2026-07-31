@@ -34,6 +34,12 @@
 
 ## Related-work figures
 
+- `assets/img/papers/onestop-experiment.png`
+  - Source: Figure 1, Yevgeni Berzak et al., “OneStop: A 360-Participant English Eye Tracking Dataset with Different Reading Regimes,” *Scientific Data* 12, 1995 (2025).
+  - Source URL: https://www.nature.com/articles/s41597-025-06272-2
+  - License: Creative Commons Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/
+  - Changes: resized by the publisher's 1200-pixel image endpoint; no content changes.
+
 - `assets/img/papers/lanfredi-fixed-window.png`
   - Source: Figure 2, Ricardo Bigolin Lanfredi et al., “Localization supervision of chest X-ray classifiers using label-specific eye-tracking annotation,” *Frontiers in Radiology* 3 (2023).
   - Source URL: https://www.frontiersin.org/journals/radiology/articles/10.3389/fradi.2023.1088068/full
@@ -59,6 +65,13 @@
   - Changes: cropped to the figure area and rasterized at 3× scale; figure content unchanged.
 
 ## GazeMed architecture
+
+- `assets/img/gazemed-pr3-pipeline-v2.png`
+  - Source: `preliminary-0718/pipeline_v2.png` in TeamBeaverSudal/GazeMed PR #3, reviewed at commit `9e2d7e7`.
+  - Source URL: https://github.com/TeamBeaverSudal/GazeMed/pull/3
+  - Creator: Team BEAVER / GazeMed.
+  - Changes: copied without visual modification.
+  - Note: this corrected diagram places the finding label on the active query path and uses the real test prediction nearest median IoU in its output panel.
 
 - `assets/img/gazemed-pr3-pipeline.png`
   - Source: `preliminary-0718/pipeline.png` in TeamBeaverSudal/GazeMed PR #3, reviewed at commit `0639081`.

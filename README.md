@@ -17,7 +17,8 @@ The site uses a hub-and-project architecture:
 ## Site structure
 
 ```text
-index.html                              BEAVER research-program hub
+index.html                              English BEAVER research-program hub
+ko/index.html                           Korean BEAVER research-program hub
 projects/
   gazemed/
     index.html                          project overview
@@ -27,14 +28,19 @@ projects/
     evidence.html                       results and claim boundaries
     literature.html                     research lineage and closest work
     directions.html                     evidence gates and next questions
+    ko/                                 Korean versions of every project chapter
     notes/
       index.html                        project notebook
       spatial-language.html             research note 001
       ko/
         index.html                      Korean project notebook
         spatial-language.html           Korean research note 001
-  gaze-image-refine/index.html          project mini-site
-  lexic/index.html                      project mini-site
+  gaze-image-refine/
+    index.html                          English project mini-site
+    ko/index.html                       Korean project mini-site
+  lexic/
+    index.html                          English project mini-site
+    ko/index.html                       Korean project mini-site
 assets/
   css/site.css                          shared visual system
   js/site.js                            shared global and project navigation
@@ -60,10 +66,11 @@ question → current evidence → alternative explanations
 → recommendation → experiment that could change the recommendation
 ```
 
-Research notes are maintained in English and Korean. Each translation uses the same
-slug and section anchors under `notes/` and `notes/ko/`, so evidence, source links,
-and recommendations can be reviewed as one paired record. The rest of the public
-site remains English.
+The complete public site is maintained in English and Korean. Project chapters use
+the same filenames and section order in the English root and `ko/` directory.
+Research-note pairs likewise share slugs and section anchors under `notes/` and
+`notes/ko/`, so explanations, evidence, sources, and recommendations can be
+reviewed as one paired record.
 
 ## Local preview
 

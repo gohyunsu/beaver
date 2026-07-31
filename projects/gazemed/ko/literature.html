@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="REFLACX, 시선 약지도 학습, 흉부 X선 문구 grounding, 시간 시선과 방사선 공간 언어의 연구 흐름을 정리합니다." />
+    <meta name="theme-color" content="#143d35" />
+    <title>선행 연구 · GazeMed</title>
+    <link rel="stylesheet" href="../../../assets/css/site.css" />
+    <script src="../../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../../" data-project="gazemed" data-project-root="../" data-page="gazemed-literature" data-lang="ko" data-alt-lang="../literature.html">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>선행 연구</p>
+            <p class="eyebrow">5장 · 선행 연구</p>
+            <h1>분야의 흐름을 <em>입력 계약</em>으로 구분한다.</h1>
+            <p class="page-summary">두 연구가 모두 “시선을 사용”해도 서로 다른 문제를 풀 수 있다. 언제 시선을 쓸 수 있는지, 추론 시 무엇을 입력받는지, 어떤 공간 목표를 예측하는지가 핵심 구분선이다.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>이 장의 구성</span>
+            <a href="#lineage">1. 연구의 계보</a>
+            <a href="#matrix">2. 최근접 연구 비교</a>
+            <a href="#language">3. 공간 언어</a>
+            <a href="#position">4. GazeMed의 위치</a>
+            <a href="#reading">5. 핵심 읽을거리</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="lineage">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">연구의 계보</p><h2>시선을 수집하는 단계에서 <em>추론 중 사용하는 단계</em>로.</h2></div>
+            <p class="section-intro">이 분야는 한 줄로 발전하지 않았다. 시선은 라벨을 만들거나, 학습을 지도하거나, 국소 영상–문장 쌍을 정의하거나, 새 사용자의 실시간 입력이 될 수 있다.</p>
+          </div>
+          <div class="literature-lineage">
+            <article><time>2022</time><span>데이터 기반</span><h3>REFLACX</h3><p>동기화된 판독자 시선, 시간 판독문, 영상 라벨과 위치 타원 덕분에 정렬 문제를 측정할 수 있게 되었다.</p><a href="https://www.nature.com/articles/s41597-022-01441-z">데이터셋 논문 ↗</a></article>
+            <article><time>2023</time><span>라벨 구성</span><h3>소견별 시선 지도</h3><p>소견 발화 전 응시로 영상 모델의 국소 지도 신호를 만든다. 시선은 학습을 돕지만 배포 모델은 영상만 사용한다.</p><a href="https://doi.org/10.3389/fradi.2023.1088068">Frontiers 논문 ↗</a></article>
+            <article><time>2024–25</time><span>풍부한 약지도</span><h3>Heatmap, track, 국소 문장</h3><p>GazeMedSeg와 GradTrack은 시선 밀도·지속·순서를 쓰고, LATTE-CXR은 REFLACX를 국소 영상–문장 쌍으로 바꾼다.</p><a href="https://papers.miccai.org/miccai-2025/0305-Paper1072.html">GradTrack ↗</a></article>
+            <article class="current"><time>GazeMed</time><span>시험 시 행동</span><h3>소견 조건부 grounding</h3><p>새 판독의 응시 시퀀스와 보고서 내용이 추론 입력으로 남는다. 현재 모델은 영상 픽셀을 직접 소비하지 않는다.</p><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">PR #3 ↗</a></article>
+          </div>
+          <div class="source-card-row">
+            <figure><img src="../../../assets/img/papers/lanfredi-fixed-window.png" alt="소견별 고정 시간 창으로 시선 지도를 만드는 선행 연구의 과정" loading="lazy" /><figcaption><strong>고정 발화 전 창.</strong> Lanfredi 외(2023)의 그림 2. <a href="https://www.frontiersin.org/journals/radiology/articles/10.3389/fradi.2023.1088068/full">원문</a>, CC BY 4.0.</figcaption></figure>
+            <figure><img src="../../../assets/img/papers/takmaz-gaze-speech.png" alt="사람의 시선과 이미지 설명 발화가 시간에 따라 연결되는 과정" loading="lazy" /><figcaption><strong>시선–언어 순차 정렬.</strong> Takmaz 외, EMNLP 2020의 그림 1. <a href="https://aclanthology.org/2020.emnlp-main.377/">원문</a>, CC BY 4.0.</figcaption></figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section dark" id="matrix">
+        <div class="shell">
+          <div class="section-head"><div><p class="eyebrow">최근접 연구 행렬</p><h2>“시선을 쓴다”만으로는 충분한 <em>비교</em>가 아니다.</h2></div></div>
+          <div class="table-wrap">
+            <table class="comparison work-matrix">
+              <thead><tr><th>연구</th><th>시선의 역할</th><th>추론 입력</th><th>출력 / 참조</th><th>GazeMed와의 경계</th></tr></thead>
+              <tbody>
+                <tr><td><a href="https://doi.org/10.3389/fradi.2023.1088068">Lanfredi 외 · 2023</a></td><td>고정 발화 전 창으로 소견별 지도 생성</td><td>학습된 모델은 영상</td><td>위치 지도 / 타원</td><td>고정 지연 기준선의 직접 출발점. 학습 정렬이 이를 넘어야 한다.</td></tr>
+                <tr><td><a href="https://papers.miccai.org/miccai-2024/843-Paper1675.html">GazeMedSeg · 2024</a></td><td>집계 시선을 의사 분할 mask로 변환</td><td>학습 후 영상</td><td>분할 mask</td><td>정적 시선 지도는 이미 확립됨. GazeMed는 시험 시 행동의 가치를 보여야 한다.</td></tr>
+                <tr><td><a href="https://papers.miccai.org/miccai-2025/0305-Paper1072.html">GradTrack · 2025</a></td><td>위치·지속·순서를 약지도에 사용</td><td>학습 후 영상</td><td>픽셀 분할</td><td>시간 순서 자체는 새롭지 않다. 추론 시 사용과 통제된 정렬이 구분점이다.</td></tr>
+                <tr><td><a href="https://physionet.org/content/latte-cxr/1.0.0/">LATTE-CXR · 2025</a></td><td>REFLACX에서 국소 영상–문장 쌍 생성</td><td>후속 모델에 따라 다름</td><td>상자 + 문장</td><td>문구 수준 국소 정렬이 데이터 구성으로 이미 존재한다.</td></tr>
+                <tr><td><a href="https://arxiv.org/abs/2504.07416">RadZero · 2025</a></td><td>시선 없음</td><td>영상 + 문구</td><td>유사도 지도 / 타원</td><td>입력이 다른 외부 참조. 경쟁력과 융합 가능성을 시험한다.</td></tr>
+                <tr class="highlight-row"><td><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed · PR #3</a></td><td>시험 시 소견 관련 응시 선택</td><td>시선 + 음성</td><td>소견 지도 / 타원</td><td>현재의 구별되는 주장: 해석 가능한 행동 grounding과 정보 대조 실험.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="matrix-legend">
+            <span><strong>학습 시 시선</strong> 시선으로 지도 신호를 만들며 배포 모델은 새 사용자의 시선 없이도 작동할 수 있다.</span>
+            <span><strong>시험 시 시선</strong> 새 판독의 행동이 있어야 출력을 만들 수 있다.</span>
+            <span><strong>참조 형태</strong> 타원·상자·픽셀 mask는 주석 의미와 지표 특성이 다르다.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="language">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">03</p>
+            <h2>방사선 공간 언어는 방향 단어보다 훨씬 풍부하다.</h2>
+            <p>현재 GazeMed는 이진 위치 표현 일곱 개를 사용한다. 해석 가능한 첫 검증으로는 좋지만, 선행 언어 연구에는 더 표현력 있는 구조가 이미 있다.</p>
+            <div class="language-ladder">
+              <article><span>1단계</span><strong>방향 토큰</strong><p>left · right · upper · lower</p></article>
+              <article><span>2단계</span><strong>해부학 개체</strong><p>heart · hilum · pleura · costophrenic angle</p></article>
+              <article><span>3단계</span><strong>관계</strong><p>behind · adjacent to · above · involving</p></article>
+              <article><span>4단계</span><strong>합성 frame</strong><p>소견 + 해부학 anchor + 관계 + 불확실성</p></article>
+            </div>
+            <p><a href="https://aclanthology.org/2020.lrec-1.274/">Rad-SpatialNet</a>은 공간 표현 trigger와 관련 개체를 frame으로 나타낸다. 이를 따르면 발화를 위치 bit 묶음이 아니라 해부학에 고정된 제약으로 바꿀 수 있다.</p>
+            <figure class="source-figure">
+              <img src="../../../assets/img/rad-spatialnet-spatial-vignettes.png" alt="방사선 보고서의 figure, ground, 공간 관계를 frame으로 표시한 Rad-SpatialNet 예시" loading="lazy" />
+              <figcaption><strong>방사선 공간 관계의 frame 표현.</strong> Datta 외, <a href="https://aclanthology.org/2020.lrec-1.274/">LREC 2020</a> 그림 2 일부. CC BY 4.0, 도식 영역만 잘라 사용.</figcaption>
+            </figure>
+            <div class="article-note"><strong>예시</strong><p>“심장 뒤의 작은 음영”은 소견 = opacity, anchor = heart, 관계 = behind, 범위 = small로 나타낼 수 있다. 그러면 모델은 단순한 ‘lower’ bit가 아니라 anchor 영역과 관계에 맞는 시선 경로를 비교할 수 있다.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="position">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04</p>
+            <h2>가장 강한 연구 포지셔닝은 좁고 반증 가능하다.</h2>
+            <div class="positioning-block"><span>GazeMed의 질문</span><strong>단순한 소견 조건부 기전이 시험 시점의 판독자 시선과 음성으로 서술된 이상 위치를 찾을 수 있는가? 그리고 통제된 정보 제거로 행동의 어느 부분이 가치를 만드는지 식별할 수 있는가?</strong></div>
+            <h3>피해야 할 주장</h3>
+            <ul class="avoid-list">
+              <li><strong>“시간 시선을 처음 사용했다.”</strong><span>응시 순서와 시선–언어 정렬은 이미 선행 연구에 있다.</span></li>
+              <li><strong>“시선이 영상보다 낫다.”</strong><span>현재 모델들의 입력이 달라 modality 우월성을 분리하지 못한다.</span></li>
+              <li><strong>“실시간 위치 추정이다.”</strong><span>전체 시퀀스 모델은 아직 인과적 replay를 통과하지 않았다.</span></li>
+              <li><strong>“공간 언어가 grounding을 해결한다.”</strong><span>일곱 표현은 현재 프로토콜에서 유의하지만, 임상 공간 언어의 일부만 다루며 분포 밖에서는 검증되지 않았다.</span></li>
+            </ul>
+            <h3>여전히 중요한 기여</h3>
+            <p>시험 시 행동 grounding이라는 명확한 과제, 최소한의 해석 가능한 기전, 시간·좌표 대응·언어 내용을 분리하는 대조 실험이 핵심이다. 다음 새로움은 모델 규모보다 더 강한 근거에서 나와야 한다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="reading">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">05</p>
+            <h2>핵심 읽을거리</h2>
+            <div class="reading-list">
+              <a href="https://www.nature.com/articles/s41597-022-01441-z"><span>데이터셋</span><strong>REFLACX: 흉부 X선 이상 위치를 위한 판독문·시선 데이터</strong><small>Lanfredi 외 · Scientific Data · 2022</small></a>
+              <a href="https://doi.org/10.3389/fradi.2023.1088068"><span>시선 지도</span><strong>Label-specific eye-tracking annotation을 이용한 이상 위치 개선</strong><small>Lanfredi 외 · Frontiers in Radiology · 2023</small></a>
+              <a href="https://papers.miccai.org/miccai-2024/843-Paper1675.html"><span>약지도 분할</span><strong>Weakly-Supervised Medical Image Segmentation with Gaze Annotations</strong><small>MICCAI · 2024</small></a>
+              <a href="https://papers.miccai.org/miccai-2025/0305-Paper1072.html"><span>시간 시선</span><strong>Gaze Track-based Medical Weakly Supervised Segmentation</strong><small>MICCAI · 2025</small></a>
+              <a href="https://physionet.org/content/latte-cxr/1.0.0/"><span>국소 영상–문장 데이터</span><strong>LATTE-CXR</strong><small>PhysioNet · 2025</small></a>
+              <a href="https://arxiv.org/abs/2504.07416"><span>영상–문장 grounding</span><strong>RadZero</strong><small>Park 외 · 2025</small></a>
+              <a href="https://aclanthology.org/2020.lrec-1.274/"><span>공간 언어</span><strong>Rad-SpatialNet</strong><small>Datta 외 · LREC · 2020</small></a>
+            </div>
+            <div class="next-chapter"><span>다음 장</span><h3>열린 근거의 경계를 결정적인 연구 질문으로 바꾼다.</h3><a href="directions.html">연구 방향으로 이동 →</a></div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

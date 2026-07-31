@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../../assets/css/site.css" />
     <script src="../../assets/js/site.js" defer></script>
   </head>
-  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-approach">
+  <body data-root="../../" data-project="gazemed" data-project-root="./" data-page="gazemed-approach" data-lang="en" data-alt-lang="ko/approach.html">
     <div data-site-header></div>
     <main id="main">
       <header class="chapter-hero">
@@ -141,8 +141,8 @@
             </div>
             <p>This restriction makes the output easy to interpret and makes position-shuffling a meaningful test: if the correspondence between a fixation’s features and its coordinate is broken, performance should fall.</p>
             <figure class="model-source-figure">
-              <img src="../../assets/img/gazemed-pr3-pipeline.png" alt="GazeMed fixation encoder, report query, cross-attention, and heatmap pipeline" loading="lazy" />
-              <figcaption>Pipeline from <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, copied without visual modification. Read it with two corrections from the current technical specification: finding identity is active through the query, and the example heatmap is illustrative.</figcaption>
+              <img src="../../assets/img/gazemed-pr3-pipeline-v2.png" alt="GazeMed fixation encoder, report-and-finding query, cross-attention, and real predicted heatmap" loading="lazy" />
+              <figcaption><strong>Corrected pipeline.</strong> The finding label is drawn on the query path; the output panel is a real test prediction nearest the median IoU, with the reference ellipse in green. Copied without visual modification from <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, head <code>9e2d7e7</code>.</figcaption>
             </figure>
           </article>
         </div>

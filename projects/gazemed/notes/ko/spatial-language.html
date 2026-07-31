@@ -242,8 +242,8 @@
               <h3>4단계 · attention을 공간 heatmap으로 변환한다</h3>
               <p>attention weight αᵢ를 fixation 좌표마다 2차원 Gaussian으로 놓고 합산합니다. 결과 heatmap을 validation set에서 고른 threshold로 이진화해 predicted region을 만듭니다. 이 방식의 장점은 예측을 실제 관찰 지점으로 추적할 수 있다는 것입니다. 한계는 병변의 시각적 경계를 볼 수 없어 fixation 주변을 정해진 kernel로만 확장한다는 점입니다.</p>
               <figure class="note-figure">
-                <img src="../../../../assets/img/gazemed-pr3-pipeline.png" alt="REFLACX에서 fixation feature와 report feature를 받아 attention과 heatmap을 만드는 GazeMed PR 3 pipeline" loading="lazy" />
-                <figcaption><strong>PR #3의 pipeline.</strong> 구조의 의도는 정확하지만, 현재 그림은 label embedding을 key 쪽에 붙인 것처럼 보이고 마지막 heatmap은 실제 사례 출력이 아닌 설명용 합성 그림입니다. 논문용으로는 query-side label과 실제 test case output으로 교체해야 합니다. Source: <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, head <code>0639081</code>.</figcaption>
+                <img src="../../../../assets/img/gazemed-pr3-pipeline-v2.png" alt="시간·Fourier fixation key, 보고서·소견 query, 교차 주의와 실제 시험 예측을 보여주는 수정된 GazeMed PR 3 pipeline" loading="lazy" />
+                <figcaption><strong>PR #3의 수정된 pipeline.</strong> 소견 label의 실제 query-side 경로가 명시되어 있고, 마지막 heatmap은 임의로 고른 성공 사례가 아니라 test IoU 중앙값에 가장 가까운 실제 예측입니다. <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, head <code>9e2d7e7</code>에서 시각적 수정 없이 복사했습니다.</figcaption>
               </figure>
             </section>
 
@@ -268,7 +268,7 @@
                   </tbody>
                 </table>
               </div>
-              <p class="source-note">5개 training seed의 평균. Source · <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, <code>TECHNICAL_SPEC.md</code>, head <code>0639081</code>.</p>
+              <p class="source-note">5개 training seed의 평균. Source · <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, <code>TECHNICAL_SPEC.md</code>, 최신 검토 head <code>9e2d7e7</code>.</p>
 
               <div class="claim-ledger">
                 <article><span>지지됨</span><strong>학습한 시간 정렬이 고정 창보다 낫다</strong><p>Temporal-only가 B1보다 IoU와 Pointing 모두 높습니다.</p></article>
@@ -482,7 +482,7 @@
 
               <h3>주요 원문</h3>
               <ul class="note-sources">
-                <li><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a> — 구현, 기술 명세, control, 2×2 architecture study, 재현 script. Head <code>0639081</code> 기준.</li>
+                <li><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a> — 구현, 기술 명세, control, 2×2 architecture study, 수정된 기전 구조도, 재현 script. Head <code>9e2d7e7</code> 기준.</li>
                 <li><a href="https://www.nature.com/articles/s41597-022-01441-z">Bigolin Lanfredi et al. (2022), REFLACX</a> — 동기화된 gaze, dictation, interface, ellipse 데이터셋.</li>
                 <li><a href="https://www.frontiersin.org/journals/radiology/articles/10.3389/fradi.2023.1088068/full">Bigolin Lanfredi et al. (2023)</a> — label별 fixed-window gaze supervision.</li>
                 <li><a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/0b9536e186a77feff516893a5f393f7a-Abstract-Conference.html">Ma et al. (2024), EGMA</a> — gaze-guided medical image–text alignment.</li>

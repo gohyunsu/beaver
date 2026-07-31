@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="GazeMed의 고정 지연 기준선, 시간 정렬 모델, 언어 조건부 교차 주의와 공간 지도를 단계별로 설명합니다." />
+    <meta name="theme-color" content="#143d35" />
+    <title>접근법 · GazeMed</title>
+    <link rel="stylesheet" href="../../../assets/css/site.css" />
+    <script src="../../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../../" data-project="gazemed" data-project-root="../" data-page="gazemed-approach" data-lang="ko" data-alt-lang="../approach.html">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>접근법</p>
+            <p class="eyebrow">3장 · 접근법</p>
+            <h1>고정 규칙을 <em>학습된 관련성</em>으로 바꾼다.</h1>
+            <p class="page-summary">모델은 의도적으로 작게 설계되었다. 한 단계마다 새로운 정보원 하나를 더해, 시간·좌표·언어가 각각 무엇을 기여하는지 비교할 수 있다.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>이 장의 구성</span>
+            <a href="#baseline">1. 고정 지연 기준선</a>
+            <a href="#temporal">2. 학습된 시간 정렬</a>
+            <a href="#final">3. 위치와 언어</a>
+            <a href="#heatmap">4. 공간 출력</a>
+            <a href="#training">5. 학습과 대조 실험</a>
+            <a href="#boundary">6. 추론 범위</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="baseline">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">01</p>
+            <h2>기준선: 소견을 말하기 1.5초 전의 시선을 선택한다.</h2>
+            <p>REFLACX의 기존 소견별 휴리스틱은 의사가 이상을 먼저 보고 잠시 뒤 말한다는 가정에서 출발한다. 따라서 소견이 언급된 시각보다 1.5초 앞선 구간의 시선을 해당 소견과 연결한다.</p>
+            <div class="baseline-window">
+              <div class="window-axis"><span>−3초</span><i></i><span>−1.5초</span><i class="active"></i><span>언급</span></div>
+              <div class="window-selection"><span>제외</span><strong>선택된 시선 구간</strong><span>발화</span></div>
+            </div>
+            <p>이 기준선은 단순하고 해석 가능하며 선행 연구와 직접 연결된다. 동시에 모든 판독자·소견·문장에 같은 지연을 강제한다. 실제로는 보고 말하기까지의 시간이 사람과 맥락에 따라 달라진다.</p>
+          </article>
+          <aside class="article-aside"><span>비교의 기준</span><p>여기서 보고하는 점수는 원 논문의 최종 모델 점수가 아니라, PR #3의 동일 예제 집합에서 이 휴리스틱을 다시 평가한 결과다.</p></aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="temporal">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">02</p>
+            <h2>V1: 모든 응시에 대해 발화와의 시간 관계를 학습한다.</h2>
+            <p>소견이 언급된 시각을 <em>t</em><sub>m</sub>이라 하면, 각 응시는 언급과의 시간차와 움직임을 나타내는 특징 벡터가 된다. 이 단계의 주의 점수는 x/y 위치를 보지 않는다.</p>
+            <div class="feature-ledger">
+              <div><span>1</span><strong>부호 있는 Δt</strong><small>응시 시각 − 언급 시각</small></div>
+              <div><span>2</span><strong>|Δt|</strong><small>절대 시간 거리</small></div>
+              <div><span>3</span><strong>선행 여부</strong><small>응시가 언급보다 앞서는가</small></div>
+              <div><span>4</span><strong>기존 창 포함 여부</strong><small>1.5초 규칙 안에 드는가</small></div>
+              <div><span>5</span><strong>응시 지속 시간</strong><small>한 지점에 머문 시간</small></div>
+              <div><span>6</span><strong>속도</strong><small>이전 응시로부터의 이동량 / 시간</small></div>
+            </div>
+            <p>여기에 8차원 소견 임베딩을 붙여 소견별 시간 패턴 차이를 표현한다. 작은 신경망이 응시마다 점수 하나를 만들고, softmax가 전체 점수를 합이 1인 관련성 분포로 바꾼다.</p>
+            <div class="equation-line"><span>시간·운동 특징 6개</span><b>+</b><span>소견 임베딩</span><b>→</b><strong>응시별 주의 확률</strong></div>
+            <div class="article-note"><strong>‘시간만 사용’한다는 뜻</strong><p>주의 가중치를 정할 때 x/y를 보지 않는다는 뜻이다. 가중치를 지도에 놓을 때는 실제 응시 좌표가 필요하므로, 최종 출력은 여전히 공간 지도다.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="final">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">03</p>
+            <h2>최종 모델: 언어가 ‘어느 위치의 응시가 관련 있는가’를 묻는다.</h2>
+            <p>최종 모델은 각 응시의 key에 Fourier 위치 표현을, 하나의 query에 소견과 보고서의 공간 표현을 넣는다. 한 층의 scaled dot-product cross-attention이 query와 모든 key의 관련성을 계산한다.</p>
+            <div class="architecture-ledger">
+              <article>
+                <span>Query · 투영 전 18차원</span>
+                <h3>무엇을 어디에서 찾는가?</h3>
+                <ul>
+                  <li>8차원 학습 소견 임베딩</li>
+                  <li>공간 표현 7개: left, right, bilateral, upper, lower, middle, retrocardiac</li>
+                  <li>범위 표현 3개: 작은 형태, 큰 형태, 미만성 형태</li>
+                </ul>
+              </article>
+              <div class="architecture-operator" aria-hidden="true">주의를<br />계산</div>
+              <article>
+                <span>Keys · 응시마다 하나</span>
+                <h3>어느 시선 점이 관련 있는가?</h3>
+                <ul>
+                  <li>시간·운동 특징 6개</li>
+                  <li>정규화한 x/y의 다중 주파수 sin/cos 표현</li>
+                  <li>응시 유효성 마스크</li>
+                </ul>
+              </article>
+            </div>
+            <p>이 언어 표현은 작은 규칙 기반 어휘다. 자유문장 임베딩보다 무엇을 사용했는지 분명하지만, 해부학적 관계, 부정 범위, 불확실성, 복합 지시 표현을 충분히 다루지는 못한다.</p>
+            <div class="article-note"><strong>구현에서 발견된 중요한 세부 사항</strong><p>현재 소스는 소견 임베딩을 모든 key에도 연결하지만, 모든 응시에 똑같이 더해지는 항은 softmax에서 상쇄된다. 소견 정체성은 query를 통해 실질적으로 작동한다. 다음 구현에서는 이 불필요한 key 항을 제거해 코드와 설명을 일치시키는 편이 타당하다.</p></div>
+            <h3>왜 Fourier 위치 표현을 쓰는가</h3>
+            <p>원시 x/y에 선형 투영 하나만 적용하면 위치에 대한 선형 함수만 만들 수 있다. 여러 주파수의 sin/cos는 좌표를 더 풍부한 기저로 올려, 언어 query가 ‘왼쪽 위’처럼 비선형적인 영역을 선택하게 한다. 완전한 2×2 비교에서 cross-attention + Fourier는 0.3391 IoU / 0.7993 Pointing, cross-attention + 원시 좌표는 0.3198 / 0.7204다. 다만 결합 MLP에서는 같은 Fourier 이득이 나타나지 않으므로, 핵심은 표현과 결합 방식의 상호작용이다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="heatmap">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04</p>
+            <h2>모델은 판독자가 실제로 본 곳에만 확률 질량을 놓을 수 있다.</h2>
+            <p>학습된 영상 디코더는 없다. 각 주의 가중치를 해당 응시의 실제 x/y에 놓고, Gaussian 커널로 퍼뜨린 뒤 합이 1인 확률 지도로 정규화한다.</p>
+            <div class="splat-flow">
+              <div><span>가중된 점</span><div class="dot-field"><i></i><i></i><i></i><i></i></div></div><b>→</b>
+              <div><span>Gaussian 확산</span><div class="blur-field"></div></div><b>→</b>
+              <div><span>임계값 지도</span><div class="mask-field"></div></div>
+            </div>
+            <p>이 제약 덕분에 출력의 근거를 쉽게 추적할 수 있다. 또한 각 응시의 특징과 좌표를 뒤섞는 대조 실험이 의미를 갖는다. 올바른 대응이 중요하다면 뒤섞었을 때 성능이 떨어져야 한다.</p>
+            <figure class="model-source-figure">
+              <img src="../../../assets/img/gazemed-pr3-pipeline-v2.png" alt="GazeMed의 응시 인코더, 보고서·소견 query, 교차 주의와 실제 예측 heatmap" loading="lazy" />
+              <figcaption><strong>수정된 pipeline.</strong> 소견 label은 query 경로에 표시되며, 출력은 참조 타원을 초록색으로 겹친 실제 median-IoU 시험 예측이다. <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a> head <code>9e2d7e7</code>의 그림을 시각적 수정 없이 사용.</figcaption>
+            </figure>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="training">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">05</p>
+            <h2>타원 안에 주의 확률이 모이도록 학습한다.</h2>
+            <p>손실 함수는 목표 타원 내부에 놓인 주의 질량을 보상하고, 작은 엔트로피 항으로 분포를 조절한다. 지도 임계값과 smoothing bandwidth는 검증 집합에서 고른 뒤 시험 집합에서는 고정한다.</p>
+            <div class="control-stack">
+              <article><span>비교 A</span><h3>고정 규칙 → 학습된 시간</h3><p>하나의 공통 지연보다 사례별 시간 관련성을 학습하는 것이 나은지 묻는다.</p></article>
+              <article><span>비교 B</span><h3>시간 모델 → 최종 모델</h3><p>위치 인식 주의와 언어 표현을 함께 더한 효과를 측정한다.</p></article>
+              <article><span>대조 C</span><h3>응시 위치 섞기</h3><p>전체 좌표 집합은 보존하되 각 특징과 실제 좌표의 짝을 끊는다.</p></article>
+              <article><span>대조 D</span><h3>공간 단어 가리기</h3><p>학습된 최종 모델에서 일곱 공간 표현만 0으로 만든다.</p></article>
+            </div>
+            <h3>두 대조 실험은 서로 다른 설명을 검증한다</h3>
+            <p>위치 섞기는 단순한 모델 용량이나 평균 시선 형태가 아니라 사례별 특징–좌표 대응을 사용하는지 본다. 공간 단어 가리기는 보고서가 소견 이름을 반복하는 것 이상으로 위치 정보를 주는지 본다.</p>
+          </article>
+          <aside class="article-aside"><span>재현성</span><p>가중치 초기화와 예제 순서를 모두 고정해야 한다. 현재 결과는 다섯 학습 seed와 다섯 환자 분할을 따로 보고한다. 환자 분할 변화가 IoU에 더 큰 변동을 만든다.</p></aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="boundary">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">06</p>
+            <h2>시험 시 시선·음성을 쓰는 것은 확인했지만, 인과적 실시간 추론은 아직 아니다.</h2>
+            <p>현재 모델은 새 판독의 시선과 발화를 입력으로 사용한다. 학습 때만 시선을 쓰고 추론 때는 영상만 보는 방법과 구별되는 지점이다. 그러나 전체 응시 시퀀스와 부호 있는 시간차를 받기 때문에, 명시적으로 가리지 않으면 발화 이후의 응시도 후보가 된다.</p>
+            <div class="boundary-line">
+              <div class="confirmed"><span>현재 근거</span><strong>오프라인 · 시험 시 시선 + 음성 위치 추정</strong></div><b>≠</b>
+              <div><span>향후 주장</span><strong>인과적 · 저지연 스트리밍 위치 추정</strong></div>
+            </div>
+            <p>실시간을 주장하려면 사건을 시간순으로 공개하고, 출력 시계를 명시하며, 그 시각 이후에 끝난 응시를 차단해야 한다. 지연 시간과 아직 충분한 시선 이력이 없어 출력을 못 하는 사례도 함께 보고해야 한다.</p>
+            <div class="next-chapter"><span>다음 장</span><h3>각 수치가 무엇을 지지하고 무엇은 아직 말할 수 없는지 살펴본다.</h3><a href="evidence.html">근거로 이동 →</a></div>
+            <h3>구현 출처</h3>
+            <ul class="source-list"><li><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3: 구조, 기술 명세, 결과와 재현 코드</a></li></ul>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

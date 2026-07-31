@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="GazeMed의 IoU, Pointing, 대조 실험, 외부 비교와 현재 근거의 경계를 설명합니다." />
+    <meta name="theme-color" content="#143d35" />
+    <title>근거 · GazeMed</title>
+    <link rel="stylesheet" href="../../../assets/css/site.css" />
+    <script src="../../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../../" data-project="gazemed" data-project-root="../" data-page="gazemed-evidence" data-lang="ko" data-alt-lang="../evidence.html">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>근거</p>
+            <p class="eyebrow">4장 · 근거</p>
+            <h1>모든 수치는 그 <em>비교 대상</em>과 함께 읽는다.</h1>
+            <p class="page-summary">핵심 결과는 최고 점수 하나가 아니다. 시간, 좌표, 공간 언어가 실제 정보를 제공하는지 단계별 비교로 확인하는 데 있다.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>이 장의 구성</span>
+            <a href="#metrics">1. 평가 지표</a>
+            <a href="#results">2. 결과표</a>
+            <a href="#claims">3. 지지되는 주장</a>
+            <a href="#controls">4. 정보 대조 실험</a>
+            <a href="#external">5. 외부 모델 비교</a>
+            <a href="#limits">6. 근거의 경계</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="metrics">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">01</p>
+            <h2>IoU와 Pointing은 서로 다른 위치 추정 질문에 답한다.</h2>
+            <div class="metric-explainer">
+              <article><span>Intersection-over-Union</span><div class="venn-demo"><i></i><b></b></div><code>면적(예측 ∩ 목표) / 면적(예측 ∪ 목표)</code><p>영역 전체가 얼마나 겹치는지 본다. 임계값, smoothing, 목표 크기와 지도의 퍼짐에 민감하다.</p></article>
+              <article><span>Pointing game</span><div class="point-demo"><i></i><b></b></div><code>예측 최댓값이 목표 안이면 1, 아니면 0</code><p>가장 확신하는 한 점이 타원을 맞히는지 묻는다. 나머지 지도의 품질은 평가하지 않는다.</p></article>
+            </div>
+            <p>같은 변화가 IoU만 높이고 Pointing은 그대로 둘 수도 있다. 예측 영역이 타원과 더 잘 겹치더라도 최고점이 경계의 같은 쪽에 남을 수 있기 때문이다. 그래서 두 지표를 함께 읽어야 한다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="results">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">PR #3 최신 기술 명세</p><h2>하나의 주 분할과 동일한 예제에서 <em>다섯 조건</em>을 비교한다.</h2></div>
+            <p class="section-intro">REFLACX 3단계 · 환자 단위 분할 · 시험 예제 1,093건 · 학습 seed 5개의 평균. 임계값과 smoothing bandwidth는 검증 집합에서 고른 뒤 시험에서는 고정한다.</p>
+          </div>
+          <div class="table-wrap">
+            <table class="comparison evidence-results">
+              <thead><tr><th>조건</th><th>사용 정보</th><th>IoU</th><th>Pointing</th><th>답하는 질문</th></tr></thead>
+              <tbody>
+                <tr><td>고정 1.5초 규칙</td><td>시선 + 고정 언급 시점</td><td>0.2652</td><td>0.5837</td><td>단순 선행 휴리스틱</td></tr>
+                <tr><td>시간 전용</td><td>학습된 시선 시간</td><td>0.2907</td><td>0.6789</td><td>시간 정렬 학습의 가치</td></tr>
+                <tr class="highlight-row"><td>최종 모델</td><td>시간 + Fourier x/y + 언어</td><td><strong>0.3394</strong></td><td><strong>0.8029</strong></td><td>현재 제안 모델</td></tr>
+                <tr><td>위치 섞기</td><td>특징↔좌표 짝을 파괴</td><td>0.2908</td><td>0.6653</td><td>사례별 공간 정보 사용</td></tr>
+                <tr><td>공간 단어 가리기</td><td>위치 표현 7개 제거</td><td>0.3077</td><td>0.7462</td><td>구체적 언어 기여</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="source-note">출처 · <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>의 <code>TECHNICAL_SPEC.md</code>, 최신 검토 head <code>9e2d7e7</code>. RadZero는 IoU와 Pointing의 최적 설정이 서로 다르고 한 번의 실행이므로 아래에서 분리해 제시한다.</p>
+          <div class="evidence-stability">
+            <article><span>고정 분할 · 학습 seed 5개</span><strong>최종 0.3394 IoU [0.3374, 0.3414]</strong><p>Pointing 0.8029 [0.7924, 0.8134]. 환자를 고정하고 최적화 변동을 측정한다.</p></article>
+            <article><span>환자 분할 5개</span><strong>최종 0.3460 IoU [0.3348, 0.3571]</strong><p>Pointing 0.8044 [0.7935, 0.8153]. 분할에 따른 IoU 분산이 seed 분산의 5.6배다.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="claims">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">03</p>
+            <h2>현재 근거는 서로 다른 강도의 세 주장을 지지한다.</h2>
+            <div class="claim-stack">
+              <article class="claim-strong"><span>주장 1 · 강함</span><h3>위치 인식·언어 조건부 주의가 시간 정렬만 쓴 모델보다 낫다.</h3><p>최종 모델은 학습 seed 5개와 환자 분할 5개 모두에서 두 지표가 시간 전용 모델보다 높다. seed 평균 이득은 IoU +0.0303, Pointing +0.1241이다.</p></article>
+              <article class="claim-strong"><span>주장 2 · 강함</span><h3>향상은 응시 특징과 실제 위치의 올바른 대응에 의존한다.</h3><p>인스턴스 안에서 좌표만 순열화하면 서로 다른 seed·분할 실행 9개 모두에서 두 지표가 유의하게 하락한다. 좌표 집합은 남아 있지만 시간·언어 맥락과 좌표의 짝이 끊어진 결과다.</p></article>
+              <article class="claim-strong"><span>주장 3 · 현재 프로토콜 안에서 강함</span><h3>공간 단어는 시간, 위치, 소견 이름을 넘어 추가 정보를 준다.</h3><p>공간 표현 7개를 가리면 9/9 실행에서 두 지표가 모두 유의하게 내려간다. seed 평균 하락은 IoU 0.0317, Pointing 0.0567이다.</p></article>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="controls">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04</p>
+            <h2>Ablation은 부품을 빼고, control은 대안 설명을 시험한다.</h2>
+            <p>PR #3의 두 대조 실험은 학습된 모델 대부분을 유지한 채 평가 시점의 특정 정보만 손상한다. 따라서 단순 성능 비교보다 어떤 설명이 맞는지 더 직접적으로 묻는다.</p>
+            <div class="control-reasoning">
+              <article><span>위치 섞기</span><h3>대안 설명</h3><p>“전체 시선 분포나 늘어난 모델 용량만 있으면 된다.”</p><h3>조작</h3><p>같은 예제 안에서 응시들의 x/y를 서로 바꾼다.</p><h3>기대 근거</h3><p>큰 하락은 실제 특징–좌표 짝이 중요함을 뜻한다.</p></article>
+              <article><span>공간 단어 가리기</span><h3>대안 설명</h3><p>“보고서 특징은 소견 이름을 반복할 뿐이다.”</p><h3>조작</h3><p>left/right/bilateral/upper/lower/middle/retrocardiac만 0으로 만든다.</p><h3>기대 근거</h3><p>하락은 소견 이름과 별개인 위치 언어의 기여를 분리한다.</p></article>
+            </div>
+            <div class="article-note"><strong>아직 남은 대안 설명</strong><p>위치 섞기만으로는 소견별 해부학 prior를 배제하지 못한다. 최종 모델은 소견 임베딩으로 ‘이 소견이 흔히 생기는 곳’을 배울 수 있으므로, 라벨 조건부 해부학 기준선과 직접 비교해야 한다.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="external">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">05</p>
+            <h2>RadZero는 경쟁력 있는 참조점이지, 어느 modality가 더 낫다는 판정은 아니다.</h2>
+            <p>RadZero는 영상 patch와 문구로 위치를 찾고, GazeMed Final은 영상 픽셀 없이 시선과 음성으로 찾는다. 동일한 1,093개 예제에서 RadZero에 지표별 최적 설정을 허용해도 Final이 두 지표에서 더 높다.</p>
+            <div class="modality-compare">
+              <article><span>RadZero</span><strong>영상 + 문구</strong><p>CXR 자체가 시각 증거를 직접 제공한다.</p><small>최고 IoU 0.3165 · 최고 Pointing 0.7255</small></article><b>vs</b>
+              <article class="accent"><span>GazeMed Final</span><strong>시선 + 음성</strong><p>판독자의 행동이 시각 증거를 매개한다.</p><small>IoU 0.3399 · Pointing 0.7941</small></article>
+            </div>
+            <p>입력 계약이 서로 다르므로 이 비교는 행동 기반 모델이 현재 프로토콜에서 경쟁력이 있음을 보여줄 뿐, 시선이 영상보다 우수한 정보원임을 보여주지 않는다. 외부 기준선은 한 환자 분할에서만 평가되었고 두 모델의 오류가 상보적인지도 아직 열려 있다.</p>
+          </article>
+          <aside class="article-aside"><span>짝지은 비교</span><p>Final − RadZero: IoU +0.0234, <em>p</em> = 4.4×10⁻⁸; Pointing +0.0686, <em>p</em> = 4.9×10⁻⁵. RadZero의 두 최적값은 서로 다른 operating point다.</p></aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="limits">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">06</p>
+            <h2>관찰한 것, 지지되는 것, 아직 열린 것을 분리한다.</h2>
+            <div class="evidence-columns">
+              <article><span>관찰</span><ul><li>주 환자 분할의 1,093개 예제</li><li>학습 seed 5개와 환자 분할 5개</li><li>9/9 실행의 위치·언어 대조 실험</li><li>주 분할에서의 RadZero 일치 평가</li></ul></article>
+              <article><span>지지</span><ul><li>학습된 시간이 고정 지연보다 우수함</li><li>실제 응시 좌표를 사용함</li><li>공간 단어가 두 지표에 기여함</li><li>행동 전용 위치 추정이 이 조건에서 경쟁력 있음</li></ul></article>
+              <article><span>열린 질문</span><ul><li>인과적 실시간 성능</li><li>새 판독자·장비·기관으로의 전이</li><li>해부학 prior를 넘는 가치</li><li>임상 언급 연결 정확도</li><li>기관·장비 간 보정 강건성</li></ul></article>
+            </div>
+            <div class="article-note"><strong>예비 결과를 읽는 원칙</strong><p>다섯 환자 분할은 표본 선택 민감도를, 다섯 seed는 최적화 민감도를 측정한다. 전자의 IoU 변동이 5.6배 더 크다. 하지만 모두 같은 REFLACX 풀에서 나온 표본이므로 다른 판독자 집단, 기관, 스캐너 구성이나 시선 장비로의 전이를 증명하지는 않는다.</p></div>
+            <div class="next-chapter"><span>다음 장</span><h3>선행 연구가 이미 해결한 부분과 GazeMed가 실제로 다른 지점을 구분한다.</h3><a href="literature.html">선행 연구로 이동 →</a></div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

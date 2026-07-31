@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="GazeImageRefine는 시각적 현저성을 통제한 뒤 행동 전 시선이 생성 이미지의 수정 의도를 식별하는지, 선택적 보조가 언제 정당한지 연구합니다." />
+    <meta name="theme-color" content="#143d35" />
+    <title>GazeImageRefine · BEAVER</title>
+    <link rel="stylesheet" href="../../../assets/css/site.css" />
+    <script src="../../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../../" data-project="refine" data-project-root="../" data-page="refine-home" data-lang="ko" data-alt-lang="../index.html">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="project-masthead secondary-project">
+        <div class="shell project-masthead-grid">
+          <div>
+            <p class="eyebrow">프로젝트 02 · 생성형 HCI</p>
+            <h1>GazeImageRefine</h1>
+            <p class="project-deck">모든 시선을 편집 명령으로 오해하지 않으면서, 사용자의 자연스러운 시선으로 생성 이미지에서 수정할 곳을 찾을 수 있을까?</p>
+          </div>
+          <aside class="project-snapshot">
+            <span>프로젝트 요약</span>
+            <dl>
+              <div><dt>구성 개념</dt><dd>행동 전 수정 의도</dd></div>
+              <div><dt>신호</dt><dd>시선 + 영상 + 이후 행동</dd></div>
+              <div><dt>주요 혼란 변수</dt><dd>시각적 현저성</dd></div>
+              <div><dt>시스템 원칙</dt><dd>제안 · 확인 · 되돌리기</dd></div>
+              <div><dt>근거 상태</dt><dd>연구 설계</dd></div>
+            </dl>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section alt" id="question">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">01 · 문제</p>
+            <h2>오류를 바라보는 것과 그것을 수정하려는 것은 다르다.</h2>
+            <p>이미지 편집은 클릭이나 텍스트 지시 이전에 시작된다. 사용자는 결과를 살펴보고, 머릿속 목표와 비교하며, 불일치를 발견하고, 그것을 바꿀 가치가 있는지 판단한다. 시선은 이 숨은 과정의 일부를 관찰하게 하지만 전체 결정을 그대로 보여주지는 않는다.</p>
+            <div class="meaning-chain">
+              <span>응시</span><b>≠</b><span>문제 인지</span><b>≠</b><span>불만족</span><b>≠</b><span>수정 의도</span><b>≠</b><span>수정 지시</span>
+            </div>
+            <p>얼굴, 밝은 물체, 글자, 기이한 artifact는 마음에 들어도 시선을 끈다. 반대로 전반적인 화풍 불일치는 한곳에 응시가 모이지 않아도 전체 재생성을 유도할 수 있다. 따라서 질문은 좁게 정의해야 한다.</p>
+            <div class="positioning-block"><span>핵심 질문</span><strong>영상과 과제가 일반적으로 끌어당기는 주의를 통제한 뒤에도, 편집 행동 전의 시선이 사용자가 나중에 선택하는 수정 영역을 예측하는가?</strong></div>
+            <div class="plain-callout"><span>조작적 참조</span><p>수정 의도는 이후의 keep/edit 선택, 영역, 이유, 지시와 최종 채택 결과로 고정한다. 시선은 의도의 증거이지 그 자체로 정답 라벨이 아니다.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="foundations">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">02 · 시선 기초</p>
+            <h2>아이트래킹은 표본의 흐름을 보기 사건의 시퀀스로 바꾼다.</h2>
+            <p>아이트래커는 눈의 방향이 화면과 만나는 지점을 초당 여러 번 추정한다. 원시 표본에는 잡음이 있고 눈 깜박임 주변에는 빈 구간이 생긴다. 사건 검출기는 비교적 안정적인 표본을 <strong>응시(fixation)</strong>로, 빠른 이동을 <strong>도약(saccade)</strong>으로 묶는다.</p>
+            <div class="concept-ledger">
+              <article><span>응시 · Fixation</span><h3>비교적 안정적인 머무름</h3><p>중심, 시작·종료 시각과 지속 시간으로 요약한다. 주변에 외현적 주의가 있었음을 뜻하지만 명령이나 의식적 인지를 보장하지 않는다.</p></article>
+              <article><span>도약 · Saccade</span><h3>응시 사이의 빠른 이동</h3><p>이동 순서는 탐색 전략을 설명한다. 일반적으로 시각 정보 취득은 응시 주변에서 모델링한다.</p></article>
+              <article><span>머문 시간 · Dwell</span><h3>영역 안의 누적 시간</h3><p>여러 응시와 재방문을 포함할 수 있다. 어려움, 관심, 불확실성, 확인 또는 과제 중요성을 반영할 수 있다.</p></article>
+              <article><span>시선 경로 · Scanpath</span><h3>순서가 있는 보기 시퀀스</h3><p>정적 heatmap이 버리는 탐색, 비교, 되돌아보기를 보존한다.</p></article>
+            </div>
+            <h3>점에서 영역 표현으로</h3>
+            <div class="splat-flow">
+              <div><span>시간이 있는 응시</span><div class="dot-field"><i></i><i></i><i></i><i></i></div></div><b>→</b>
+              <div><span>지속 시간 가중 밀도</span><div class="blur-field"></div></div><b>→</b>
+              <div><span>후보 영역</span><div class="mask-field"></div></div>
+            </div>
+            <p>Heatmap은 시각화에 편리하지만 순서를 지운다. 모델에는 응시 시각, 첫 진입 시간, 재방문 수, 후기 dwell, 분산과 후보 영역 사이의 전이를 남겨야 한다.</p>
+            <div class="article-note"><strong>보정 정확도가 공간 해상도를 결정한다.</strong><p>데스크톱에서 시각 1°의 오차는 많은 픽셀을 덮을 수 있다. 영역 라벨과 평가 허용치는 결과를 본 뒤 정하지 말고, 시각도나 보정된 영상 좌표 기준으로 사전에 정의해야 한다.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="construct">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">측정 모형</p><h2>숨은 구성 개념과 <em>관찰 가능한 흔적</em>을 분리한다.</h2></div>
+            <p class="section-intro">수정 의도는 잠재 변수라 아이트래커에서 직접 읽을 수 없다. 유효한 연구는 서로 다른 사건을 함께 측정하고 그 불일치도 보존한다.</p>
+          </div>
+          <div class="reading-mechanism">
+            <article><span>자극과 목표</span><strong>영상 · prompt · 사용자 선호</strong><p>무엇이 보이고 무엇이 불일치인지 정한다.</p></article><b>→</b>
+            <article><span>잠재 판단</span><strong>인지 · 평가 · 결정</strong><p>직접 관찰할 수 없고 시간에 따라 바뀔 수 있다.</p></article><b>→</b>
+            <article><span>행동 흔적</span><strong>시선 · 선택 · 언어 · 채택</strong><p>각기 다른 잡음과 시점을 가진 부분 측정이다.</p></article>
+          </div>
+          <div class="construct-grid">
+            <article><span>영역 참조</span><h3>무엇을 선택했나?</h3><p>브러시 mask, 상자, 클릭점 또는 자동 제안 후 사용자가 수정한 영역.</p></article>
+            <article><span>이유 참조</span><h3>왜 고치려 했나?</h3><p>Prompt 위반, 렌더링 artifact, 관계 오류, 취향 또는 전역 불만족.</p></article>
+            <article><span>지시 참조</span><h3>어떻게 바꾸려 했나?</h3><p>추가, 삭제, 교체, 이동, 색 변경, 형태 변경, 재스타일 또는 전체 재생성.</p></article>
+            <article><span>결과 참조</span><h3>변경을 채택했나?</h3><p>채택 여부는 실제 수정 의도와 만족스럽지 못한 탐색 행동을 구분하는 추가 근거다.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="confounds">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04 · 혼란 변수</p>
+            <h2>시각적 현저성은 가장 먼저 배제해야 할 대안 설명이다.</h2>
+            <p>현저성(saliency)은 대비, 얼굴, 크기, 고립, 구도 같은 자극 특성 때문에 여러 사람이 공통으로 바라보는 영역을 뜻한다. 수정 영역이 눈에 잘 띈다면 시선–편집의 겹침만으로 의도를 증명할 수 없다.</p>
+            <div class="residual-equation"><span>관찰된 개인 시선</span><b>−</b><span>영상이 유도하는 기대 주의</span><b>=</b><strong>후보 과제 잔차</strong></div>
+            <p>이 잔차가 자동으로 의도가 되는 것은 아니다. 사용자가 없는 saliency 모델로 설명되지 않는 부분일 뿐이며, 과제 관련성, prompt–image 불일치, 물체 크기, 중심 편향과 이전 상호작용을 추가로 비교해야 한다.</p>
+            <div class="control-stack">
+              <article><span>자극 대조</span><h3>Saliency-only</h3><p>참여자 행동 없이 영상만으로 수정 영역을 예측한다.</p></article>
+              <article><span>과제 대조</span><h3>Prompt–image grounding</h3><p>사용자가 보지 않아도 prompt와 맞지 않는 영역을 찾는다.</p></article>
+              <article><span>기하 대조</span><h3>중심·크기 prior</h3><p>큰 중앙 물체가 시선과 선택을 모두 설명하는지 본다.</p></article>
+              <article><span>행동 대조</span><h3>사용자·시행 섞기</h3><p>전체 시선 통계는 유지하되 실제 시선–행동의 짝을 끊는다.</p></article>
+            </div>
+          </article>
+          <aside class="article-aside"><span>인과적 주의</span><p>시선은 결정보다 앞설 수도, 이미 형성된 결정의 결과일 수도, 대안을 비교하는 과정일 수도 있다. 예측 가능성과 인과 역할의 식별은 서로 다른 주장이다.</p></aside>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="study">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">연구 1 · 식별 가능성</p><h2>보조 시스템보다 먼저 <em>신호</em>를 확립한다.</h2></div>
+            <p class="section-intro">참여자는 영역 제안이 보이지 않는 상태에서 생성 이미지를 살펴본다. 첫 수정 행동 이전의 시선을 수집하고, 이후의 행동을 참조로 사용한다.</p>
+          </div>
+          <ol class="process-list">
+            <li><span>1</span><div><strong>Prompt–image 쌍을 제시한다.</strong><p>오류 유형, 공간 범위, 물체 크기, 현저성, 영상 품질을 균형 있게 구성한다. 모든 영상을 고쳐야 한다는 암시를 막기 위해 만족스러운 영상도 포함한다.</p></div></li>
+            <li><span>2</span><div><strong>제약 없는 관찰을 기록한다.</strong><p>첫 관찰 구간에는 overlay를 두지 않는다. 시선, 영상 표시, prompt 가시성, 모든 UI 사건을 동기화한다.</p></div></li>
+            <li><span>3</span><div><strong>결정을 수집한다.</strong><p>Keep/edit 뒤에 영역, 이유, 확신도, 지시를 묻는다. 국소 mask를 강제하지 않고 ‘전체 수정’과 ‘불확실’을 보존한다.</p></div></li>
+            <li><span>4</span><div><strong>결과를 생성하고 선택하게 한다.</strong><p>채택한 결과, 거절한 시도, 수동 수정, 최종적으로 원본을 선호했는지 기록한다.</p></div></li>
+          </ol>
+          <h3 class="subsection-title">필수 모델 사다리</h3>
+          <div class="table-wrap">
+            <table class="comparison">
+              <thead><tr><th>모델</th><th>사용 정보</th><th>답하는 질문</th></tr></thead>
+              <tbody>
+                <tr><td>Prior</td><td>중심, 물체 크기, 수정 빈도</td><td>데이터 편향만으로 얼마나 설명되는가?</td></tr>
+                <tr><td>Saliency only</td><td>영상 유도 주의</td><td>자극만으로 선택 영역을 설명할 수 있는가?</td></tr>
+                <tr><td>Gaze only</td><td>응시, dwell, 재방문</td><td>영상 맥락 없이 행동이 무엇을 예측하는가?</td></tr>
+                <tr><td>Residual gaze</td><td>개인 시선 − 기대 saliency</td><td>비정상적으로 큰 주의가 중요한가?</td></tr>
+                <tr><td>Context model</td><td>시선 + saliency + prompt 불일치</td><td>과제 맥락이 이후 수정을 식별하는가?</td></tr>
+                <tr><td>Temporal model</td><td>순서 있는 응시 + UI 이력</td><td>되돌아보기와 후기 dwell이 추가 정보를 주는가?</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="evaluation">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">06 · 평가</p>
+            <h2>위치 품질, 의사결정, 일반화를 따로 측정한다.</h2>
+            <div class="metric-explainer">
+              <article><span>영역 품질</span><h3>IoU · point hit · 중심 거리</h3><p>국소 mask, 클릭점, 전역 수정에 한 지표를 강제할 수 없다. 참조 형태와 영역 크기별로 보고한다.</p></article>
+              <article><span>의도 판단</span><h3>Precision · recall · AUPRC</h3><p>Keep 시행은 no-edit class를 만든다. 거짓 제안이 사용자를 방해하므로 precision이 특히 중요하다.</p></article>
+              <article><span>선택적 품질</span><h3>Risk–coverage 곡선</h3><p>더 많이 판단을 보류할 때 오류가 충분히 줄어드는지 보여준다.</p></article>
+              <article><span>보정</span><h3>ECE · Brier score</h3><p>0.8 확신도가 UI 동작을 제어한다면 실제 성공률도 비슷해야 한다.</p></article>
+            </div>
+            <div class="generalization-grid">
+              <article><span>새 참여자</span><p>시선 역학이 처음 보는 사용자에게 전이되는가?</p></article>
+              <article><span>새 영상</span><p>자극별 saliency를 암기하지 않는가?</p></article>
+              <article><span>새 생성기</span><p>다른 artifact 분포에도 전이되는가?</p></article>
+            </div>
+            <p>참여자와 영상 ID를 그룹 단위로 분할해야 한다. 시행을 무작위로 나누면 거의 같은 행동이나 같은 자극이 양쪽에 들어가 성능이 부풀 수 있다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="literature">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">07 · 선행 연구</p>
+            <h2>인접 연구는 아직 열린 기여를 더 정확히 만든다.</h2>
+            <div class="paper-card-grid">
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>CHI EA · 2026</span><h3>Eye Want It All!</h3><p>생성 이미지 작업에서 시선 행동과 이후 재생성 영역의 관계를 분석한다.</p><div class="paper-tags"><i>관찰 연구</i><i>재생성</i></div><dl><div><dt>가져올 것</dt><dd>이후의 편집 선택을 행동 참조로 삼는 관점.</dd></div><div><dt>확장</dt><dd>현저성을 통제하고 새 사람·영상에서 예측을 시험.</dd></div></dl><a href="https://doi.org/10.1145/3772363.3799314">1차 출처 →</a></div></article>
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>arXiv · 2024</span><h3>GazeGen</h3><p>시선을 능동적 가리킴 신호로 사용해 시각 콘텐츠를 생성하고 편집한다.</p><div class="paper-tags"><i>능동 시선</i><i>생성</i></div><dl><div><dt>가져올 것</dt><dd>시선이 공간 지시 비용을 줄일 수 있다는 가능성.</dd></div><div><dt>구분</dt><dd>GazeImageRefine는 의도적인 gaze pointing이 아니라 행동 전 수동 증거를 연구.</dd></div></dl><a href="https://arxiv.org/abs/2411.04335">1차 출처 →</a></div></article>
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>IUI · 2022</span><h3>MIDAS</h3><p>자연스러운 행동 의도를 시간 시선으로 예측해 정적 dwell 임계값 이상의 역학을 모델링한다.</p><div class="paper-tags"><i>의도</i><i>시간 시선</i></div><dl><div><dt>가져올 것</dt><dd>행동 전 시퀀스와 행동까지 남은 시간이 중요함.</dd></div><div><dt>검증</dt><dd>재방문과 후기 dwell이 heatmap을 넘어서는지 확인.</dd></div></dl><a href="https://arxiv.org/abs/2201.09135">1차 출처 →</a></div></article>
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>CVPR · 2023</span><h3>Imagen Editor and EditBench</h3><p>객체, 속성, 장면 편집 범주를 정의하고 text-guided inpainting을 사람 평가로 측정한다.</p><div class="paper-tags"><i>편집 분류</i><i>평가</i></div><dl><div><dt>가져올 것</dt><dd>편집 품질은 다차원이며 사람 평가가 필요함.</dd></div><div><dt>확장</dt><dd>상호작용 비용, 거짓 방해, 사용자 통제를 함께 측정.</dd></div></dl><a href="https://research.google/pubs/imagen-editor-and-editbench-advancing-and-evaluating-text-guided-image-inpainting/">1차 출처 →</a></div></article>
+            </div>
+            <p>따라서 “시선으로 이미지를 편집한다”는 너무 넓은 새로움이다. 남아 있는 기여는 <strong>현저성을 통제한 수동 시선으로 이후 수정 행동을 식별</strong>하고, 시선을 명령으로 오해하지 않는 선택적 인터페이스의 가치를 보이는 것이다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="assistance">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">연구 2 · 선택적 보조</p><h2>근거가 <em>충분히 강할 때만</em> 되돌릴 수 있는 제안을 한다.</h2></div>
+            <p class="section-intro">연구 1에서 보정된 held-out 식별 가능성이 확인된 뒤에만 연구 2로 간다. 시스템은 영역을 제안하고, 편집의 저자는 계속 사용자다.</p>
+          </div>
+          <div class="study-stages">
+            <article><span>대조 조건</span><h3>수동 표현</h3><p>일반 편집기에서 사용자가 영역과 지시를 직접 정한다.</p><ul><li>첫 유효 수정까지 시간</li><li>영역 수정 횟수</li><li>최종 결과 채택</li><li>작업부하와 통제감</li></ul></article>
+            <b aria-hidden="true">짝지은 비교</b>
+            <article><span>보조 조건</span><h3>확인 가능한 제안</h3><p>보정된 임계값을 넘을 때만 preview가 나타나며 채택, 조정, 무시, 닫기가 가능하다.</p><ul><li>제안 precision과 coverage</li><li>거짓 방해율</li><li>정답일 때 절약 시간</li><li>오답일 때 발생 비용</li></ul></article>
+          </div>
+          <div class="boundary-line">
+            <div class="confirmed"><span>안전한 상호작용</span><strong>보기 → 제안 → 명시적 확인 → 되돌릴 수 있는 수정</strong></div><b>≠</b>
+            <div><span>Midas-touch 상호작용</span><strong>보기 → 자동·비가역 행동</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section dark" id="direction">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">방향과 결정</p><h2>현재 작업은 <em>측정 계층</em>에 있다.</h2></div>
+            <p class="section-intro">프로젝트는 연구 설계 단계이며 아직 경험적 성능 주장은 없다. 당장의 산출물은 타당한 구성 개념, 자극 집합, 계측 계획과 사전 정의된 모델 사다리다.</p>
+          </div>
+          <div class="direction-grid">
+            <article><span>정의</span><h3>자극 분류 체계</h3><p>Prompt 위반, 렌더링 artifact, 관계 오류, 취향 불일치 × 국소·관계·전역 범위 × 눈에 띄는·덜 띄는 제시.</p></article>
+            <article><span>계측</span><h3>행동 참조</h3><p>시선을 keep/edit, 선택 영역, 이유, 지시, 수정, 채택 결과와 동기화한다.</p></article>
+            <article><span>기준선</span><h3>사용자 없는 설명</h3><p>참여자 자료가 모델 선택에 영향을 주기 전에 saliency, 기하, prompt-grounding 기준선을 고정한다.</p></article>
+            <article><span>관문</span><h3>식별 임계값</h3><p>Precision, 보정, 참여자·영상 일반화가 사전 기준을 충족할 때만 보조 연구로 진행한다.</p></article>
+          </div>
+          <div class="project-position"><span>작업 연구 질문</span><strong>어떤 행동 전 시선 역학이 영상 현저성과 과제 불일치를 넘어 이후 수정 영역을 예측하며, 보정된 제안이 통제감을 줄이지 않고 표현 비용을 낮출 수 있는가?</strong></div>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

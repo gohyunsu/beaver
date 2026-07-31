@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="leXic은 어떤 사전 계산 어휘 난이도 단서가 독자와 글이 달라지는 상황에서 시선 기반 독해 예측을 개선하는지 연구합니다." />
+    <meta name="theme-color" content="#143d35" />
+    <title>leXic · BEAVER</title>
+    <link rel="stylesheet" href="../../../assets/css/site.css" />
+    <script src="../../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../../" data-project="lexic" data-project-root="../" data-page="lexic-home" data-lang="ko" data-alt-lang="../index.html">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="project-masthead secondary-project">
+        <div class="shell project-masthead-grid">
+          <div>
+            <p class="eyebrow">프로젝트 03 · 읽기와 인지</p>
+            <h1>leXic</h1>
+            <p class="project-deck">단어의 어떤 저비용 특성이 시선 전용 모델이 놓치는 독해 성과의 일부를 설명할 수 있을까?</p>
+          </div>
+          <aside class="project-snapshot">
+            <span>프로젝트 요약</span>
+            <dl>
+              <div><dt>과제</dt><dd>문항 응답 예측</dd></div>
+              <div><dt>데이터</dt><dd>EyeBench · OneStop</dd></div>
+              <div><dt>맥락</dt><dd>길이 · 빈도 · surprisal</dd></div>
+              <div><dt>현재 근거</dt><dd>작은 AUROC 향상</dd></div>
+              <div><dt>근거 상태</dt><dd>보강 연구</dd></div>
+            </dl>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section alt" id="foundations">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">01 · 읽기 기초</p>
+            <h2>읽기 시선은 <em>독자와 글의 상호작용</em>을 반영한다.</h2>
+            <p>눈은 모든 단어를 부드럽게 훑지 않는다. 잠시 멈추고, 앞으로 뛰며, 예상 가능한 단어를 건너뛰고, 때로는 앞부분으로 돌아간다. 이런 사건은 처리 과정을 드러내지만 사람과 글의 맥락을 함께 알아야 의미를 해석할 수 있다.</p>
+            <div class="concept-ledger">
+              <article><span>응시 · Fixation</span><h3>단어 근처에서 멈춤</h3><p>위치와 지속 시간을 기록한다. 긴 시간은 어휘 난이도, 중요성, 통합, 주의 분산 또는 개인 전략을 반영할 수 있다.</p></article>
+              <article><span>건너뛰기 · Skip</span><h3>단어를 직접 응시하지 않음</h3><p>짧고 자주 쓰이며 예상 가능한 단어는 주변시로 처리되어 건너뛸 가능성이 높다. 건너뜀은 읽지 않았다는 증거가 아니다.</p></article>
+              <article><span>역행 · Regression</span><h3>앞선 글로 되돌아감</h3><p>재분석, 지시 대상 확인, 근거 탐색 또는 과제 중심 검색을 반영할 수 있다. 방향과 도착 단어가 중요하다.</p></article>
+              <article><span>재응시 · Refixation</span><h3>같은 단어를 다시 응시</h3><p>길거나 어려운 단어에서 늘 수 있지만 첫 착지 위치의 오차 때문에 생길 수도 있다.</p></article>
+            </div>
+            <h3>자주 쓰는 단어 단위 시간 지표</h3>
+            <div class="feature-ledger">
+              <div><span>1</span><strong>첫 응시 시간</strong><small>단어를 처음 본 응시의 지속 시간</small></div>
+              <div><span>2</span><strong>Gaze duration</strong><small>단어를 처음 떠나기 전까지 응시 합</small></div>
+              <div><span>3</span><strong>총 읽기 시간</strong><small>나중의 재방문을 포함한 모든 응시 합</small></div>
+              <div><span>4</span><strong>Go-past time</strong><small>단어 오른쪽으로 완전히 넘어갈 때까지의 시간</small></div>
+              <div><span>5</span><strong>건너뛰기 확률</strong><small>단어에 직접 응시가 없었는가</small></div>
+              <div><span>6</span><strong>역행 확률</strong><small>단어에서 또는 단어로 되돌아갔는가</small></div>
+            </div>
+            <div class="article-note"><strong>한 지속 시간이 한 인지 상태를 뜻하지 않는다.</strong><p>400 ms dwell은 희귀 단어, 어려운 문장, 신중한 독자, 문항 중심 탐색 또는 추적 오류에서 모두 생길 수 있다. leXic은 모델이 이 모든 설명을 행동만으로 추정하지 않도록 글 맥락을 더한다.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="lexical">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">02 · 어휘 맥락</p>
+            <h2>세 가지 단순한 단서가 서로 다른 처리 비용을 설명한다.</h2>
+            <div class="reading-mechanism">
+              <article><span>단어 속성</span><strong>길이 · 빈도 · surprisal</strong><p>시각적 형태, 사전 노출, 문맥상 기대를 나타낸다.</p></article><b>→</b>
+              <article><span>관찰된 읽기</span><strong>응시 · 건너뛰기 · 역행</strong><p>글의 비용과 독자 능력·목표·전략을 함께 반영한다.</p></article><b>→</b>
+              <article><span>결과</span><strong>문항 응답</strong><p>지문 이해를 간접적으로 측정하는 불완전한 행동 참조다.</p></article>
+            </div>
+            <dl class="definition-list">
+              <div><dt>단어 길이</dt><dd>글자 또는 하위 단위의 수. 시각적 폭과 형태소 복잡성의 근사치다. 계산은 쉽지만 언어와 tokenization에 따라 달라진다.</dd></div>
+              <div><dt>단어 빈도</dt><dd>선택한 참조 corpus에서 단어가 등장하는 횟수. 반복 노출은 대체로 어휘 접근을 쉽게 하지만 corpus, 대소문자, 활용형, 미등록어 처리 방식을 보고해야 한다.</dd></div>
+              <div><dt>Surprisal</dt><dd><code>I(wᵢ) = −log P(wᵢ | w₁…wᵢ₋₁)</code>. 문맥에서 덜 예상되는 단어일수록 값이 크다. 밑이 2인 log라면 확률이 절반이 될 때 surprisal이 1 bit 증가한다.</dd></div>
+            </dl>
+            <div class="equation-line"><span>문맥상 높은 확률</span><b>→</b><strong>낮은 surprisal</strong><b>·</b><span>문맥상 낮은 확률</span><b>→</b><strong>높은 surprisal</strong></div>
+            <p>빈도는 문맥과 무관하게 단어가 일반적으로 흔한지 묻는다. Surprisal은 문맥에 의존한다. “bank”는 흔한 단어여도 특정 문장에서는 뜻밖일 수 있다. 길이는 더 표면적인 비용을 포착한다. 서로 상관된 특징이므로 개별·조합 ablation이 필요하다.</p>
+            <div class="plain-callout"><span>배포 주장</span><p>GPT-2는 배포 전에 surprisal을 계산하는 데 사용된다. 따라서 language-model-free가 아니라 <strong>예측 loop에서 언어 모델 추론이 없는 사전 계산 어휘 조건화</strong>라고 표현해야 정확하다.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="dataset">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">03 · OneStop</p>
+            <h2>읽기 목적, 글 난이도, 시선과 정답을 연결한 통제 데이터셋.</h2>
+            <p>OneStop은 360명이 뉴스 글을 일반 읽기와 정보 탐색 조건에서 읽은 아이트래킹 자료다. 공개 자료는 약 152시간의 시선, 260만 단어 token, 486개 이해도 문항을 포함한다. 글 난이도와 반복 읽기 조작 덕분에 자료와 읽기 목적이 행동을 어떻게 바꾸는지 물을 수 있다.</p>
+            <figure class="source-figure">
+              <img src="../../../assets/img/papers/onestop-experiment.png" alt="정보 탐색과 일반 읽기 조건, 글 난이도, 이해도 문항과 반복 읽기를 포함한 OneStop 실험 설계" loading="lazy" />
+              <figcaption><strong>OneStop 실험 설계.</strong> Berzak 외, <a href="https://www.nature.com/articles/s41597-025-06272-2">Scientific Data 12, 1995 (2025)</a>의 그림 1. <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>에 따라 출판사 endpoint로 크기만 조정하여 사용.</figcaption>
+            </figure>
+            <h3>하나의 예측 예제는 어떻게 만들어지는가?</h3>
+            <div class="identity-chain">
+              <div><span>독자</span><strong>participant ID</strong><small>능력과 전략</small></div><b>×</b>
+              <div><span>문항</span><strong>지문 / 질문</strong><small>내용과 난이도</small></div><b>→</b>
+              <div><span>행동</span><strong>정렬된 시선</strong><small>단어 단위 시퀀스</small></div><b>→</b>
+              <div><span>목표</span><strong>정답 / 오답</strong><small>문항 응답</small></div>
+            </div>
+            <p>목표는 추상적인 ‘진짜 이해’가 아니라 특정 독자가 특정 질문에 맞게 답했는지다. 추측, 문항 품질, 기억과 응답 전략이 라벨 잡음을 만든다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="benchmark">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">EyeBench</p><h2><em>누가, 무엇이 새로운지</em>로 일반화를 정의한다.</h2></div>
+            <p class="section-intro">EyeBench v1.0은 6개 읽기 데이터셋의 7개 예측 과제를 표준화하고, 현재 15개 구현 모델을 하나의 평가 틀에서 제시한다. leXic은 OneStop 독해 과제와 분할 논리를 사용한다.</p>
+          </div>
+          <div class="generalization-grid">
+            <article><span>Unseen reader</span><h3>처음 보는 사람</h3><p>글 분포는 익숙하지만 참여자가 학습에 없었다. 능력, 전략, 개인 시선 형태를 넘는 전이를 본다.</p></article>
+            <article><span>Unseen text</span><h3>처음 보는 지문</h3><p>독자는 익숙할 수 있지만 지문은 학습에 없었다. 문항별 패턴을 넘어 일반화하는지 본다.</p></article>
+            <article><span>Unseen both</span><h3>새 사람 + 새 지문</h3><p>상호작용의 양쪽이 모두 처음이다. 실제 배포에 가장 가까운 어려운 shift다.</p></article>
+          </div>
+          <div class="article-note"><strong>행 단위 무작위 분할이 잘못된 이유</strong><p>같은 독자와 지문이 양쪽에 있으면 모델이 읽기 행동과 결과의 관계가 아니라 ID별 패턴을 이용할 수 있다. 독자·문항 그룹화는 단순 구현 세부가 아니라 과제 정의다.</p></div>
+          <ul class="source-list"><li><a href="https://eyebench.github.io/eyebench/">EyeBench 공식 benchmark, 과제, 평가 regime, 모델과 결과</a></li></ul>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="approach">
+        <div class="shell">
+          <div class="section-head"><div><p class="eyebrow">접근법</p><h2>시선 모델에 어휘 맥락을 더하는 두 방법.</h2></div></div>
+          <div class="compare-two large">
+            <article><span>LEXIC-Concat</span><h3>직접 특징 결합</h3><p>각 응시를 단어에 맞추고 단어 길이, 빈도, 사전 계산 GPT-2 surprisal을 학습 통계로 정규화한 뒤 시선 특징 시퀀스에 연결한다.</p><strong>장점 · 단순하고 감사 가능하며 안정적</strong></article>
+            <article><span>LEXIC-Res</span><h3>전형적 독자 잔차</h3><p>먼저 어휘 난이도로 기대 시선을 예측한 뒤, 관찰 행동과 기대 행동의 차이를 독해 모델에 입력한다.</p><strong>위험 · ‘전형적’ 시선이 독자·corpus에 종속될 수 있음</strong></article>
+          </div>
+          <div class="architecture-ledger">
+            <article><span>Concat 경로</span><h3>예측기가 상호작용을 학습</h3><ul><li>관찰 시선을 그대로 유지</li><li>정렬된 모든 단계에 어휘 특징 제공</li><li>하류 모델이 글 맥락을 언제 쓸지 결정</li></ul></article>
+            <div class="architecture-operator" aria-hidden="true">대비</div>
+            <article><span>Residual 경로</span><h3>기대 행동을 먼저 설명</h3><ul><li>어휘 모델이 전형적 시선을 예측</li><li>잔차가 기대와의 차이를 강조</li><li>기대 모델 오류가 하류로 전파</li></ul></article>
+          </div>
+          <h3 class="subsection-title">학습 전 정렬 점검</h3>
+          <div class="audit-grid">
+            <article><span>토큰 감사</span><h3>Tracker 단어 ↔ lexical token</h3><p>문장부호, 축약, subword 집계, 건너뛴 단어, 반복 token과 미등록어를 확인한다.</p></article>
+            <article><span>누수 감사</span><h3>정규화 ↔ fold</h3><p>Scaler, 빈도 기본값, 잔차 모델과 ensemble 선택을 학습 partition에서만 맞춘다.</p></article>
+            <article><span>결측 감사</span><h3>응시 없음 ≠ 특징 없음</h3><p>건너뛴 단어, 글 밖 시선, tracker 손실, 정렬 실패를 모두 같은 0으로 만들지 않는다.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="evidence">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">06 · 현재 근거</p>
+            <h2>작은 예측 신호는 있지만 실용적 의미는 아직 열려 있다.</h2>
+            <p><a href="https://arxiv.org/abs/2607.08152">현재 preprint</a>는 10개 fold에서 seed 5개 ensemble을 보고한다. 두 어휘 변형은 unseen-text AUROC를 약 1.8–2.2%p 높이고, Concat은 unseen-reader AUROC를 약 2.9%p 높인다.</p>
+            <h3>AUROC를 읽는 법</h3>
+            <p>AUROC는 임의의 정답 예제가 임의의 오답 예제보다 높은 점수를 받을 확률이다. 0.5는 무작위 순위, 1.0은 완벽한 순위다. AUROC는 운용 임계값을 고르지 않고 보정을 측정하지 않으며 실제 오류 수를 알려주지 않는다.</p>
+            <div class="evidence-columns">
+              <article><span>관찰</span><ul><li>일부 shift에서 작은 AUROC 향상</li><li>Concat이 더 안정적인 설계</li><li>Residual의 전이가 약함</li><li>동일 fold와 seed ensemble로 비교</li></ul></article>
+              <article><span>가능한 해석</span><ul><li>어휘 맥락이 gaze-only 오류 일부를 설명</li><li>단순 결합으로도 충분할 수 있음</li><li>전형적 시선 모델이 집단에 종속될 수 있음</li><li>Shift에 따라 글 맥락의 가치가 다름</li></ul></article>
+              <article><span>아직 미확립</span><ul><li>실제 의사결정 가치</li><li>각 특징의 기여</li><li>다른 데이터·backbone 전이</li><li>보정과 하위군 신뢰도</li><li>배포 비용 우위</li></ul></article>
+            </div>
+            <div class="article-note"><strong>새로움보다 효과 크기</strong><p>알려진 심리언어 특징과 직접 결합은 구조적 돌파구가 아니다. 작은 신호가 어디에서 반복되고 무엇이 만들며, 그 비용을 정당화할 만큼 유용한지 통제된 방식으로 설명하는 데 연구 가치가 있다.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="literature">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">07 · 선행 연구</p>
+            <h2>심리언어 설명과 benchmark 일반화가 만나는 지점.</h2>
+            <div class="paper-card-grid">
+              <article class="paper-card"><img src="../../../assets/img/papers/onestop-experiment.png" alt="OneStop 읽기 실험 설계" loading="lazy" /><div class="paper-card-copy"><span>Scientific Data · 2025</span><h3>OneStop</h3><p>통제된 읽기 목적, 글 난이도, 반복 읽기, 시선과 이해도 문항을 포함한 대규모 자연 읽기 자료.</p><div class="paper-tags"><i>데이터셋</i><i>읽기 목표</i></div><dl><div><dt>제공</dt><dd>독자 × 문항 상호작용과 응답 목표.</dd></div><div><dt>제약</dt><dd>주장은 수집 집단과 영어 뉴스 글에 묶임.</dd></div></dl><a href="https://www.nature.com/articles/s41597-025-06272-2">1차 출처 →</a></div></article>
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>NeurIPS · 2025</span><h3>EyeBench</h3><p>읽기 시선의 예측 모델링을 여러 과제, 데이터, 모델 계열과 unseen-reader/text regime으로 표준화한다.</p><div class="paper-tags"><i>benchmark</i><i>일반화</i></div><dl><div><dt>제공</dt><dd>비교 가능한 처리, 분할, 기준선, 지표.</dd></div><div><dt>확장</dt><dd>leXic은 명시적 어휘 맥락이 shift 양상을 바꾸는지 질문.</dd></div></dl><a href="https://eyebench.github.io/eyebench/">1차 출처 →</a></div></article>
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>ETRA · 2020</span><h3>Towards Predicting Reading Comprehension From Gaze</h3><p>응시 위치, 지속 시간, 동공 특징 시퀀스로 독해를 예측하며 AhnCNN 계열의 기반이 된다.</p><div class="paper-tags"><i>시선 시퀀스</i><i>독해</i></div><dl><div><dt>제공</dt><dd>Gaze-only 비교 기준.</dd></div><div><dt>질문</dt><dd>어떤 gaze 오류를 저비용 글 단서가 설명하는가?</dd></div></dl><a href="https://www3.cs.stonybrook.edu/~arunab/papers/etra20.pdf">저자 원고 →</a></div></article>
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>arXiv · 2026</span><h3>leXic preprint</h3><p>단어 길이, 빈도, 사전 계산 GPT-2 surprisal을 concat과 residual 방식으로 시선 기반 독해 예측에 조건화한다.</p><div class="paper-tags"><i>어휘 맥락</i><i>저비용 추론</i></div><dl><div><dt>관찰</dt><dd>Unseen-text와 unseen-reader에서 작은 AUROC 향상.</dd></div><div><dt>필요</dt><dd>기여 분해, 보정, 강건성, 완전한 비용 비교.</dd></div></dl><a href="https://arxiv.org/abs/2607.08152">1차 출처 →</a></div></article>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section dark" id="direction">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">보강 프로그램</p><h2>작은 향상을 <em>설명 가능한 연구</em>로 바꾼다.</h2></div>
+            <p class="section-intro">초기 모델과 평가는 존재한다. 다음 질문은 향상의 원인을 분해하고, 일반화·보정하며, 전체 비용으로 정당화할 수 있는가다.</p>
+          </div>
+          <div class="priority-stack">
+            <article><div class="priority-index"><span>관문 01</span><strong>기여 분해</strong></div><div><h3>어느 단서가 향상을 만드는가?</h3><p>길이, 빈도, surprisal, 세 쌍 조합, 전체 특징을 동일 fold, seed, 정규화, ensemble 정책으로 비교한다.</p><dl><div><dt>전진</dt><dd>효과가 반복되고 상호작용이 하나의 지배적 단서 이상을 설명한다.</dd></div><div><dt>단순화</dt><dd>값싼 특징 하나가 거의 모든 이득을 유지한다.</dd></div></dl></div></article>
+            <article><div class="priority-index"><span>관문 02</span><strong>강건성</strong></div><div><h3>다른 모델과 데이터에서도 남는가?</h3><p>다른 시선 backbone 하나 이상과 호환되는 corpus 또는 EyeBench 과제에서 반복한다. 새 시험 결과를 보기 전에 전처리를 고정한다.</p><dl><div><dt>전진</dt><dd>하나 이상의 shift에서 방향이 안정적으로 유지된다.</dd></div><div><dt>범위 축소</dt><dd>효과가 OneStop이나 AhnCNN에만 나타난다.</dd></div></dl></div></article>
+            <article><div class="priority-index"><span>관문 03</span><strong>의사결정 품질</strong></div><div><h3>예측은 보정되고 유용한가?</h3><p>AUPRC, balanced accuracy, ECE, Brier score, 신뢰구간, 독자·글 하위군 오류를 더한다. 임계값 비교는 검증 보정 뒤에만 한다.</p><dl><div><dt>전진</dt><dd>순위 향상이 관련 운용점의 보정된 향상으로 이어진다.</dd></div><div><dt>재정의</dt><dd>AUROC는 오르지만 실제 오류가 줄지 않는다.</dd></div></dl></div></article>
+            <article><div class="priority-index"><span>관문 04</span><strong>전체 비용</strong></div><div><h3>‘저비용’ 맥락이 실제로 저비용인가?</h3><p>일회성 surprisal 계산과 예측 시 parameter, latency, memory, storage, 정렬, 운영 비용을 분리한다. 작은 online text encoder와 frequency-only 변형을 비교한다.</p><dl><div><dt>전진</dt><dd>선택 특징 집합에 정확도–보정–비용의 명확한 우위가 있다.</dd></div><div><dt>주장 제거</dt><dd>오프라인 계산과 유지가 배포 이점을 없앤다.</dd></div></dl></div></article>
+          </div>
+          <div class="project-position"><span>작업 연구 질문</span><strong>어떤 사전 계산 어휘 단서가 독자·글 shift에서 시선 기반 독해 예측을 개선하며, 그 향상은 원인이 분명하고 보정되며 강건하고 충분히 저렴한가?</strong></div>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

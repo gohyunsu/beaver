@@ -276,11 +276,11 @@
 
               <div class="note-correction">
                 <strong>Implementation subtlety · the key-side label embedding is inert</strong>
-                <p>The code also concatenates the same finding embedding to every fixation key. Because that vector is constant across all fixations in one instance, it adds the same offset to every attention logit; softmax cancels the offset. Gradient inspection in the latest specification confirms near-zero influence. The label meaningfully conditions the <em>query</em>, not the key. Future diagrams and cleanup should reflect the computation rather than the intended design.</p>
+                <p>The code also concatenates the same finding embedding to every fixation key. Because that vector is constant across all fixations in one instance, it adds the same offset to every attention logit; softmax cancels the offset. Gradient inspection confirms near-zero influence. The label meaningfully conditions the <em>query</em>, not the key. The latest repository diagram now reflects this mechanism; code cleanup can remove the inert key-side term.</p>
               </div>
               <figure class="note-figure">
-                <img src="../../../assets/img/gazemed-pr3-pipeline.png" alt="GazeMed source architecture diagram showing report and finding features attending over a sequence of positioned fixations" loading="lazy" />
-                <figcaption><strong>Repository diagram, preserved as a source artifact.</strong> Copied from <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>. Two source-documented corrections remain: the label should be drawn only on the active query path, and the output panel should be replaced by a real prediction rather than an explanatory heatmap.</figcaption>
+                <img src="../../../assets/img/gazemed-pr3-pipeline-v2.png" alt="Corrected GazeMed source architecture showing temporal and Fourier fixation keys, a report-and-finding query, cross-attention, and a real prediction" loading="lazy" />
+                <figcaption><strong>Corrected repository diagram.</strong> The active query-side label path is explicit, and the heatmap is a real test prediction selected nearest the median IoU—not a hand-picked success. Copied without visual modification from <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, head <code>9e2d7e7</code>.</figcaption>
               </figure>
             </section>
 
@@ -317,7 +317,7 @@
                   </tbody>
                 </table>
               </div>
-              <p class="source-note">Source · <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, latest head reviewed at <code>0639081</code>. RadZero’s two values come from different bandwidths chosen to favor the baseline on each metric and are not one operating point.</p>
+              <p class="source-note">Source · <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a>, latest head reviewed at <code>9e2d7e7</code>. RadZero’s two values come from different bandwidths chosen to favor the baseline on each metric and are not one operating point.</p>
 
               <h3>Three causal claims are now supported consistently</h3>
               <div class="claim-ledger">
@@ -673,7 +673,7 @@
 
               <h3>Primary sources</h3>
               <ul class="note-sources">
-                <li><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a> — implementation, technical specification, controls, factorial architecture study, and reproduction scripts. Reviewed at head <code>0639081</code>.</li>
+                <li><a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">GazeMed PR #3</a> — implementation, technical specification, controls, factorial architecture study, corrected mechanism diagram, and reproduction scripts. Reviewed at head <code>9e2d7e7</code>.</li>
                 <li><a href="https://www.nature.com/articles/s41597-022-01441-z">Bigolin Lanfredi et al. (2022), REFLACX</a> — synchronized gaze, dictation, interface, and ellipse dataset.</li>
                 <li><a href="https://www.frontiersin.org/journals/radiology/articles/10.3389/fradi.2023.1088068/full">Bigolin Lanfredi et al. (2023)</a> — label-specific fixed-window eye-tracking supervision.</li>
                 <li><a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/0b9536e186a77feff516893a5f393f7a-Abstract-Conference.html">Ma et al. (2024), EGMA</a> — gaze-guided medical image–text alignment.</li>

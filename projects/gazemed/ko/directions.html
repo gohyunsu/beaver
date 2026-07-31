@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="해부학 prior, 인과 replay, 공간 언어, 일반화, 시선 역할과 다중양식 융합을 근거 관문으로 정리한 GazeMed 연구 방향입니다." />
+    <meta name="theme-color" content="#143d35" />
+    <title>연구 방향 · GazeMed</title>
+    <link rel="stylesheet" href="../../../assets/css/site.css" />
+    <script src="../../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../../" data-project="gazemed" data-project-root="../" data-page="gazemed-directions" data-lang="ko" data-alt-lang="../directions.html">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="chapter-hero">
+        <div class="shell chapter-hero-grid">
+          <div>
+            <p class="breadcrumb"><a href="index.html">GazeMed</a><span>/</span>연구 방향</p>
+            <p class="eyebrow">6장 · 연구 방향</p>
+            <h1>대안 설명을 닫아 <em>주장을 전진</em>시킨다.</h1>
+            <p class="page-summary">다음 단계는 가능한 한 큰 다중양식 모델이 아니다. GazeMed가 정직하게 말할 수 있는 범위를 바꾸는 가장 작은 실험이다.</p>
+          </div>
+          <aside class="chapter-outline">
+            <span>이 장의 구성</span>
+            <a href="#state">1. 현재 상태</a>
+            <a href="#priorities">2. 근거 우선순위</a>
+            <a href="#language">3. 공간 언어 프로그램</a>
+            <a href="#fusion">4. 다중양식 확장</a>
+            <a href="#decision">5. 의사결정 틀</a>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section" id="state">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">현재 상태</p><h2>작동하는 기전과 <em>명확한 근거의 경계</em>.</h2></div>
+            <p class="section-intro">기본 가능성은 이미 넘어섰다. 이제 행동 신호가 언제 환자별 정보를 담고, 인과적으로 이용 가능하며, 영상 정보와 상보적인지 결정해야 한다.</p>
+          </div>
+          <div class="state-map">
+            <article class="done"><span>PR #3에서 확인</span><h3>기전 근거</h3><ul><li>학습된 시간이 고정 지연을 넘음</li><li>최종 모델이 seed·분할 전반에서 시간 전용보다 우수</li><li>위치 섞기가 두 지표를 크게 낮춤</li><li>공간 언어 가리기가 9/9 실행에서 두 지표를 낮춤</li></ul></article>
+            <article class="now"><span>즉시 필요한 근거 관문</span><h3>타당성과 추가 가치</h3><ul><li>소견 조건부 해부학 prior</li><li>인과적 prefix replay</li><li>판독자 분리 평가</li><li>언급 연결 감사</li></ul></article>
+            <article><span>조건부 확장</span><h3>새 모델링 질문</h3><ul><li>해부학 grounding 언어</li><li>판독자 적응과 시선 역할</li><li>영상–행동 융합</li><li>스트리밍 구현</li></ul></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="priorities">
+        <div class="shell">
+          <div class="section-head"><div><p class="eyebrow">근거 우선순위</p><h2>의존 관계에 따라 정렬한 <em>여섯 질문</em>.</h2></div></div>
+          <div class="priority-stack">
+            <article>
+              <div class="priority-index"><span>관문 01</span><strong>추가 가치</strong></div>
+              <div><h3>시선은 소견 조건부 해부학 prior보다 나은가?</h3><p>소견 임베딩은 흔한 위치를 암기할 수 있다. 학습 타원만으로 prior를 만들고 정확히 같은 예제에서 평가한다. 소견, 병변 크기, 흉곽 중심 거리와 판독자별 Final−prior 차이를 보고한다.</p><dl><div><dt>전진</dt><dd>전체와 사전 정의 하위군에서 해석 가능한 이득이 반복된다.</dd></div><div><dt>범위 축소</dt><dd>작거나 주변부이거나 해부학적으로 비전형적인 소견에서만 이득이 난다.</dd></div></dl></div>
+            </article>
+            <article>
+              <div class="priority-index"><span>관문 02</span><strong>인과 타당성</strong></div>
+              <div><h3>미래 시선 없이도 작동하는가?</h3><p>판독을 시간순으로 재생하고 각 언급 종료 시점에는 이미 끝난 응시만 공개한다. 사용할 수 있는 과거 길이를 바꾸며 정확도, coverage, latency를 함께 보고한다.</p><dl><div><dt>전진</dt><dd>인과 prefix가 미리 정한 비율의 전체 시퀀스 성능을 유지한다.</dd></div><div><dt>재정의</dt><dd>성능이 발화 후 확인 시선에 크게 의존한다.</dd></div></dl></div>
+            </article>
+            <article>
+              <div class="priority-index"><span>관문 03</span><strong>데이터 타당성</strong></div>
+              <div><h3>소견 언급이 올바르게 연결되었는가?</h3><p>소견, 부정, 불확실성, 반복 언급, 공간 표현으로 층화해 수동 감사를 실시한다. 오류 양상을 먼저 알아낸 뒤 현재 정규식 연결기와 임상 관계 추출기를 비교한다.</p><dl><div><dt>전진</dt><dd>새 연결기가 정렬 오류를 줄이고 짝지은 하류 결과도 개선한다.</dd></div><div><dt>단순 유지</dt><dd>대부분의 오류가 시간이나 descriptor를 실제로 바꾸지 않는다.</dd></div></dl></div>
+            </article>
+            <article>
+              <div class="priority-index"><span>관문 04</span><strong>일반화</strong></div>
+              <div><h3>효과가 새 환자 구성과 새 판독자에서도 남는가?</h3><p>여러 환자 그룹 분할에서 핵심 조건을 반복한다. 데이터가 허용하면 leave-one-reader-out으로 환자 전이와 판독자 전이를 분리한다.</p><dl><div><dt>전진</dt><dd>분할이 달라도 효과 방향과 대조 실험의 붕괴가 유지된다.</dd></div><div><dt>적응</dt><dd>판독자별 발화 지연이나 탐색 방식이 변동을 지배한다.</dd></div></dl></div>
+            </article>
+            <article>
+              <div class="priority-index"><span>관문 05</span><strong>구성 개념</strong></div>
+              <div><h3>발견 시선과 확인 시선을 구분할 수 있는가?</h3><p>소견 언급 주변의 작은 맹검 표본에 최초 발견, 확인, 일상 탐색, 버린 distractor를 주석한다. 단계 인식 모델을 만들기 전에 주석자 간 일치도를 측정한다.</p><dl><div><dt>전진</dt><dd>역할을 신뢰성 있게 주석할 수 있고 판독자를 넘어 반복된다.</dd></div><div><dt>잠재 변수 유지</dt><dd>기록만으로 역할 라벨을 안정적으로 정의할 수 없다.</dd></div></dl></div>
+            </article>
+            <article>
+              <div class="priority-index"><span>관문 06</span><strong>상보성</strong></div>
+              <div><h3>영상과 행동은 서로 다른 사례에서 실패하는가?</h3><p>RadZero와 Final의 예제별 출력을 연결해 오류 상관과 oracle 상한을 먼저 계산한다. 공동 구조를 학습하기 전에 검증 집합에서 보정한 단순 평균을 시험한다.</p><dl><div><dt>전진</dt><dd>단순 보정 융합이 여러 분할에서 두 입력을 모두 넘는다.</dd></div><div><dt>중단</dt><dd>oracle 상한 자체가 커다란 모델을 정당화하기에 너무 작다.</dd></div></dl></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="language">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">03</p>
+            <h2>공간 언어를 하나의 구조화된 연구 프로그램으로 발전시킨다.</h2>
+            <p>현재 일곱 이진 descriptor는 유용한 진단 probe다. 가장 설득력 있는 다음 단계는 단순히 큰 text encoder를 붙이는 것이 아니라 소견, 해부 구조와 관계를 연결하는 표현이다.</p>
+            <div class="language-program">
+              <article><span>단계 A</span><h3>현재 토큰 감사</h3><p>coverage, precision, 동시 출현, 좌우 일관성과 descriptor별 기여를 측정한다.</p><strong>질문 · 지금 실제 신호를 담는 단어는 무엇인가?</strong></article>
+              <article><span>단계 B</span><h3>해부학 anchor 추가</h3><p>심장, 폐문, 흉막, 폐 구역, 종격과 늑골횡격막각을 추출한다.</p><strong>질문 · 언어만으로 시선 전 후보 영역을 좁힐 수 있는가?</strong></article>
+              <article><span>단계 C</span><h3>관계 표현</h3><p>behind, adjacent to, involving, above, below, bilateral을 frame으로 합성한다.</p><strong>질문 · 관계가 서로 경쟁하는 응시를 구분하는가?</strong></article>
+              <article><span>단계 D</span><h3>불확실성 보정</h3><p>긍정, 불확실, 부정, 비교 표현을 한 언급으로 합치지 않고 구분한다.</p><strong>질문 · 모델은 언제 판단을 보류해야 하는가?</strong></article>
+            </div>
+            <div class="article-note"><strong>권장하는 첫 확장</strong><p>제약 없는 문장 encoder보다 해석 가능한 해부–관계 frame을 먼저 사용한다. coverage와 실패 원인을 직접 분석할 수 있고, 나중에는 학습된 text representation의 지도 신호로도 쓸 수 있다.</p></div>
+            <a class="inline-feature-link" href="../notes/ko/spatial-language.html"><span>연구 노트 001</span><strong>공간 언어 확장의 전체 논증 읽기 →</strong></a>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section dark" id="fusion">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">조건부 확장</p><h2><em>상보성</em>을 확인한 뒤에만 modality를 결합한다.</h2></div>
+            <p class="section-intro">영상 증거와 판독 행동은 서로 다른 질문에 답한다. 결합은 분석과 단순 보정에서 시작해야 하며 곧바로 공동 transformer로 갈 이유는 없다.</p>
+          </div>
+          <div class="fusion-stages">
+            <article><span>0</span><h3>오류 지도</h3><p>상관, 한 모델만 성공한 사례, oracle 최대값.</p></article><b>→</b>
+            <article><span>1</span><h3>보정 평균</h3><p>검증 자료에서 두 지도를 정규화하고 평균·최대·곱을 비교.</p></article><b>→</b>
+            <article><span>2</span><h3>신뢰도 gate</h3><p>영상 지도 entropy, 시선 분산, modality 일치도로 혼합.</p></article><b>→</b>
+            <article><span>3</span><h3>공동 모델</h3><p>단순 융합 뒤에도 반복되는 미설명 가치가 있을 때만.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="decision">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">05</p>
+            <h2>가능한 결과가 프로젝트의 선택을 바꿀 때 좋은 연구 방향이 된다.</h2>
+            <div class="decision-checklist">
+              <div><span>질문</span><p>어떤 대안 설명이나 아직 열린 주장을 다루는가?</p></div>
+              <div><span>최소 비교</span><p>새 아이디어를 불필요하게 만들 수 있는 가장 단순한 기준선은 무엇인가?</p></div>
+              <div><span>정보 대조</span><p>모델 용량을 유지하면서 무엇을 섞거나 가릴 수 있는가?</p></div>
+              <div><span>결정 규칙</span><p>어떤 결과가 확장, 축소, 재정의, 중단으로 이어지는가?</p></div>
+              <div><span>근거의 경계</span><p>어떤 판독자, 소견, 데이터와 운용 조건이 주장 밖에 남는가?</p></div>
+            </div>
+            <p>이 틀은 개별 아이디어가 실패해도 프로젝트의 일관성을 지킨다. 해부학 prior나 인과 실험이 부정적이라면 숨기는 대신 시선이 맡을 수 있는 역할을 더 정확히 재정의한다.</p>
+            <div class="next-chapter"><span>프로젝트 노트</span><h3>연구 방향이 발전하는 동안 더 짧은 논증과 결정을 이어서 기록한다.</h3><a href="../notes/ko/index.html">연구 노트 열기 →</a></div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="GazeMed는 방사선 전문의의 시선과 발화가 설명 중인 흉부 X선 소견을 국소화할 수 있는지 연구합니다." />
+    <meta name="theme-color" content="#143d35" />
+    <title>GazeMed · BEAVER</title>
+    <link rel="canonical" href="https://gohyunsu.github.io/beaver/projects/gazemed/ko/" />
+    <link rel="alternate" hreflang="en" href="https://gohyunsu.github.io/beaver/projects/gazemed/" />
+    <link rel="alternate" hreflang="ko" href="https://gohyunsu.github.io/beaver/projects/gazemed/ko/" />
+    <link rel="stylesheet" href="../../../assets/css/site.css" />
+    <script src="../../../assets/js/site.js" defer></script>
+  </head>
+  <body data-root="../../../" data-project="gazemed" data-project-root="../" data-page="gazemed-home" data-lang="ko" data-alt-lang="../index.html">
+    <div data-site-header></div>
+    <main id="main">
+      <header class="project-masthead">
+        <div class="shell project-masthead-grid">
+          <div>
+            <p class="eyebrow">Project 01 · Medical AI</p>
+            <h1>GazeMed</h1>
+            <p class="project-deck">방사선 전문의가 흉부 X선을 해석할 때 남기는 두 흔적, 즉 어디를 보았는지와 무엇을 말했는지를 이용해 현재 설명 중인 소견의 위치를 찾습니다.</p>
+            <div class="button-row">
+              <a class="button" href="foundations.html">기초 개념부터 시작하기 →</a>
+              <a class="text-link" href="evidence.html">현재 근거 읽기</a>
+            </div>
+          </div>
+          <aside class="project-snapshot">
+            <span>프로젝트 개요</span>
+            <dl>
+              <div><dt>문제</dt><dd>소견 수준 국소화</dd></div>
+              <div><dt>추론 입력</dt><dd>Gaze + speech</dd></div>
+              <div><dt>Image pixel</dt><dd>현재 모델은 사용하지 않음</dd></div>
+              <div><dt>Dataset</dt><dd>REFLACX · Phase 3</dd></div>
+              <div><dt>근거 상태</dt><dd>PR #3 · preliminary</dd></div>
+            </dl>
+          </aside>
+        </div>
+      </header>
+
+      <section class="article-section alt" id="problem">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">01 · 문제</p>
+            <h2>판독문은 무엇이 있는지 말하지만, 정확히 어디에 있는지는 항상 말하지 않습니다.</h2>
+            <p>흉부 X선 판독문은 이상 소견의 이름, 정도, 변화, 임상적 의미를 언어로 압축합니다. “우측 폐기저부에 경도의 음영 증가”라는 문장은 개념과 대략적 위치는 알려 주지만 픽셀 경계를 제공하지 않습니다. 반면 판독 중 기록한 gaze는 좌표를 주지만 그 시선이 병변 확인인지, 정상 부위 비교인지, 탐색인지 알려 주지 않습니다.</p>
+            <div class="note-dual-trace">
+              <article><span>공간 신호</span><h3>Gaze: 어디를 보았는가?</h3><p>영상에 직접 연결되지만 탐색, 비교, 검증, UI 조작이 함께 섞입니다.</p></article>
+              <article><span>의미 신호</span><h3>Speech: 무엇을 설명하는가?</h3><p>소견과 관계를 명명하지만 관찰보다 늦고 정확한 영역을 생략할 수 있습니다.</p></article>
+            </div>
+            <div class="note-thesis"><span>중심 질문</span><strong>각 fixation의 시간, 실제 좌표, 발화 내용을 함께 사용하면 현재 언급한 소견과 관련된 시선을 선택해 병변 위치를 복원할 수 있는가?</strong></div>
+            <h3>국소화는 분류나 segmentation과 다릅니다</h3>
+            <div class="concept-stair">
+              <div><span>Classification</span><strong>소견이 있는가?</strong><p>영상 전체에 점수 하나를 냅니다.</p></div>
+              <div><span>Localization</span><strong>소견이 어디에 있는가?</strong><p>point, ellipse, box, heatmap으로 영역을 찾습니다.</p></div>
+              <div><span>Segmentation</span><strong>어느 픽셀이 소견인가?</strong><p>정확한 pixel boundary를 요구합니다.</p></div>
+            </div>
+            <p>REFLACX 정답은 전문의가 그린 거친 ellipse이므로 GazeMed는 <strong>localization 연구</strong>로 표현하는 것이 타당합니다. pixel-perfect segmentation을 주장하면 supervision의 의미를 과장하게 됩니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="mechanism">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">현재 방법</p><h2>언급이 전체 fixation 중 <em>어떤 것을 볼지 묻습니다.</em></h2></div>
+            <p class="section-intro">소견과 공간 표현이 query가 되고, fixation의 시간·지속 시간·Fourier 좌표가 key가 됩니다. single-query cross-attention은 fixation별 relevance distribution을 만듭니다.</p>
+          </div>
+          <div class="input-contract reveal">
+            <div><span>Speech query</span><strong>finding identity + spatial/extent descriptors</strong><small>무엇을 찾고 있는가?</small></div>
+            <b aria-hidden="true">×</b>
+            <div><span>Fixation keys</span><strong>timing + duration + Fourier x/y</strong><small>어떤 시각 이벤트가 관련 있는가?</small></div>
+            <b aria-hidden="true">→</b>
+            <div class="accent"><span>Output</span><strong>finding-conditioned spatial map</strong><small>설명한 근거는 어디에 있었는가?</small></div>
+          </div>
+          <figure class="model-source-figure reveal">
+            <img src="../../../assets/img/gazemed-pr3-pipeline-v2.png" alt="시간·Fourier fixation key, 언어·소견 query, 교차 주의와 실제 median-IoU 예측으로 이어지는 GazeMed pipeline" loading="lazy" />
+            <figcaption><strong>GazeMed PR #3의 수정된 구조도.</strong> 소견 label이 실제로 작동하는 query 경로에 표시되고, 출력은 설명용 합성이 아니라 median-IoU에 가까운 시험 예측입니다. Head <code>9e2d7e7</code>의 그림을 시각적 수정 없이 사용했습니다. <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">출처와 구현 보기</a>.</figcaption>
+          </figure>
+          <div class="learning-route">
+            <article><span>1 · Align</span><strong>시간 대응을 학습</strong><p>모든 사례에 같은 1.5초 lag를 적용하지 않고 fixation별 relevance를 학습합니다.</p></article>
+            <article><span>2 · Condition</span><strong>소견과 언어로 질문</strong><p>현재 어떤 finding과 공간 제약을 찾는지 query로 표현합니다.</p></article>
+            <article><span>3 · Select</span><strong>실제 좌표를 가진 fixation 선택</strong><p>시간과 위치가 언어 조건에 얼마나 부합하는지 비교합니다.</p></article>
+            <article><span>4 · Render</span><strong>heatmap 생성</strong><p>attention weight를 실제 gaze 좌표에 Gaussian splatting합니다.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section dark" id="evidence">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">근거 요약</p><h2>중요한 것은 하나의 점수가 아니라 <em>정보를 단계적으로 더하고 깨뜨리는 비교입니다.</em></h2></div>
+            <p class="section-intro">아래는 primary patient split의 동일한 1,093개 finding-level instance에서 얻은 5개 training seed 평균입니다.</p>
+          </div>
+          <div class="result-triptych">
+            <article><span>Fixed 1.5 s rule</span><strong>0.265</strong><small>IoU · Pointing 0.584</small></article>
+            <article><span>Learned timing</span><strong>0.291</strong><small>IoU · Pointing 0.679</small></article>
+            <article class="selected"><span>Timing + position + language</span><strong>0.339</strong><small>IoU · Pointing 0.803</small></article>
+          </div>
+          <div class="evidence-boundary-compact">
+            <div><span>지지됨</span><p>학습한 timing이 fixed lag보다 낫습니다. 실제 fixation–coordinate 대응이 중요합니다. 공간어 masking은 9/9 distinct seed/split run에서 두 지표를 낮춥니다.</p></div>
+            <div><span>아직 열림</span><p>causal real-time 성능, 새 독자·기관으로의 transfer, 검증된 mention linker, label-conditioned anatomy prior 너머의 가치입니다.</p></div>
+          </div>
+          <a class="button light" href="evidence.html">결과와 control 자세히 보기 →</a>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="guide">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">학습 경로</p><h2>가정이 생략되지 않도록 <em>의도한 순서로 읽습니다.</em></h2></div>
+            <p class="section-intro">각 장은 서로 다른 질문에 답합니다. 용어와 좌표를 먼저 이해하고, 데이터와 모델을 거쳐 근거와 다음 연구 방향으로 이동합니다.</p>
+          </div>
+          <div class="chapter-grid">
+            <a href="foundations.html"><span>01</span><small>기초</small><h3>시선, 발화, 국소화는 어떻게 연결되는가?</h3><p>fixation, scanpath, temporal lag, weak supervision, heatmap부터 시작합니다.</p></a>
+            <a href="data.html"><span>02</span><small>데이터</small><h3>REFLACX 판독은 어떻게 instance가 되는가?</h3><p>identifier, timestamp, coordinate, label, ellipse를 따라갑니다.</p></a>
+            <a href="approach.html"><span>03</span><small>방법</small><h3>고정 시간 창을 learned alignment로 바꾸기</h3><p>baseline, temporal model, final cross-attention을 단계별로 구성합니다.</p></a>
+            <a href="evidence.html"><span>04</span><small>근거</small><h3>metric, control, claim boundary 읽기</h3><p>무엇이 개선되었고 어떤 정보를 깨뜨렸을 때 무너지는지 확인합니다.</p></a>
+            <a href="literature.html"><span>05</span><small>선행 연구</small><h3>연구 지형에서 GazeMed의 위치 찾기</h3><p>training-time gaze, test-time gaze, phrase grounding을 구분합니다.</p></a>
+            <a href="directions.html"><span>06</span><small>방향</small><h3>열린 질문을 결정적 실험으로 바꾸기</h3><p>mention, causal replay, anatomy, spatial language, fusion을 순서화합니다.</p></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section alt">
+        <div class="shell latest-note">
+          <div>
+            <p class="eyebrow">연구 노트 · 001</p>
+            <h2>기초부터 이해하는 GazeMed: 근거, 연구 공백, 그리고 다음 모델</h2>
+            <p>시선–발화 국소화의 배경, 최신 PR #3 근거, causal boundary, 관련 연구, anatomy-grounded language와 boundary recovery를 하나의 긴 논증으로 연결합니다.</p>
+          </div>
+          <a class="button" href="../notes/ko/spatial-language.html">연구 노트 읽기 →</a>
+        </div>
+      </section>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

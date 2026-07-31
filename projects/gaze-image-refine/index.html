@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="GazeImageRefine studies whether gaze can identify revision intent in generated images after controlling for visual saliency." />
+    <meta name="description" content="GazeImageRefine studies whether pre-action gaze identifies revision intent in generated images after controlling visual saliency, and when selective assistance is justified." />
     <meta name="theme-color" content="#143d35" />
     <title>GazeImageRefine · BEAVER</title>
     <link rel="stylesheet" href="../../assets/css/site.css" />
     <script src="../../assets/js/site.js" defer></script>
   </head>
-  <body data-root="../../" data-project="refine" data-project-root="./" data-page="refine">
+  <body data-root="../../" data-project="refine" data-project-root="./" data-page="refine-home" data-lang="en" data-alt-lang="ko/index.html">
     <div data-site-header></div>
     <main id="main">
       <header class="project-masthead secondary-project">
@@ -17,15 +17,15 @@
           <div>
             <p class="eyebrow">Project 02 · Generative HCI</p>
             <h1>GazeImageRefine</h1>
-            <p class="project-deck">Studying whether a viewer’s gaze can help identify where a generated image needs revision—without confusing visual attention with an editing command.</p>
+            <p class="project-deck">Can a viewer’s natural gaze help identify where a generated image needs revision—without turning every look into an editing command?</p>
           </div>
           <aside class="project-snapshot">
             <span>Project snapshot</span>
             <dl>
-              <div><dt>Question</dt><dd>Edit-intent identifiability</dd></div>
-              <div><dt>Signal</dt><dd>Gaze + later edit behavior</dd></div>
-              <div><dt>Primary confound</dt><dd>Visual saliency</dd></div>
-              <div><dt>System principle</dt><dd>Suggest, confirm, undo</dd></div>
+              <div><dt>Construct</dt><dd>Pre-action revision intent</dd></div>
+              <div><dt>Signals</dt><dd>Gaze + image + later action</dd></div>
+              <div><dt>Main confound</dt><dd>Visual saliency</dd></div>
+              <div><dt>System rule</dt><dd>Suggest, confirm, undo</dd></div>
               <div><dt>Evidence state</dt><dd>Study design</dd></div>
             </dl>
           </aside>
@@ -35,105 +35,182 @@
       <section class="article-section alt" id="question">
         <div class="shell article-layout">
           <article class="article-body wide">
-            <p class="chapter-number">01 · Question</p>
+            <p class="chapter-number">01 · Problem</p>
             <h2>Looking at an error is not the same as wanting to edit it.</h2>
-            <p>A generated image can attract gaze because an object is visually salient, surprising, malformed, important to the task, or simply pleasing. Only some of those cases lead to a revision.</p>
+            <p>Image editing begins before a mouse click or text instruction. A person inspects the result, compares it with an internal goal, detects a mismatch, and decides whether that mismatch is worth changing. Gaze makes part of this hidden process observable, but it does not reveal the entire decision.</p>
             <div class="meaning-chain">
-              <span>observed fixation</span><b>≠</b><span>noticed problem</span><b>≠</b><span>edit intention</span><b>≠</b><span>desired edit</span>
+              <span>fixation</span><b>≠</b><span>noticed issue</span><b>≠</b><span>dissatisfaction</span><b>≠</b><span>edit intention</span><b>≠</b><span>edit instruction</span>
             </div>
-            <p>The project therefore asks a narrower question: <strong>after accounting for what the image would normally attract, does pre-action gaze predict the region a user later chooses to edit?</strong></p>
-            <div class="plain-callout">
-              <span>Operational definition</span>
-              <p>Edit intention is anchored to later behavior: keep/edit choice, selected region, stated reason, revision instruction, and accepted output. Gaze alone is never treated as ground truth.</p>
+            <p>A face, bright object, textual element, or unusual artifact may attract gaze even when the viewer likes it. Conversely, a global style mismatch may motivate revision without creating one concentrated fixation cluster. The research question must therefore stay narrow:</p>
+            <div class="positioning-block">
+              <span>Primary question</span>
+              <strong>After accounting for what the image and task would normally attract, does gaze collected before any editing action predict the region a user later chooses to revise?</strong>
             </div>
+            <div class="plain-callout"><span>Operational reference</span><p>Revision intent is anchored to later behavior: keep/edit choice, selected region, reason, instruction, and accepted output. Gaze supplies evidence about intent; it is never the intent label by itself.</p></div>
           </article>
         </div>
       </section>
 
       <section class="article-section" id="foundations">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">02 · Gaze foundations</p>
+            <h2>Eye tracking turns a stream of samples into a sequence of viewing events.</h2>
+            <p>An eye tracker estimates where the eyes intersect the display many times per second. Raw samples are noisy and contain gaps around blinks. An event detector groups relatively stable samples into <strong>fixations</strong> and faster transitions into <strong>saccades</strong>.</p>
+            <div class="concept-ledger">
+              <article><span>Fixation</span><h3>A relatively stable look</h3><p>Often summarized by center, start time, end time, and duration. It indicates overt visual attention near a region, not a command or guaranteed conscious recognition.</p></article>
+              <article><span>Saccade</span><h3>A rapid movement between looks</h3><p>Its path helps describe search order. Visual intake is commonly modeled around fixations, while the eyes are comparatively insensitive during the movement.</p></article>
+              <article><span>Dwell</span><h3>Accumulated time in a region</h3><p>May include several fixations and revisits. Longer dwell can reflect difficulty, interest, uncertainty, verification, or task importance.</p></article>
+              <article><span>Scanpath</span><h3>The ordered viewing sequence</h3><p>Preserves search, comparison, and return behavior that a static heatmap discards.</p></article>
+            </div>
+            <h3>From points to a region representation</h3>
+            <div class="splat-flow">
+              <div><span>Timed fixations</span><div class="dot-field"><i></i><i></i><i></i><i></i></div></div><b>→</b>
+              <div><span>Duration-weighted density</span><div class="blur-field"></div></div><b>→</b>
+              <div><span>Candidate region</span><div class="mask-field"></div></div>
+            </div>
+            <p>A heatmap is useful for visualization, but it collapses order. The model should retain fixation timing, first-entry time, revisit count, late dwell, dispersion, and transitions between candidate regions.</p>
+            <div class="article-note"><strong>Calibration sets the spatial resolution.</strong><p>A 1° visual-angle error can cover many pixels on a desktop display. Region labels and evaluation tolerances should be defined in degrees of visual angle or calibrated image coordinates—not chosen after seeing model scores.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="construct">
         <div class="shell">
           <div class="section-head">
-            <div><p class="eyebrow">Foundations</p><h2>Three concepts define the <em>measurement problem.</em></h2></div>
+            <div><p class="eyebrow">Measurement model</p><h2>Separate the hidden construct from its <em>observable traces.</em></h2></div>
+            <p class="section-intro">“Edit intent” is latent: it cannot be read directly from the eye tracker. A valid study triangulates it from several events and preserves disagreement among them.</p>
           </div>
-          <div class="grid-3">
-            <article class="card"><span class="card-number">Visual saliency</span><h3>What attracts many viewers</h3><p>Contrast, faces, large objects, and composition can explain gaze without any dissatisfaction. A saliency-only model is a required baseline.</p></article>
-            <article class="card"><span class="card-number">Midas touch</span><h3>Looking is not commanding</h3><p>A gaze-controlled system produces false activations when every inspection is interpreted as intent. Gaze should propose candidates, not execute edits.</p></article>
-            <article class="card"><span class="card-number">Selective prediction</span><h3>Act only at useful confidence</h3><p>The system should abstain when gaze is diffuse or ambiguous and expose the trade-off between coverage and false interruption.</p></article>
+          <div class="reading-mechanism">
+            <article><span>Stimulus and goal</span><strong>image · prompt · user preference</strong><p>Determine what can be noticed and what counts as a mismatch.</p></article><b>→</b>
+            <article><span>Latent judgment</span><strong>notice · evaluate · decide</strong><p>Not directly observable and allowed to change over time.</p></article><b>→</b>
+            <article><span>Traces</span><strong>gaze · selection · language · acceptance</strong><p>Partial measurements with different noise and timing.</p></article>
           </div>
-          <div class="residual-equation">
-            <span>observed gaze</span><b>−</b><span>expected attention from the image</span><b>=</b><strong>candidate intent residual</strong>
+          <div class="construct-grid">
+            <article><span>Region reference</span><h3>What was selected?</h3><p>Brush mask, box, click point, or automatically proposed region corrected by the participant.</p></article>
+            <article><span>Reason reference</span><h3>Why revise it?</h3><p>Prompt violation, rendering artifact, relational error, style preference, or global dissatisfaction.</p></article>
+            <article><span>Instruction reference</span><h3>What change was requested?</h3><p>Add, remove, replace, move, recolor, reshape, restyle, or regenerate globally.</p></article>
+            <article><span>Outcome reference</span><h3>Was the change accepted?</h3><p>Acceptance distinguishes an intended edit from an exploratory action that did not satisfy the user.</p></article>
           </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="confounds">
+        <div class="shell article-layout">
+          <article class="article-body">
+            <p class="chapter-number">04 · Confounds</p>
+            <h2>Visual saliency is the first alternative explanation.</h2>
+            <p>Saliency describes which regions attract attention across viewers because of stimulus properties such as contrast, faces, size, isolation, or composition. If an edit region is also highly salient, gaze–edit overlap does not by itself show intention.</p>
+            <div class="residual-equation"><span>observed viewer gaze</span><b>−</b><span>expected image-driven attention</span><b>=</b><strong>candidate task residual</strong></div>
+            <p>The residual is not automatically “intent.” It is the part not explained by a no-user saliency model and must still be compared with task relevance, prompt–image mismatch, object size, center bias, and interaction history.</p>
+            <div class="control-stack">
+              <article><span>Stimulus control</span><h3>Saliency-only predictor</h3><p>Estimates edit regions using the image without participant behavior.</p></article>
+              <article><span>Task control</span><h3>Prompt–image grounding</h3><p>Estimates regions inconsistent with the prompt, even if the user never looked there.</p></article>
+              <article><span>Geometry control</span><h3>Center and size prior</h3><p>Tests whether large central objects explain both gaze and selections.</p></article>
+              <article><span>Behavior control</span><h3>Shuffled viewer or trial</h3><p>Breaks the true gaze–action pairing while preserving aggregate gaze statistics.</p></article>
+            </div>
+          </article>
+          <aside class="article-aside"><span>Causal caution</span><p>Gaze may precede a decision, result from an already formed decision, or participate in comparing alternatives. Prediction is possible without identifying which causal role is true.</p></aside>
         </div>
       </section>
 
       <section class="article-section alt" id="study">
         <div class="shell">
           <div class="section-head">
-            <div><p class="eyebrow">Study design</p><h2>Prove identifiability before building <em>assistance.</em></h2></div>
+            <div><p class="eyebrow">Study 1 · Identifiability</p><h2>Establish the signal before building <em>assistance.</em></h2></div>
+            <p class="section-intro">Participants inspect a generated image without visible region proposals. Gaze is collected before the first edit action; later actions provide the reference.</p>
           </div>
-          <div class="study-stages">
-            <article>
-              <span>Study 1</span>
-              <h3>Can revision intent be identified?</h3>
-              <p>Collect gaze before any action, then record keep/edit, region, reason, revision instruction, and output choice. Compare gaze with visual saliency and prompt–image mismatch.</p>
-              <ul><li>Leave-participant-out evaluation</li><li>Leave-image-out evaluation</li><li>Precision and risk–coverage, not accuracy alone</li><li>Error type × size × salience analysis</li></ul>
-            </article>
-            <b aria-hidden="true">evidence gate</b>
-            <article>
-              <span>Study 2</span>
-              <h3>Does a suggestion reduce articulation cost?</h3>
-              <p>Compare manual region specification with a gaze-assisted preview that appears only at high confidence and always requires confirmation.</p>
-              <ul><li>Time to first valid edit</li><li>Accepted suggestion and false interruption rates</li><li>Correction quality and number of revisions</li><li>Control, workload, and annoyance</li></ul>
-            </article>
-          </div>
+          <ol class="process-list">
+            <li><span>1</span><div><strong>Present a prompt–image pair.</strong><p>Balance error type, spatial extent, object size, salience, and image quality. Include satisfactory images so the task does not imply that every image must be edited.</p></div></li>
+            <li><span>2</span><div><strong>Record unconstrained inspection.</strong><p>Keep the first viewing interval free of overlays. Synchronize gaze, image display, prompt visibility, and every UI event.</p></div></li>
+            <li><span>3</span><div><strong>Collect the decision.</strong><p>Ask keep/edit, then region, reason, confidence, and instruction. Preserve “global edit” and “unsure” rather than forcing a local mask.</p></div></li>
+            <li><span>4</span><div><strong>Generate and choose outcomes.</strong><p>Record accepted result, rejected attempts, manual corrections, and whether the original image was ultimately preferred.</p></div></li>
+          </ol>
           <h3 class="subsection-title">Required model ladder</h3>
           <div class="table-wrap">
             <table class="comparison">
-              <thead><tr><th>Model</th><th>Information</th><th>Question</th></tr></thead>
+              <thead><tr><th>Model</th><th>Available information</th><th>Question</th></tr></thead>
               <tbody>
-                <tr><td>Saliency only</td><td>image-derived attention</td><td>Can the stimulus alone explain the region?</td></tr>
-                <tr><td>Gaze only</td><td>fixation and dwell features</td><td>What does behavior predict without context?</td></tr>
-                <tr><td>Gaze − saliency</td><td>viewer-specific residual</td><td>Does unusual attention matter?</td></tr>
-                <tr><td>Context model</td><td>gaze + saliency + prompt mismatch</td><td>Does task context identify edit intent?</td></tr>
-                <tr><td>Temporal context</td><td>revisit and late dwell</td><td>Do gaze dynamics add value?</td></tr>
+                <tr><td>Prior</td><td>center, object size, edit frequency</td><td>How much can dataset bias explain?</td></tr>
+                <tr><td>Saliency only</td><td>image-derived attention</td><td>Can the stimulus explain the selected region?</td></tr>
+                <tr><td>Gaze only</td><td>fixation, dwell, revisit features</td><td>What does behavior predict without image context?</td></tr>
+                <tr><td>Residual gaze</td><td>viewer gaze − expected saliency</td><td>Does unusual attention matter?</td></tr>
+                <tr><td>Context model</td><td>gaze + saliency + prompt mismatch</td><td>Does task context identify later revision?</td></tr>
+                <tr><td>Temporal model</td><td>ordered fixations and UI history</td><td>Do return and late-dwell dynamics add value?</td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <section class="article-section" id="literature">
+      <section class="article-section" id="evaluation">
         <div class="shell article-layout">
           <article class="article-body wide">
-            <p class="chapter-number">03 · Literature</p>
-            <h2>The closest work narrows the contribution.</h2>
-            <div class="reading-list">
-              <a href="https://doi.org/10.1145/3772363.3799314"><span>Observed correlation</span><strong>Eye Want It All!</strong><small>Longer gaze and regions selected for regeneration · CHI EA 2026</small></a>
-              <a href="https://arxiv.org/abs/2411.04335"><span>Active interaction</span><strong>GazeGen</strong><small>Gaze-targeted visual content generation and editing · 2024</small></a>
-              <a href="https://arxiv.org/abs/2201.09135"><span>Intent prediction</span><strong>MIDAS</strong><small>Temporal modeling of action intent from natural gaze · 2022</small></a>
-              <a href="https://research.google/pubs/imagen-editor-and-editbench-advancing-and-evaluating-text-guided-image-inpainting/"><span>Editing evaluation</span><strong>Imagen Editor and EditBench</strong><small>Object, attribute, and scene editing with human evaluation · CVPR 2023</small></a>
+            <p class="chapter-number">06 · Evaluation</p>
+            <h2>Measure localization, decision quality, and generalization separately.</h2>
+            <div class="metric-explainer">
+              <article><span>Region quality</span><h3>IoU · point hit · center distance</h3><p>No one metric fits local masks, click points, and global edits. Report results by reference type and region size.</p></article>
+              <article><span>Intent decision</span><h3>Precision · recall · AUPRC</h3><p>Keep trials create a no-edit class. Precision matters because false prompts interrupt users.</p></article>
+              <article><span>Selective quality</span><h3>Risk–coverage curve</h3><p>As the system abstains more, does error fall enough to justify fewer suggestions?</p></article>
+              <article><span>Calibration</span><h3>ECE · Brier score</h3><p>A 0.8 confidence should correspond to comparable success rates if it controls UI behavior.</p></article>
             </div>
-            <p>These works make “edit an image with gaze” too broad as a novelty claim. The specific contribution must be <strong>passive, saliency-controlled identification of revision intent</strong> and the value of selective assistance that avoids false interruption.</p>
+            <div class="generalization-grid">
+              <article><span>Unseen participant</span><p>Can gaze dynamics transfer to a new user?</p></article>
+              <article><span>Unseen image</span><p>Can the model avoid memorizing stimulus-specific saliency?</p></article>
+              <article><span>Unseen generator</span><p>Does it transfer to a different artifact distribution?</p></article>
+            </div>
+            <p>Participant and image identities must be grouped in the split. A trial-level random split can place nearly identical behavior or the same stimulus on both sides and inflate the result.</p>
           </article>
+        </div>
+      </section>
+
+      <section class="article-section alt" id="literature">
+        <div class="shell article-layout">
+          <article class="article-body wide">
+            <p class="chapter-number">07 · Related work</p>
+            <h2>Nearby systems clarify which contribution is still open.</h2>
+            <div class="paper-card-grid">
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>CHI EA · 2026</span><h3>Eye Want It All!</h3><p>Relates gaze behavior to regions later selected for regeneration in generative image workflows.</p><div class="paper-tags"><i>observational</i><i>regeneration</i></div><dl><div><dt>Take</dt><dd>Later edit selection is the right behavioral anchor.</dd></div><div><dt>Extend</dt><dd>Control saliency and test prediction on held-out people and images.</dd></div></dl><a href="https://doi.org/10.1145/3772363.3799314">Primary source →</a></div></article>
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>arXiv · 2024</span><h3>GazeGen</h3><p>Uses gaze as an active pointing signal for visual content generation and editing.</p><div class="paper-tags"><i>active gaze</i><i>generation</i></div><dl><div><dt>Take</dt><dd>Gaze can reduce spatial articulation effort.</dd></div><div><dt>Distinguish</dt><dd>GazeImageRefine studies passive pre-action evidence, not deliberate gaze pointing.</dd></div></dl><a href="https://arxiv.org/abs/2411.04335">Primary source →</a></div></article>
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>IUI · 2022</span><h3>MIDAS</h3><p>Models temporal gaze to anticipate natural user action, treating intention as a dynamic rather than a static dwell threshold.</p><div class="paper-tags"><i>intent</i><i>temporal gaze</i></div><dl><div><dt>Take</dt><dd>Pre-action sequence structure and time-to-action matter.</dd></div><div><dt>Test</dt><dd>Whether revisits and late dwell add information beyond a heatmap.</dd></div></dl><a href="https://arxiv.org/abs/2201.09135">Primary source →</a></div></article>
+              <article class="paper-card no-figure"><div class="paper-card-copy"><span>CVPR · 2023</span><h3>Imagen Editor and EditBench</h3><p>Defines object, attribute, and scene-editing categories and evaluates text-guided inpainting with human judgment.</p><div class="paper-tags"><i>editing taxonomy</i><i>evaluation</i></div><dl><div><dt>Take</dt><dd>Editing quality is multi-dimensional and needs human evaluation.</dd></div><div><dt>Extend</dt><dd>Add interaction cost, false interruption, and user control.</dd></div></dl><a href="https://research.google/pubs/imagen-editor-and-editbench-advancing-and-evaluating-text-guided-image-inpainting/">Primary source →</a></div></article>
+            </div>
+            <p>These works make “edit images with gaze” too broad as a novelty claim. The defensible opening is <strong>passive, saliency-controlled identification of later revision behavior</strong>, followed by a selective interface that demonstrates value without treating looking as commanding.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="article-section" id="assistance">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="eyebrow">Study 2 · Selective assistance</p><h2>Offer a reversible proposal only when evidence is <em>strong enough.</em></h2></div>
+            <p class="section-intro">Study 2 begins only if Study 1 shows calibrated, held-out identifiability. The system proposes a region; the user remains the author of the edit.</p>
+          </div>
+          <div class="study-stages">
+            <article><span>Control</span><h3>Manual articulation</h3><p>The user specifies the region and instruction with the ordinary editor.</p><ul><li>Time to first valid edit</li><li>Number of region corrections</li><li>Final output acceptance</li><li>Workload and perceived control</li></ul></article>
+            <b aria-hidden="true">paired comparison</b>
+            <article><span>Assisted</span><h3>Confirmable proposal</h3><p>A preview appears only above a calibrated threshold and can be accept­ed, adjusted, ignored, or dismissed.</p><ul><li>Suggestion precision and coverage</li><li>False interruption rate</li><li>Time saved when correct</li><li>Cost imposed when wrong</li></ul></article>
+          </div>
+          <div class="boundary-line">
+            <div class="confirmed"><span>Safe interaction</span><strong>look → proposal → explicit confirmation → reversible edit</strong></div><b>≠</b>
+            <div><span>Midas-touch interaction</span><strong>look → automatic irreversible action</strong></div>
+          </div>
         </div>
       </section>
 
       <section class="article-section dark" id="direction">
         <div class="shell">
           <div class="section-head">
-            <div><p class="eyebrow">Direction and progress</p><h2>Current work belongs to the <em>measurement layer.</em></h2></div>
-            <p class="section-intro">The project is in study-design state. The immediate output is a defensible task and baseline suite, not an automated editor.</p>
+            <div><p class="eyebrow">Direction and decisions</p><h2>Current work belongs to the <em>measurement layer.</em></h2></div>
+            <p class="section-intro">The project is in study-design state. There are no empirical performance claims yet. The immediate product is a defensible construct, stimulus set, instrumentation plan, and preregistered model ladder.</p>
           </div>
           <div class="direction-grid">
-            <article><span>Define</span><h3>Stimulus taxonomy</h3><p>Prompt violation, rendering artifact, and preference mismatch × local, relational, and global extent × salient and non-salient presentation.</p></article>
-            <article><span>Instrument</span><h3>Behavioral reference</h3><p>Connect gaze to keep/edit, region, reason, instruction, and accepted result with synchronized events.</p></article>
-            <article><span>Baseline</span><h3>No-user explanations</h3><p>Prepare saliency-only and prompt-grounding predictors before participant data influence modeling choices.</p></article>
-            <article><span>Gate</span><h3>Identifiability threshold</h3><p>Proceed to interface assistance only if calibrated precision and participant/image generalization are sufficient.</p></article>
+            <article><span>Define</span><h3>Stimulus taxonomy</h3><p>Prompt violation, rendering artifact, relation error, and preference mismatch × local, relational, and global extent × salient and non-salient presentation.</p></article>
+            <article><span>Instrument</span><h3>Behavioral reference</h3><p>Synchronize gaze with keep/edit, selected region, reason, instruction, corrections, and accepted result.</p></article>
+            <article><span>Baseline</span><h3>No-user explanations</h3><p>Freeze saliency, geometry, and prompt-grounding baselines before participant data influence modeling decisions.</p></article>
+            <article><span>Gate</span><h3>Identifiability threshold</h3><p>Proceed to assistance only if precision, calibration, and participant/image generalization meet predefined criteria.</p></article>
           </div>
-          <div class="project-position">
-            <span>Working research question</span>
-            <strong>When visual saliency and prompt–image mismatch are controlled, which gaze dynamics predict a user’s later edit region, and can high-confidence suggestions reduce articulation effort without reducing control?</strong>
-          </div>
+          <div class="project-position"><span>Working research question</span><strong>Which pre-action gaze dynamics predict a user’s later edit region beyond image saliency and task mismatch, and can calibrated proposals reduce articulation effort without reducing control?</strong></div>
         </div>
       </section>
     </main>
