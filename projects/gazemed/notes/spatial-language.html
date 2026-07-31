@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../../../assets/css/site.css" />
     <script src="../../../assets/js/site.js" defer></script>
   </head>
-  <body data-root="../../../" data-project="gazemed" data-project-root="../" data-page="gazemed-notes" data-note-lang="en">
+  <body data-root="../../../" data-project="gazemed" data-project-root="../" data-page="gazemed-notes" data-lang="en" data-alt-lang="ko/spatial-language.html">
     <div class="reading-progress" data-reading-progress></div>
     <div data-site-header></div>
     <main id="main">
@@ -21,14 +21,10 @@
         <header class="note-header">
           <div class="note-shell">
             <p class="breadcrumb"><a href="../index.html">GazeMed</a><span>/</span><a href="index.html">Research Notes</a><span>/</span>001</p>
-            <nav class="note-language-switch" aria-label="Research note language">
-              <a href="spatial-language.html" lang="en" aria-current="page">EN</a>
-              <a href="ko/spatial-language.html" lang="ko">한국어</a>
-            </nav>
             <div class="note-kicker"><span>Research Note 001</span><time datetime="2026-07-31">31 July 2026</time></div>
             <h1>GazeMed from first principles: evidence, gaps, and the next model</h1>
             <p class="note-standfirst">A radiologist’s gaze is an imperfect pointer; speech is a delayed semantic trace. GazeMed asks whether their correspondence can localize the finding being described—and how that compact idea can grow without losing a falsifiable scientific claim.</p>
-            <div class="note-meta"><span>42 min read</span><span>Latest PR #3 review</span><span>Research roadmap</span></div>
+            <div class="note-meta"><span>46 min read</span><span>Latest PR #3 review</span><span>Research roadmap</span></div>
           </div>
         </header>
 
@@ -351,6 +347,31 @@
 
               <h3>Where the model works reveals what the output head cannot do</h3>
               <p>Final is strongest on broad findings such as enlarged cardiac silhouette, consolidation, atelectasis, and ground-glass opacity (IoU around 0.38–0.39). It is weaker on nodules or masses (0.156), pneumothorax (0.125), and acute fracture (0.047). This pattern is not merely “hard disease versus easy disease.” It reflects a geometric mismatch: the model paints blurred probability around a finite set of points, while small or thin structures require boundary-aware image evidence.</p>
+
+              <h3>Qualitative evidence needs a sampling rule, not a gallery of successes</h3>
+              <p>A mean score cannot show whether a heatmap is slightly misplaced, centered correctly but too broad, or entirely attached to the wrong fixation. Images are therefore necessary—but selecting them by eye can turn a diagnostic figure into advertising. The PR’s qualitative script first freezes the shipped model and evaluation settings, ranks every test prediction by IoU, and only then retrieves cases near prespecified parts of the distribution.</p>
+              <div class="qualitative-spectrum" aria-label="Percentile-based qualitative sampling from the GazeMed test distribution">
+                <article class="strong"><span>Upper range · ≥ 90th percentile</span><strong>Selected IoU 0.645</strong><p>The 90th-percentile boundary is 0.572. This case shows what the model can achieve, not what a typical user should expect.</p></article>
+                <article class="typical"><span>Typical · 50th percentile</span><strong>Selected IoU 0.332</strong><p>The test median is 0.333. This is the most representative single panel for understanding ordinary output quality.</p></article>
+                <article class="failure"><span>Lower range · ≤ 10th percentile</span><strong>Selected IoU 0.103</strong><p>The 10th-percentile boundary is 0.115. This case keeps failure visible and should drive the next hypothesis.</p></article>
+              </div>
+              <p class="source-note">Distribution and selection rule · <a href="https://github.com/TeamBeaverSudal/GazeMed/pull/3">PR #3</a>’s <code>qualitative_fig.py</code> and frozen run record: test mean 0.340, median 0.333, p10 0.115, p90 0.572. Percentiles are computed before viewing the cases.</p>
+
+              <h3>Read each case as a diagnosis of the pipeline</h3>
+              <p>For each percentile case, inspect the gaze scanpath, target ellipse, Final heatmap, and Temporal-only heatmap in that order. The goal is not to decide whether an image “looks good,” but to locate the stage at which useful evidence was lost.</p>
+              <div class="table-wrap note-table-wrap">
+                <table class="comparison diagnostic-table">
+                  <thead><tr><th>Observed pattern</th><th>Most plausible bottleneck</th><th>Discriminating next test</th></tr></thead>
+                  <tbody>
+                    <tr><td>Little or no gaze enters the target ellipse</td><td>The behavioral input may not contain enough lesion evidence.</td><td>Measure pre-mention target mass; evaluate calibrated abstention instead of forcing a region.</td></tr>
+                    <tr><td>The hottest point lands inside, but IoU remains low</td><td>Correspondence is plausible; spatial extent is wrong.</td><td>Compare adaptive kernels and an image-conditioned boundary head while preserving the same selected fixations.</td></tr>
+                    <tr><td>Temporal-only succeeds but Final shifts away</td><td>Coordinates or spatial descriptors are misleading for this mention.</td><td>Audit the matched span, then swap relation words and anatomy grounds without changing finding identity.</td></tr>
+                    <tr><td>Gaze crosses the target, but both models miss</td><td>The aligner may be selecting the wrong reading phase.</td><td>Label search–compare–verify phases on a small audit set and test phase-conditioned attention.</td></tr>
+                    <tr><td>The matched sentence does not express the annotated finding</td><td>The instance is ill-posed before model inference.</td><td>Report mention-link precision and localization conditional on a verified link.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>This reading protocol separates three problems that a single IoU number conflates: <strong>evidence availability</strong> (did the reader look at it?), <strong>correspondence</strong> (did the model choose the relevant look?), and <strong>extent recovery</strong> (did the chosen points become the right region?). The next model should target the dominant failure stage, not merely add capacity to all three.</p>
             </section>
 
             <section id="streaming">
@@ -536,6 +557,7 @@
                 <article><span>G4</span><h3>Spatial extent</h3><p>The output can only blur observed points. It cannot infer a thin pleural line or expand a fixation into a visually coherent lesion boundary.</p><strong>Needed: adaptive uncertainty kernels or an image-conditioned boundary head.</strong></article>
                 <article><span>G5</span><h3>Causal availability</h3><p>Full-sequence evaluation permits post-mention gaze. The operational latency and coverage of a prefix-only model are unknown.</p><strong>Needed: event replay and quality–latency curves.</strong></article>
                 <article><span>G6</span><h3>Population shift</h3><p>All splits come from one REFLACX pool. Reader habits, hardware calibration, and institutional reporting style may shift together.</p><strong>Needed: leave-one-reader/device/site-out evaluation.</strong></article>
+                <article><span>G7</span><h3>Failure visibility</h3><p>Averages and three percentile cases can still hide systematic tails by finding size, reader, mention quality, or gaze coverage.</p><strong>Needed: a frozen slice manifest, worst-group estimates, and risk–coverage curves.</strong></article>
               </div>
             </section>
 
@@ -632,7 +654,7 @@
               <h2>Which experiments should come first?</h2>
               <p>A coherent program should reduce uncertainty in dependency order. It is inefficient to build a large tri-modal model before knowing whether the mention linker, causal prefix, and anatomy prior explain the present gain.</p>
               <div class="experiment-program">
-                <article><span>E0 · Freeze</span><div><strong>Version the evidence</strong><p>Snapshot the PR head, instance keys, splits, tuning grids, and per-instance predictions. Eliminate number drift between the paper, site, and scripts.</p></div><em>Prerequisite</em></article>
+                <article><span>E0 · Freeze</span><div><strong>Version the evidence</strong><p>Snapshot the PR head, instance keys, splits, tuning grids, per-instance predictions, and percentile-selection manifest. Eliminate drift in both numbers and example panels between the paper, site, and scripts.</p></div><em>Prerequisite</em></article>
                 <article><span>E1 · Link</span><div><strong>Validate mention association</strong><p>Hand-audit a stratified sample; compare regex, a clinical labeler, and span-level linking. Report mention precision/recall and downstream localization on the same cases.</p></div><em>Highest fidelity gain</em></article>
                 <article><span>E2 · Stream</span><div><strong>Run causal prefix replay</strong><p>Define output clocks, prevent future gaze, and plot IoU/Pointing/coverage against latency.</p></div><em>Closes claim boundary</em></article>
                 <article><span>E3 · Ground</span><div><strong>Test structured spatial frames</strong><p>Add anatomy, relation, extent, negation, and uncertainty one factor at a time, then complete a factorial test of parser × coordinate representation.</p></div><em>Core language claim</em></article>

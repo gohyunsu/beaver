@@ -3,8 +3,7 @@ const root = body.dataset.root || "./";
 const current = body.dataset.page || "";
 const project = body.dataset.project || "";
 const projectRoot = body.dataset.projectRoot || "./";
-const noteLang = body.dataset.noteLang || "en";
-const siteLang = body.dataset.lang || document.documentElement.lang || noteLang;
+const siteLang = body.dataset.lang || document.documentElement.lang || "en";
 const alternateLanguageHref = body.dataset.altLang || "";
 
 const globalLinks = [
@@ -129,7 +128,7 @@ if (header) {
             <span>${projectSpec.name}</span>
             <small>${localizedProjectCopy?.descriptor || projectSpec.descriptor}</small>
           </a>
-          <nav class="project-links" aria-label="${projectSpec.name} sections">
+          <nav class="project-links" aria-label="${siteLang === "ko" ? `${projectSpec.name} 섹션` : `${projectSpec.name} sections`}">
             ${projectSpec.links
               .map(
                 ([id, label, href]) => {
@@ -158,12 +157,12 @@ if (header) {
     <a class="skip-link" href="#main">${siteLang === "ko" ? "본문으로 건너뛰기" : "Skip to content"}</a>
     <header class="site-header">
       <div class="nav-shell">
-        <a class="brand" href="${root}${siteLang === "ko" ? "ko/" : ""}index.html" aria-label="BEAVER home">
+        <a class="brand" href="${root}${siteLang === "ko" ? "ko/" : ""}index.html" aria-label="${siteLang === "ko" ? "BEAVER 홈" : "BEAVER home"}">
           <span class="brand-mark" aria-hidden="true">B</span>
           <span>BEAVER <small>Human signals × intelligent systems</small></span>
         </a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">${siteLang === "ko" ? "메뉴" : "Menu"}</button>
-        <nav class="nav-links" id="site-nav" aria-label="Primary navigation">${globalNav}</nav>
+        <nav class="nav-links" id="site-nav" aria-label="${siteLang === "ko" ? "주요 탐색" : "Primary navigation"}">${globalNav}</nav>
         ${languageSwitch}
       </div>
     </header>

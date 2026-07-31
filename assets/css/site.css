@@ -6543,41 +6543,9 @@ body[data-lang="ko"] .section-head h2 {
 
 /* Research notes */
 
-.note-language-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: .15rem;
-  margin: 0 0 1.6rem;
-  padding: .22rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(255, 253, 247, .68);
-}
-
 .notes-hero .breadcrumb,
 .note-header .breadcrumb {
   margin-bottom: .9rem;
-}
-
-.note-language-switch a {
-  min-width: 3rem;
-  padding: .38rem .72rem;
-  border-radius: 999px;
-  color: var(--muted);
-  font-size: .65rem;
-  font-weight: 800;
-  line-height: 1;
-  text-align: center;
-  text-decoration: none;
-}
-
-.note-language-switch a[aria-current="page"] {
-  background: var(--forest);
-  color: white;
-}
-
-.note-language-switch a:not([aria-current="page"]):hover {
-  color: var(--forest);
 }
 
 .notes-index {
@@ -7537,6 +7505,63 @@ body[data-lang="ko"] .section-head h2 {
   line-height: 1.65;
 }
 
+.qualitative-spectrum {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 2rem 0 1.2rem;
+}
+
+.qualitative-spectrum article {
+  padding: 1.35rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--blue);
+  background: rgba(255, 253, 247, .7);
+}
+
+.qualitative-spectrum article.strong {
+  border-top-color: var(--forest);
+}
+
+.qualitative-spectrum article.failure {
+  border-top-color: var(--orange);
+}
+
+.qualitative-spectrum span,
+.qualitative-spectrum strong {
+  display: block;
+}
+
+.qualitative-spectrum span {
+  min-height: 2.4em;
+  color: var(--muted);
+  font-size: .59rem;
+  font-weight: 850;
+  letter-spacing: .04em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.qualitative-spectrum strong {
+  margin-top: 1rem;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.18rem;
+  font-weight: 500;
+}
+
+.qualitative-spectrum p {
+  margin: .75rem 0 0;
+  color: var(--muted);
+  font-size: .7rem;
+  line-height: 1.65;
+}
+
+.diagnostic-table td:first-child {
+  color: var(--ink);
+  font-weight: 750;
+}
+
 .note-video-figure {
   margin: 3rem -3rem;
 }
@@ -8080,26 +8105,25 @@ body[data-lang="ko"] .section-head h2 {
   text-decoration: none;
 }
 
-body[data-note-lang="ko"] .chapter-hero h1,
-body[data-note-lang="ko"] .note-card h2,
-body[data-note-lang="ko"] .note-header h1,
-body[data-note-lang="ko"] .note-standfirst,
-body[data-note-lang="ko"] .note-body h2,
-body[data-note-lang="ko"] .note-body h3,
-body[data-note-lang="ko"] .note-body p,
-body[data-note-lang="ko"] .note-body li,
-body[data-note-lang="ko"] .note-thesis strong,
-body[data-note-lang="ko"] .note-conclusion strong {
+body[data-lang="ko"] .note-card h2,
+body[data-lang="ko"] .note-header h1,
+body[data-lang="ko"] .note-standfirst,
+body[data-lang="ko"] .note-body h2,
+body[data-lang="ko"] .note-body h3,
+body[data-lang="ko"] .note-body p,
+body[data-lang="ko"] .note-body li,
+body[data-lang="ko"] .note-thesis strong,
+body[data-lang="ko"] .note-conclusion strong {
   overflow-wrap: break-word;
   word-break: keep-all;
 }
 
-body[data-note-lang="ko"] .note-header h1 {
+body[data-lang="ko"] .note-header h1 {
   letter-spacing: -.045em;
   line-height: 1.08;
 }
 
-body[data-note-lang="ko"] .note-body h2 {
+body[data-lang="ko"] .note-body h2 {
   letter-spacing: -.025em;
   line-height: 1.2;
 }
@@ -8559,6 +8583,7 @@ body[data-note-lang="ko"] .note-body h2 {
   .signal-glossary.compact,
   .note-metric-primer,
   .evidence-stability,
+  .qualitative-spectrum,
   .note-feature-roles,
   .spatial-taxonomy,
   .decision-gates,
@@ -8660,7 +8685,7 @@ body[data-note-lang="ko"] .note-body h2 {
     overflow-wrap: break-word;
   }
 
-  body[data-note-lang="ko"] .note-header h1 {
+  body[data-lang="ko"] .note-header h1 {
     overflow-wrap: anywhere;
     word-break: normal;
   }
